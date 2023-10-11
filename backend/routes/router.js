@@ -31,6 +31,8 @@ router.post("submit-onboardingapplication", submitOnboardingApplication );
 router.get("personal-information/:id", getPersonalInformation);
 router.get("personal-information/:id/edit", editPersonalInformation)
 
+// Emergence Contact Flow
+
 // HR Flow
 
 

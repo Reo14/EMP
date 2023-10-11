@@ -5,5 +5,7 @@
 创建了本项目 请阅读readme.md 按照其中的指示存放文件
 完成backend部分schema和controller的demo
 
+由于Userschema的属性太多 我将emergence contact和reference单独定义了schema
+
 ## Qixin
 目前在EmployeeController中 修改个人资料我只设置了一个完整的函数 如果你需要抽象出专门的功能 例如修改签证状态 直接copy我的代码简单修改后即可

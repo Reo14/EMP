@@ -125,16 +125,17 @@ async function editPersonalInformation(req, res) {
     }
 
     // Update employee fields with the data from the request body
+    // 请将无法被更改的个人信息注释掉
     employee.username = updatedEmployee.username;
     employee.password = updatedEmployee.password;
     employee.email = updatedEmployee.email;
-    employee.role = updatedEmployee.role;
-    employee.registrationToken = updatedEmployee.registrationToken;
-    employee.onboardingApplication = updatedEmployee.onboardingApplication;
-    employee.emergencyContact = updatedEmployee.emergencyContact;
-    employee.reference = updatedEmployee.reference;
-    employee.userId = updatedEmployee.userId;
-    employee.hrId = updatedEmployee.hrId;
+    // employee.role = updatedEmployee.role;
+    // employee.registrationToken = updatedEmployee.registrationToken;
+    // employee.onboardingApplication = updatedEmployee.onboardingApplication;
+    // employee.emergencyContact = updatedEmployee.emergencyContact;
+    // employee.reference = updatedEmployee.reference;
+    // employee.userId = updatedEmployee.userId;
+    // employee.hrId = updatedEmployee.hrId;
     employee.firstName = updatedEmployee.firstName;
     employee.lastName = updatedEmployee.lastName;
     employee.middleName = updatedEmployee.middleName;
