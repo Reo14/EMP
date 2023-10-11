@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const emergencyContactSchema = new mongoose.Schema({
-    firstName: String,
-    lastName: String,
+    firstName: {type: String, required: true},
+    lastName: {type: String, required: true},
     middleName: String,
     phone: String,
     email: String,

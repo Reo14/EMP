@@ -67,15 +67,27 @@ async function getVisaStatusEmployees(req, res) {
 // 生成注册令牌并发送邮件
 async function generateRegistrationToken(req, res) {
   try {
-    const { email, personName } = req.body;
+    const { email } = req.body;
 
-    // 生成注册令牌
-    const registrationToken = new RegistrationToken({ email, personName });
-    const savedToken = await registrationToken.save();
+    // 输入验证
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
 
-    // 发送邮件代码（这里需要实际的邮件发送逻辑）
+    // 检查邮箱是否已注册
+    const existingEmployee = await Employee.findOne({ email });
+    if (existingEmployee) {
+      return res.status(400).json({ error: 'Email is already registered' });
+    }
 
-    res.json(savedToken);
+    // 创建注册令牌
+    const token = new RegistrationToken({ email });
+    await token.save();
+
+    // 实现邮件发送逻辑...
+    // 假设这里调用发送邮件的函数 sendEmail(email, token)
+
+    res.status(200).json({ message: 'Registration token sent successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
