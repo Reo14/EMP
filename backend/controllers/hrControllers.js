@@ -1,96 +1,142 @@
-const Employee = require('../models/employee');
+const User = require('../models/user');
 const RegistrationToken = require('../models/registrationToken');
 const OnboardingApplication = require('../models/onboardingApplication');
+const nodemailer = require('nodemailer');
+require("dotenv").config();
 
 // 获取所有员工信息
 async function getAllEmployeeSummaries(req, res) {
     try {
-      const employees = await Employee.find().sort({ lastName: 1 }); // 按姓氏排序
+      const employees = await User.find().sort({ lastName: 1 }); // 按姓氏排序
       res.json(employees.map(employee => ({
-        name: employee.fullName,
-        ssn: employee.ssn,
-        workAuthorizationTitle: employee.workAuthorization.title,
-        phoneNumber: employee.phoneNumber,
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        middleName: employee.middleName,
+        preferredName: employee.preferredName,
+        profilePicture : employee.profilePicture,
+        role: employee.role,
+        reference: employee.reference,
+        emergencyContact: employee.emergencyContact,
+        SSN: employee.SSN,
+        DOB: employee.DOB,
+        workAuthorization: employee.employment,
+        address: employee.address,
+        Contact: employee.Contact,
         email: employee.email,
-      })));
+        userId: employee.userId,
+        hrId: employee.hrId,
+        gender: employee.gender,
+        documents: employee.documents,
+        onboardingApplication: employee.onboardingApplication,
+      }
+      )));
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   }
   
-// 获取 Visa Status Management 中指定状态的员工
-async function getVisaStatusEmployees(req, res) {
-    try {
-      const { status } = req.params; // 通过路由参数传递状态
+// // 获取 Visa Status Management 中指定状态的员工
+// async function getVisaStatusEmployees(req, res) {
+//     try {
+//       const { status } = req.params; // 通过路由参数传递状态
   
-      // 验证状态是否有效
-      const validStatuses = ['InProgress', 'All'];
-      if (!validStatuses.includes(status)) {
-        return res.status(400).json({ error: 'Invalid status' });
-      }
+//       // 验证状态是否有效
+//       const validStatuses = ['InProgress', 'All'];
+//       if (!validStatuses.includes(status)) {
+//         return res.status(400).json({ error: 'Invalid status' });
+//       }
   
-      // 根据状态查询员工
-      let employees;
-      if (status === 'InProgress') {
-        employees = await Employee.find({ /* 查询条件，例如未完成的步骤 */ });
-      } else {
-        employees = await Employee.find({ /* 查询条件，例如所有持有签证的员工 */ });
-      }
+//       // 根据状态查询员工
+//       let employees;
+//       if (status === 'InProgress') {
+//         employees = await Employee.find({ /* 查询条件，例如未完成的步骤 */ });
+//       } else {
+//         employees = await Employee.find({ /* 查询条件，例如所有持有签证的员工 */ });
+//       }
   
-      // 构造响应
-      const response = employees.map(employee => {
-        const responseData = {
-          name: employee.fullName,
-          ...employee.toObject(), // 包含所有员工信息
-        };
+//       // 构造响应
+//       const response = employees.map(employee => {
+//         const responseData = {
+//           name: employee.fullName,
+//           ...employee.toObject(), // 包含所有员工信息
+//         };
   
-        if (status === 'InProgress') {
-          // 添加工作授权信息
-          responseData.workAuthorization = {
-            title: employee.workAuthorization.title,
-            startDate: employee.workAuthorization.startDate,
-            endDate: employee.workAuthorization.endDate,
-            daysRemaining: /* 计算剩余天数 */,
-          };
-        }
+//         if (status === 'InProgress') {
+//           // 添加工作授权信息
+//           responseData.workAuthorization = {
+//             title: employee.workAuthorization.title,
+//             startDate: employee.workAuthorization.startDate,
+//             endDate: employee.workAuthorization.endDate,
+//             daysRemaining: /* 计算剩余天数 */,
+//           };
+//         }
   
-        return responseData;
-      });
+//         return responseData;
+//       });
   
-      res.json(response);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  }
+//       res.json(response);
+//     } catch (error) {
+//       res.status(500).json({ error: error.message });
+//     }
+//   }
   
   
 // 生成注册令牌并发送邮件
 async function generateRegistrationToken(req, res) {
   try {
-    const { email } = req.body;
+    const { email, employeeName, hrId } = req.body;
 
-    // 输入验证
+    // Input validation
     if (!email) {
       return res.status(400).json({ error: 'Email is required' });
     }
 
-    // 检查邮箱是否已注册
-    const existingEmployee = await Employee.findOne({ email });
+    // Check if email is already registered
+    const existingEmployee = await Employee.findOne({ email: email });
     if (existingEmployee) {
       return res.status(400).json({ error: 'Email is already registered' });
     }
 
-    // 创建注册令牌
-    const token = new RegistrationToken({ email });
-    await token.save();
+    // Generate JWT token with a 3-hour expiration
+    const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '3h' });
 
-    // 实现邮件发送逻辑...
-    // 假设这里调用发送邮件的函数 sendEmail(email, token)
+    // Save the token in your RegistrationToken model
+    const registrationToken = new RegistrationToken({ 
+      email: email,
+      employeeName: employeeName,
+      registrationLink: token,
+      status: 'Not Submitted',
+      hrID: hrId, // Reference to HR ID (Sender's ID)
+    });
+    await registrationToken.save();
+
+    // Send email with registration link
+    await sendRegistrationEmail(email, token);
 
     res.status(200).json({ message: 'Registration token sent successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+}
+
+// Function to send registration email
+async function sendRegistrationEmail(email, token) {
+  // Use nodemailer to send an email with the registration link
+  // Configure your nodemailer transporter
+  const transporter = nodemailer.createTransport({
+    // Your mailer configuration
+  });
+
+  // Define the email content
+  const mailOptions = {
+    from: 'your-email@example.com',
+    to: email,
+    subject: 'Registration Token',
+    text: `Click the following link to register: http://your-app-url/register/${token}`,
+  };
+
+  // Send the email
+  await transporter.sendMail(mailOptions);
 }
 
 // 获取所有已发送过注册令牌的历史记录
@@ -99,7 +145,7 @@ async function getRegistrationTokenHistory(req, res) {
       const tokenHistory = await RegistrationToken.find();
       res.json(tokenHistory.map(token => ({
         email: token.email,
-        personName: token.personName,
+        employeeName: token.employeeName,
         registrationLink: token.registrationLink,
         status: token.status,
       })));
@@ -183,7 +229,6 @@ async function getOnboardingApplicationsByStatus(req, res) {
 
 module.exports = {
   getAllEmployeeSummaries,
-  getVisaStatusEmployees,
   generateRegistrationToken,
   getRegistrationTokenHistory,
   processOnboardingApplication,

@@ -1,6 +1,6 @@
 // 引入模型
 const User = require('../models/user');
-const RegistrationToken = require('../models/registrationtoken');
+const RegistrationToken = require('../models/registrationToken');
 const OnboardingApplication = require('../models/onboardingApplication');
 
 
@@ -55,6 +55,33 @@ async function submitOnboardingApplication(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
+
+// 获取入职申请的状态
+async function getOnboardingApplicationStatus(req, res) {
+  try {
+    const { id } = req.params;
+
+    // Check if the employee exists
+    const employee = await User.findOne({ userID: id });
+
+    if (!employee) {
+      return res.status(400).json({ error: 'Invalid employee ID' });
+    }
+
+    // Find the onboarding application for the employee
+    const onboardingApplication = await OnboardingApplication.findOne({ employeeId });
+
+    if (!onboardingApplication) {
+      return res.status(404).json({ error: 'Onboarding application not found' });
+    }
+
+    // Return the status of the onboarding application
+    res.json({ status: onboardingApplication.status });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 
 // 获取个人信息
 async function getPersonalInformation(req, res) {
@@ -187,6 +214,7 @@ async function editPersonalInformation(req, res) {
 
 module.exports = {
   submitOnboardingApplication,
+  getOnboardingApplicationStatus,
   getPersonalInformation,
   editPersonalInformation,
 };

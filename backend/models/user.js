@@ -5,9 +5,11 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     email: { type: String, unique: true, required: true },
     role: { type: String, enum: ['Employee', 'HR'], default: 'Employee' },
+
     registrationToken: { type: mongoose.Schema.Types.ObjectId, ref: 'RegistrationToken' },
     onboardingApplication: { type: mongoose.Schema.Types.ObjectId, ref: 'OnboardingApplication' },
-    emergencyContact: { type: mongoose.Schema.Types.ObjectId, ref: 'EmergencyContact' },
+    emergencyContact: [{ type: mongoose.Schema.Types.ObjectId, ref: 'EmergencyContact' }],
+    
     reference: { type: mongoose.Schema.Types.ObjectId, ref: 'Reference' }, 
     
     userId: { type: String, default: generateID, unique: true },
@@ -30,7 +32,7 @@ const userSchema = new mongoose.Schema({
       city: String,
       state: String,
       zip: String
-  },
+    },
 
     SSN: {type: String, unqiue: true},
     DOB: {type: String, unique: true},
