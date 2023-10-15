@@ -1,20 +1,22 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { userData } from "../../types/auth";
+import { authData } from "../../types/auth";
 
 interface authState {
   status: "idle" | "loading" | "failed" | "succeeded";
   isLoggedIn: boolean;
+  error: string | undefined | null;
 }
 
 const initialState: authState = {
-  status: "idle",
   isLoggedIn: false,
+  status: "idle",
+  error: null,
 };
 
 export const signUp = createAsyncThunk(
   "auth/signUp",
-  async (userData: userData, { rejectWithValue }) => {
+  async (userData: authData, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
 
@@ -25,15 +27,19 @@ export const signUp = createAsyncThunk(
         },
       });
       return res.data;
-    } catch (error) {
-      return rejectWithValue(error);
+    } catch (err) {
+      const axiosErr = err as AxiosError;
+      if (!axiosErr.response) {
+        throw err; // Some network or unknown error, let it go to the fallback error handling
+      }
+      return rejectWithValue(axiosErr.response.data);
     }
   }
 );
 
 export const signIn = createAsyncThunk(
   "auth/signIn",
-  async (userData: userData, { rejectWithValue }) => {
+  async (userData: authData, { rejectWithValue }) => {
     try {
       const res = await axios.post("http://localhost:3000/sign-in", userData, {
         headers: {
@@ -41,8 +47,12 @@ export const signIn = createAsyncThunk(
         },
       });
       return res.data;
-    } catch (error) {
-      return rejectWithValue(error);
+    } catch (err) {
+      const axiosErr = err as AxiosError;
+      if (!axiosErr.response) {
+        throw err; // Some network or unknown error, let it go to the fallback error handling
+      }
+      return rejectWithValue(axiosErr.response.data);
     }
   }
 );
