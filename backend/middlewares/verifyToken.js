@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 
 // Middleware to verify JWT token
 function verifyToken(req, res, next) {
+  // Need changing to getting from headers
   const token = req.params.token; // Assuming the token is in the URL parameter
 
   if (!token) {

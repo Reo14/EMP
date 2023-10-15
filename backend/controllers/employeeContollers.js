@@ -1,8 +1,7 @@
 // 引入模型
-const User = require('../models/user');
-const RegistrationToken = require('../models/registrationToken');
-const OnboardingApplication = require('../models/onboardingApplication');
-
+const User = require("../models/user");
+const RegistrationToken = require("../models/registrationtoken");
+const OnboardingApplication = require("../models/onboardingApplication");
 
 // 提交入职申请
 async function submitOnboardingApplication(req, res) {
@@ -24,11 +23,11 @@ async function submitOnboardingApplication(req, res) {
       visaTitle,
       // Other onboarding application details
     } = req.body;
-   
+
     const employee = await User.findOne({ userID: employeeId });
 
     if (!employee) {
-      return res.status(400).json({ error: 'Invalid employee ID' });
+      return res.status(400).json({ error: "Invalid employee ID" });
     }
 
     // 保存入职申请信息
@@ -37,20 +36,22 @@ async function submitOnboardingApplication(req, res) {
       employeeId: employeeId,
       firstName: firstName,
       lastName: lastName,
-      middleName : middleName,
+      middleName: middleName,
       preferredName: preferredName,
       profilePicture: profilePicture,
-      phoneNumber : phoneNumber,
-      email : email,
-      SSN : SSN,
-      DOB : DOB,
-      gender : gender,
-      visaTitle : visaTitle,
+      phoneNumber: phoneNumber,
+      email: email,
+      SSN: SSN,
+      DOB: DOB,
+      gender: gender,
+      visaTitle: visaTitle,
     });
 
     await application.save();
 
-    res.status(200).json({ message: 'Onboarding application submitted successfully' });
+    res
+      .status(200)
+      .json({ message: "Onboarding application submitted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -65,14 +66,18 @@ async function getOnboardingApplicationStatus(req, res) {
     const employee = await User.findOne({ userID: id });
 
     if (!employee) {
-      return res.status(400).json({ error: 'Invalid employee ID' });
+      return res.status(400).json({ error: "Invalid employee ID" });
     }
 
     // Find the onboarding application for the employee
-    const onboardingApplication = await OnboardingApplication.findOne({ employeeId });
+    const onboardingApplication = await OnboardingApplication.findOne({
+      employeeId,
+    });
 
     if (!onboardingApplication) {
-      return res.status(404).json({ error: 'Onboarding application not found' });
+      return res
+        .status(404)
+        .json({ error: "Onboarding application not found" });
     }
 
     // Return the status of the onboarding application
@@ -82,20 +87,19 @@ async function getOnboardingApplicationStatus(req, res) {
   }
 }
 
-
 // 获取个人信息
 async function getPersonalInformation(req, res) {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
 
-    const employee = User.findOne({userId: id})
-    .populate('RegistrationToken')
-    .populate('EmergencyContact')
-    .populate('Reference')
-    .populate('OnboardingApplication');
+    const employee = User.findOne({ userId: id })
+      .populate("RegistrationToken")
+      .populate("EmergencyContact")
+      .populate("Reference")
+      .populate("OnboardingApplication");
 
     if (!employee) {
-      return res.status(404).json({ error: 'Employee not found' });
+      return res.status(404).json({ error: "Employee not found" });
     }
 
     const personalInformation = {
@@ -103,21 +107,21 @@ async function getPersonalInformation(req, res) {
       password: employee.password,
       email: employee.email,
       role: employee.role,
-      registrationToken:  employee.registrationToken,
+      registrationToken: employee.registrationToken,
       onboardingApplication: employee.OnboardingApplication,
       emergencyContact: employee.emergencyContact,
-      reference: employee.reference, 
-      
+      reference: employee.reference,
+
       userId: employee.userId,
-      hrId : employee.hrId, // Reference to his HR
+      hrId: employee.hrId, // Reference to his HR
 
       firstName: employee.firstName,
       lastName: employee.lastName,
       middleName: employee.middleName,
       preferredName: employee.preferredName,
-      profilePicture : employee.profilePicture, // 请在Chakra UI库中给它设置一个icon作为默认头像
+      profilePicture: employee.profilePicture, // 请在Chakra UI库中给它设置一个icon作为默认头像
 
-      Contact : employee.Contact,
+      Contact: employee.Contact,
 
       address: employee.address,
 
@@ -127,9 +131,8 @@ async function getPersonalInformation(req, res) {
 
       employment: employee.employment,
 
-      documents: employee.document
-
-      }
+      documents: employee.document,
+    };
 
     res.status(200).json({ personalInformation });
   } catch (error) {
@@ -179,12 +182,13 @@ async function editPersonalInformation(req, res) {
     // Save the updated employee document
     await employee.save();
 
-    res.status(200).json({ message: 'Personal information updated successfully' });
+    res
+      .status(200)
+      .json({ message: "Personal information updated successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 }
-
 
 // // 管理签证状态
 // async function manageVisaStatus(req, res) {
