@@ -1,6 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { EmployeeInfo, onboardData } from "../../types/employee";
+import { EmployeeInfo } from "../../types/employee";
+import { ErrorResponse } from "../../types/error";
 
 interface EmployeeState {
   info: EmployeeInfo | null;
@@ -8,9 +9,6 @@ interface EmployeeState {
   error: string | undefined | null;
 }
 
-interface ErrorResponse {
-  error: string;
-}
 
 interface EmployeeInfoResponse {
   personalInformation: EmployeeInfo;
@@ -22,30 +20,6 @@ const initialState: EmployeeState = {
   error: null,
 };
 
-export const submitOnboarding = createAsyncThunk(
-  "employee/submitOnboarding",
-  async (onboardData: onboardData, { rejectWithValue }) => {
-    try {
-      const res = await axios.post(
-        "http://localhost:3000/submit-onboardingapplication",
-        onboardData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      return res.data;
-    } catch (err) {
-      const axiosErr = err as AxiosError<ErrorResponse>;
-      if (!axiosErr.response || !axiosErr.response.data.error) {
-        // Some network or unknown error, let it go to the fallback error handling
-        throw err;
-      }
-      return rejectWithValue(axiosErr.response.data);
-    }
-  }
-);
 
 export const fetchEmployeeInfo = createAsyncThunk<
   EmployeeInfo, // Return type on success
