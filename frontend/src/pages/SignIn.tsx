@@ -20,14 +20,14 @@ import {
   import MyCard from "../components/MyCard";
   
   const SignIn: FC = () => {
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const [showPassword, setShowPassword] = useState(false);
-    const [email, setEmail] = useState("");
-    const [emailError, setEmailError] = useState("");
-    const [password, setPassword] = useState("");
-    const [passwordError, setPasswordError] = useState("");
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [showPassword, setShowPassword] = useState(false);
+    const [username, setUsername] = useState("");
+    const [usernameError, setUsernameError] = useState("");
+    const [password, setPassword] = useState("");
+    const [passwordError, setPasswordError] = useState("");
   
     const inputStyles = {
       mt: "2",
@@ -53,9 +53,9 @@ import {
   
     const handleClick = () => setShowPassword(!showPassword);
   
-    const onEmailBlur = () => {
-      if (!email) {
-        setEmailError("This field is required");
+    const onUsernameBlur = () => {
+      if (!username) {
+        setUsernameError("This field is required");
       }
     };
   
@@ -65,14 +65,12 @@ import {
       }
     };
   
-    const onEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
-      setEmail(e.target.value);
+    const onUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
+      setUsername(e.target.value);
       if (!e.target.value) {
-        setEmailError("This field is required");
-      } else if (!/\S+@\S+\.\S+/.test(e.target.value)) {
-        setEmailError("Invalid Email format");
+        setUsernameError("This field is required");
       } else {
-        setEmailError("");
+        setUsernameError("");
       }
     };
   
@@ -86,8 +84,8 @@ import {
     };
   
     const handleLogin = async () => {
-      if (!email) {
-        setEmailError("This field is required");
+      if (!username) {
+        setUsernameError("This field is required");
         return;
       }
       if (!password) {
@@ -97,7 +95,7 @@ import {
   
       // try {
       //   await dispatch(
-      //     signIn({ email, password })
+      //     signIn({ username, password })
       //   ).unwrap();
       //   onOpen();
       // } catch (error: any) {
@@ -122,22 +120,22 @@ import {
     return (
       <>
         <Box display="flex" justifyContent="center" alignItems="center" h="100%">
-          <MyCard title="Sign In to your account">
+          <MyCard title="Welcome">
             <Box mb="5">
-              <Text textColor="gray">Email:</Text>
+              <Text textColor="gray">Username:</Text>
               <Input
-                type="email"
-                value={email}
-                onChange={onEmailChange}
+                type="text"
+                value={username}
+                onChange={onUsernameChange}
                 onKeyDown={handleKeyDown}
-                onBlur={onEmailBlur}
-                placeholder="Enter your email"
+                onBlur={onUsernameBlur}
+                placeholder="Enter your username"
                 {...inputStyles}
-                borderColor={emailError ? "red.500" : "gray.300"}
+                borderColor={usernameError ? "red.500" : "gray.300"}
               />
-              {emailError && (
+              {usernameError && (
                 <Text color="red.500" fontSize="sm" float="right">
-                  {emailError}
+                  {usernameError}
                 </Text>
               )}
             </Box>
@@ -190,7 +188,7 @@ import {
           isOpen={isOpen}
           onClose={() => {
             onClose();
-            navigate("/all-products");
+            navigate("/home");
           }}
           isCentered
         >

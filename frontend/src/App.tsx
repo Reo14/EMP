@@ -31,7 +31,7 @@ const App: FC = () => {
             <Route path="/" element={<Navigate to="/sign-in" replace />} />
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
-            <Route path="*" element={<ErrorPage />} />
+            <Route path="/error" element={<ErrorPage />} />
           </Routes>
         </GridItem>
         <GridItem bg="#111827" area={"footer"}>
