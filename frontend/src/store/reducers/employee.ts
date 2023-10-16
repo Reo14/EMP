@@ -68,6 +68,30 @@ export const fetchEmployeeInfo = createAsyncThunk<
   }
 });
 
+const editEmployeeInfo = createAsyncThunk(
+  "employee/edit",
+  async (updatedInfo: EmployeeInfo, { rejectWithValue }) => {
+    try {
+      const res = await axios.put(
+        `http://localhost:3000/personal-information/${updatedInfo.userId}/edit`,
+        updatedInfo,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return res.data;
+    } catch (err) {
+      const axiosErr = err as AxiosError<ErrorResponse>;
+      if (!axiosErr.response || !axiosErr.response.data.error) {
+        throw err; // Some network or unknown error, let it go to the fallback error handling
+      }
+      return rejectWithValue(axiosErr.response.data);
+    }
+  }
+);
+
 const employeeSlice = createSlice({
   name: "employee",
   initialState,
@@ -91,6 +115,19 @@ const employeeSlice = createSlice({
       } else {
         state.error = action.error.message;
       }
+    });
+
+    // edit employee info
+    builder.addCase(editEmployeeInfo.fulfilled, (state, action) => {
+      console.log(action.payload);
+      state.status = "succeeded";
+    });
+    builder.addCase(editEmployeeInfo.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(editEmployeeInfo.rejected, (state, action) => {
+      state.status = "failed";
+      state.error = action.error.message;
     });
 
     // submit onboarding
