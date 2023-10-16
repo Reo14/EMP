@@ -28,7 +28,7 @@ async function submitOnboardingApplication(req, res) {
     const employee = await User.findOne({ userID: employeeId });
 
     if (!employee) {
-      return res.status(400).json({ error: 'Invalid employee ID' });
+      return res.status(400).json({ error: error.message });
     }
 
     // 保存入职申请信息
@@ -49,6 +49,20 @@ async function submitOnboardingApplication(req, res) {
     });
 
     await application.save();
+
+    commonData = {
+      registrationToken: registrationToken,
+      hrId: hrId,
+      firstName: firstName,
+      lastName: lastName,
+      middleName : middleName,
+      preferredName: preferredName,
+      profilePicture: profilePicture,
+      SSN : SSN,
+      DOB : DOB,
+      gender : gender,
+      
+    };
 
     res.status(200).json({ message: 'Onboarding application submitted successfully' });
   } catch (error) {
@@ -82,6 +96,75 @@ async function getOnboardingApplicationStatus(req, res) {
   }
 }
 
+// 创建个人信息
+async function createPersonalInformation(req, res) {
+  const {id} = req.params;
+  try {
+
+    const {
+      // username, 这几个在auth中已经create了
+      // password,
+      // email,
+
+      // role,
+      // registrationToken,
+      // onboardingApplication,
+
+      // emergencyContact, 这两个有专门的api
+      // reference, 
+      
+      // userId,
+      // hrId, // Reference to his HR
+
+      // firstName,
+      // lastName,
+      // middleName,
+      // preferredName,
+      // profilePicture, 
+
+      Contact,
+
+      address,
+
+      // SSN,
+      // DOB,
+      // gender,
+
+      employment,
+
+      documents,
+      
+    } = req.body;
+   
+    const personalInformation = await User.findOne({ userID: id });
+
+    if (personalInformation) {
+      return res.status(400).json({ error:error.message });
+    }
+
+    // 保存入职申请信息
+    const newInformation = new User({
+      ...commonData,
+      // emergencyContact: emergencyContact,
+      // reference: reference,
+
+      Contact : Contact,
+      address : address,
+      // SSN : SSN,
+      // DOB : DOB,
+      // gender : gender,
+      employment : employment,
+      documents: documents,
+    });
+
+    await newInformation.save();
+
+    res.status(200).json({ message: 'Personal Profile created successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 
 // 获取个人信息
 async function getPersonalInformation(req, res) {
@@ -95,7 +178,7 @@ async function getPersonalInformation(req, res) {
     .populate('OnboardingApplication');
 
     if (!employee) {
-      return res.status(404).json({ error: 'Employee not found' });
+      return res.status(404).json({ error: error.message });
     }
 
     const personalInformation = {
@@ -215,6 +298,7 @@ async function editPersonalInformation(req, res) {
 module.exports = {
   submitOnboardingApplication,
   getOnboardingApplicationStatus,
+  createPersonalInformation,
   getPersonalInformation,
   editPersonalInformation,
 };

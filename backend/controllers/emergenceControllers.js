@@ -18,7 +18,7 @@ async function createEmergencyContact(req, res) {
     const employee = await User.findOne({ userID: id });
 
     if (!employee) {
-      return res.status(400).json({ error: 'Invalid employee ID' });
+      return res.status(400).json({ error: error.message });
     }
 
     const emergenceContact = new EmergencyContact({
@@ -48,7 +48,7 @@ async function getAllEmergencyContacts(req, res) {
     const employee = await User.findOne({ userId: id });
 
     if (!employee) {
-      return res.status(400).json({ error: 'Invalid employee ID' });
+      return res.status(400).json({ error: error.message });
     }
 
     const emergencyContacts = await EmergencyContact.find({ employeeId: id });
@@ -87,7 +87,7 @@ async function updateEmergencyContact(req, res) {
     );
 
     if (!updatedContact) {
-      return res.status(404).json({ error: 'Emergency contact not found' });
+      return res.status(404).json({ error: error.message });
     }
 
     res.json(updatedContact);
@@ -104,7 +104,7 @@ async function deleteEmergencyContact(req, res) {
     const deletedContact = await EmergencyContact.findOneAndDelete({ _id: emergenceContactid });
 
     if (!deletedContact) {
-      return res.status(404).json({ error: 'Emergency contact not found' });
+      return res.status(404).json({ error: error.message });
     }
 
     res.json({ message: 'Emergency contact deleted successfully' });

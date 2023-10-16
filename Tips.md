@@ -12,3 +12,7 @@
 
 ## Qixin
 Backend的基础功能已完成
+
+## Qixin
+create personal information之前忘记pull了
+error.message已经统一
