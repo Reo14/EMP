@@ -30,3 +30,5 @@ error.message已经统一
 1. 后端.env需要增加两行，会发在slack里
 2. 后端在merge后再运行下npm i，因为装了个新module
 
+## Xiaoxuan
+复用并修改了SignIn，但遇到了问题，也就是handleLogin这个method，可能是需要调整signIn里传入的输入
