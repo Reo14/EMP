@@ -22,14 +22,14 @@ export type Document = {
   file: string;
 };
 
-type EmployeeInfo = {
+export type EmployeeInfo = {
   username: string;
-  password: string;  // delete after debugging
+  password: string; // delete after debugging
   email: string;
   role: string;
-  registrationToken: string; 
-  onboardingApplication: string; 
-  emergencyContact: string[]; 
+  registrationToken: string;
+  onboardingApplication: string;
+  emergencyContact: string[];
   reference: string;
   userId: string;
   hrId: string;
@@ -47,4 +47,18 @@ type EmployeeInfo = {
   documents: Document[];
 };
 
-export default EmployeeInfo;
+export type onboardData = {
+  registrationToken: string;
+  employeeId: string;
+  firstName: string;
+  lastName: string;
+  middleName: string;
+  preferredName: string;
+  profilePicture: string;
+  phoneNumber: string;
+  email: string;
+  SSN: string;
+  DOB: string;
+  gender: string;
+  visaTitle: string;
+};

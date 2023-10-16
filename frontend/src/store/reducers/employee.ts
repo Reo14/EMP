@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import EmployeeInfo from "../../types/employee";
+import { EmployeeInfo, onboardData } from "../../types/employee";
 
 interface EmployeeState {
   info: EmployeeInfo | null;
@@ -21,6 +21,31 @@ const initialState: EmployeeState = {
   status: "idle",
   error: null,
 };
+
+export const submitOnboarding = createAsyncThunk(
+  "employee/submitOnboarding",
+  async (onboardData: onboardData, { rejectWithValue }) => {
+    try {
+      const res = await axios.post(
+        "http://localhost:3000/submit-onboardingapplication",
+        onboardData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return res.data;
+    } catch (err) {
+      const axiosErr = err as AxiosError<ErrorResponse>;
+      if (!axiosErr.response || !axiosErr.response.data.error) {
+        // Some network or unknown error, let it go to the fallback error handling
+        throw err;
+      }
+      return rejectWithValue(axiosErr.response.data);
+    }
+  }
+);
 
 export const fetchEmployeeInfo = createAsyncThunk<
   EmployeeInfo, // Return type on success
@@ -48,6 +73,7 @@ const employeeSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    // fetch employee info
     builder.addCase(fetchEmployeeInfo.fulfilled, (state, action) => {
       state.info = action.payload;
       state.status = "succeeded";
@@ -65,6 +91,18 @@ const employeeSlice = createSlice({
       } else {
         state.error = action.error.message;
       }
+    });
+
+    // submit onboarding
+    builder.addCase(submitOnboarding.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(submitOnboarding.fulfilled, (state) => {
+      state.status = "succeeded";
+    });
+    builder.addCase(submitOnboarding.rejected, (state, action) => {
+      state.status = "failed";
+      state.error = action.error.message;
     });
   },
 });
