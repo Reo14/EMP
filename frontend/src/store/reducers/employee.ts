@@ -46,7 +46,7 @@ const editEmployeeInfo = createAsyncThunk(
   "employee/edit",
   async (updatedInfo: EmployeeInfo, { rejectWithValue }) => {
     try {
-      const res = await axios.put(
+      await axios.put(
         `http://localhost:3000/personal-information/${updatedInfo.userId}/edit`,
         updatedInfo,
         {
@@ -55,7 +55,7 @@ const editEmployeeInfo = createAsyncThunk(
           },
         }
       );
-      return res.data;
+      return updatedInfo;
     } catch (err) {
       const axiosErr = err as AxiosError<ErrorResponse>;
       if (!axiosErr.response || !axiosErr.response.data.error) {
@@ -93,25 +93,13 @@ const employeeSlice = createSlice({
 
     // edit employee info
     builder.addCase(editEmployeeInfo.fulfilled, (state, action) => {
-      console.log(action.payload);
+      state.info = action.payload;
       state.status = "succeeded";
     });
     builder.addCase(editEmployeeInfo.pending, (state) => {
       state.status = "loading";
     });
     builder.addCase(editEmployeeInfo.rejected, (state, action) => {
-      state.status = "failed";
-      state.error = action.error.message;
-    });
-
-    // submit onboarding
-    builder.addCase(submitOnboarding.pending, (state) => {
-      state.status = "loading";
-    });
-    builder.addCase(submitOnboarding.fulfilled, (state) => {
-      state.status = "succeeded";
-    });
-    builder.addCase(submitOnboarding.rejected, (state, action) => {
       state.status = "failed";
       state.error = action.error.message;
     });
