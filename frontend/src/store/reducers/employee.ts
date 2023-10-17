@@ -120,4 +120,8 @@ const employeeSlice = createSlice({
 
 export const { startEdit, cancelEdit } = employeeSlice.actions;
 
+// selectors
+export const isHR = (state: { employee: EmployeeState }) =>
+  state.employee.info?.role === "HR";
+
 export default employeeSlice.reducer;
