@@ -1,5 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import cloneDeep from "lodash/cloneDeep";
 import { EmployeeInfo } from "../../types/employee";
 import { ErrorResponse } from "../../types/error";
 
@@ -7,8 +8,8 @@ interface EmployeeState {
   info: EmployeeInfo | null;
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | undefined | null;
+  buffer: EmployeeInfo | null;
 }
-
 
 interface EmployeeInfoResponse {
   personalInformation: EmployeeInfo;
@@ -18,8 +19,8 @@ const initialState: EmployeeState = {
   info: null,
   status: "idle",
   error: null,
+  buffer: null,
 };
-
 
 export const fetchEmployeeInfo = createAsyncThunk<
   EmployeeInfo, // Return type on success
@@ -69,7 +70,18 @@ const editEmployeeInfo = createAsyncThunk(
 const employeeSlice = createSlice({
   name: "employee",
   initialState,
-  reducers: {},
+  reducers: {
+    startEdit: (state) => {
+      if (state.info) {
+        state.buffer = cloneDeep(state.info); // Create a deep copy of info to buffer
+      }
+    },
+    cancelEdit: (state) => {
+      if (state.buffer) {
+        state.info = cloneDeep(state.buffer); // Restore info from buffer
+      }
+    },
+  },
   extraReducers: (builder) => {
     // fetch employee info
     builder.addCase(fetchEmployeeInfo.fulfilled, (state, action) => {
@@ -106,6 +118,6 @@ const employeeSlice = createSlice({
   },
 });
 
-export const {} = employeeSlice.actions;
+export const { startEdit, cancelEdit } = employeeSlice.actions;
 
 export default employeeSlice.reducer;
