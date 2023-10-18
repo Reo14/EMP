@@ -11,6 +11,7 @@ import Header from "./components/Layout/Header";
 import Footer from "./components/Layout/Footer";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import OnBoardingPage from "./pages/OnBoardingPage";
 import ErrorPage from "./pages/ErrorPage";
 
 const App: FC = () => {
@@ -31,6 +32,7 @@ const App: FC = () => {
             <Route path="/" element={<Navigate to="/sign-in" replace />} />
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/employee-onboarding" element={<OnBoardingPage />} />
             <Route path="/error" element={<ErrorPage />} />
           </Routes>
         </GridItem>
