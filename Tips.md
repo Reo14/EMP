@@ -41,3 +41,15 @@ Hr获取所有申请人信息时 <Td>{employee.Employment?.visaTitle || 'N/A'}</
 ## Wenfeng
 onboardingPage经历了大改，现使用Formik库管理表单状态，之后的表单界面请参考本页面，并安装formik和yup这两个库
 
+## Xiaoxuan
+复用并修改了SignIn，但遇到了问题，也就是handleLogin这个method，可能是需要调整signIn里传入的输入
+
+## Xiaoxuan
+1. 我这里已经rebase + merge完Wenfeng昨晚最新的提交的Employee-Redux；然后机遇他的那个版本加上了3b；
+
+2. 3b UI完成，但是需要帮助React UI显示逻辑（比如点击某个按钮可以显示出form之类的操作），这里对我来说过于复杂，不知道怎么实现那几个按钮的逻辑；
+
+3. 继续完成新页面 - Personal Information page
+
+其他：
+咱们每次个人push到自己的（或者哪个branch）可否在群里吱一声，我也每次说一下，这样我们在push之前都先rebase到对方最新的commit，然后再push。这样可以减少rebase时由于版本落后导致需要merge很多conflict的问题。
