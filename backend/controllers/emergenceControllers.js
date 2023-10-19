@@ -116,7 +116,6 @@ async function deleteEmergencyContact(req, res) {
 
 
 module.exports = { createEmergencyContact, getAllEmergencyContacts, updateEmergencyContact, deleteEmergencyContact };
-const EmergencyContact = require('../models/emergenceContact');
 
 // 创建新的紧急联系人
 async function createEmergencyContact(req, res) {
