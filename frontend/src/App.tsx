@@ -13,6 +13,8 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import OnBoardingPage from "./pages/OnBoardingPage";
 import ErrorPage from "./pages/ErrorPage";
+import PersonalInfoPage from "./pages/PersonalInfoPage";
+import EmployeeVisaPage from "./pages/EmployeeVisaPage";
 
 const App: FC = () => {
   return (
@@ -33,6 +35,8 @@ const App: FC = () => {
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/employee-onboarding" element={<OnBoardingPage />} />
+            <Route path="/employee-infos" element={<PersonalInfoPage />} />
+            <Route path="/employee-visa" element={<EmployeeVisaPage />} />
             <Route path="/error" element={<ErrorPage />} />
           </Routes>
         </GridItem>
