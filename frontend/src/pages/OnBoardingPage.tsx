@@ -280,7 +280,6 @@ const OnBoardingPage: FC = () => {
                     onBlur={formik.handleBlur}
                     name="firstName"
                     {...inputStyles}
-                    placeholder="firstname"
                   />
                   {formik.touched.firstName && formik.errors.firstName ? (
                     <FormErrorMessage>
@@ -303,7 +302,7 @@ const OnBoardingPage: FC = () => {
                     onBlur={formik.handleBlur}
                     name="lastName"
                     {...inputStyles}
-                    placeholder="lastname"
+                    placeholder="+1 (___) __-___-___"
                   />
                   {formik.touched.lastName && formik.errors.lastName ? (
                     <FormErrorMessage>
