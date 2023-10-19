@@ -13,9 +13,12 @@ import {
   HStack,
   Select,
   Avatar,
-  Text
+  Text,
+  Divider,
+  Stack,
+  Center
 } from "@chakra-ui/react";
-import ReactDatePicker from "react-datepicker";
+import { SingleDatepicker } from "chakra-dayzed-datepicker";
 // import { createProduct } from "../store/reducers/productSlice";
 
 // enum ApplicationStatus {
@@ -34,52 +37,54 @@ const OnBoardingPage: FC = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  // ----- basic info -----
   const [employeeFirstName, setEmployeeFirstName] = useState("");
   const [employeeLastName, setEmployeeLastName] = useState("");
   const [employeeMiddleName, setEmployeeMiddleName] = useState("");
   const [employeePreferredName, setEmployeePreferredName] = useState("");
   const [employeeProfilePicture, setEmployeeProfilePicture] = useState("");
+  // const [employeeEmail, setEmployeeEmail] = useState("");
+  const [employeeSSN, setEmployeeSSN] = useState("");
+  // ------ detail DOB Date -----
+  const [employeeDOB, setEmployeeDOB] = useState("");
+  const [employeeDOBDate, setEmployeeDOBDate] = useState(new Date());
+  const [employeeGender, setEmployeeGender] = useState("");
 
-  const [employeeAddress, setEmployeeAddress] = useState("");
+  // ------ detail phone contact -----
+  const [employeeContact, setEmployeeContact] = useState("");
+  const [employeeCellPhoneContact, setEmployeeCellPhoneContact] = useState("");
+  const [employeeWorkPhoneContact, setEmployeeWorkPhoneContact] = useState("");
+
   // ----- detail address -----
+  const [employeeAddress, setEmployeeAddress] = useState("");
+  const [employeeBuildingAddress, setEmployeeBuildingAddress] = useState("");
   const [employeeStreetAddress, setEmployeeStreetAddress] = useState("");
   const [employeeCityAddress, setEmployeeCityAddress] = useState("");
   const [employeeStateAddress, setEmployeeStateAddress] = useState("");
   const [employeeZipAddress, setEmployeeZipAddress] = useState("");
 
-  const [employeeContact, setEmployeeContact] = useState("");
-  // ------ detail phone contact -----
-  const [employeeCellPhoneContact, setEmployeeCellPhoneContact] = useState("");
-  const [employeeWorkPhoneContact, setEmployeeWorkPhoneContact] = useState("");
-  
-//   const [employeeEmail, setEmployeeEmail] = useState("");
-
-  const [employeeSSN, setEmployeeSSN] = useState("");
-
-  const [employeeDOB, setEmployeeDOB] = useState("");
-  // ------ detail DOB Date -----
-  const [employeeDOBDate, setEmployeeDOBDate] = useState<Date|null> (new Date());
-  const [employeeGender, setEmployeeGender] = useState("");
-
-  const [employeeEmployment, setEmployeeEmployment] = useState("");
   // ------ detail work authoriation -----
+  const [employeeEmployment, setEmployeeEmployment] = useState("");  
   const [isPermanentResident, setIsPermanentResident] = useState("");
   const [perminantType, setPerminantType] = useState("");
   const [workAuthType, setWorkAuthType] = useState("");
-  const [workAuthStartDate, setWorkAuthStartDate] = useState<Date|null> (new Date());
-  const [workAuthEndDate, setWorkAuthEndDate] = useState<Date|null> (new Date());
+  const [workAuthStartDate, setWorkAuthStartDate] = useState(new Date());
+  const [workAuthEndDate, setWorkAuthEndDate] = useState(new Date());
 
-  const [employeeReference, setEmployeeReference] = useState("");
   // ------ detail reference people -----
+  const [employeeReference, setEmployeeReference] = useState("");
   const [employeeReferenceFirstName, setEmployeeReferenceFirstName] = useState("");
   const [employeeReferenceLastName, setEmployeeReferenceLastName] = useState("");
+  const [employeeReferenceMiddleName, setEmployeeReferenceMiddleName] = useState("");
+  const [employeeReferenceTele, setEmployeeReferenceTele] = useState("");
   const [employeeReferenceEmail, setEmployeeReferenceEmail] = useState("");
   const [employeeReferenceRelation, setEmployeeReferenceRelation] = useState("");
 
-  const [employeeEmergencyContact, setEmployeeEmergencyContact] = useState([]);
   // ------ detail emergency contact -----
+  const [employeeEmergencyContact, setEmployeeEmergencyContact] = useState([]);
   const [employeeEmergencyFirstName, setEmployeeEmergencyFirstName] = useState("");
   const [employeeEmergencyLastName, setEmployeeEmergencyLastName] = useState("");
+  const [employeeEmergencyMiddleName, setEmployeeEmergencyMiddleName] = useState("");
   const [employeeEmergencyEmail, setEmployeeEmergencyEmail] = useState("");
   const [employeeEmergencyPhone, setEmployeeEmergencyPhone] = useState("");
   const [employeeEmergencyRelation, setEmployeeEmergencyRelation] = useState("");
@@ -141,22 +146,22 @@ const OnBoardingPage: FC = () => {
       justify="center"
       h="100%"
       spacing="20px"
-    >
+      >
       <Text color="black">Login/Sign Up Successful</Text>
-    </VStack>
+      </VStack>
 
       <Heading as="h1" mb="4">
         Collect Infos
       </Heading>
       <Box boxShadow="dark-lg" p="6" rounded="md" bg="white">
         <VStack spacing="6">
-          <Text fontSize="xl">
+          {/* ----- basic info part -----  */}
+          <Heading as="h3" fontSize="xl">
             Basic Infos
-          </Text>
-          <HStack>
-            <Box>
+          </Heading>
+          <HStack width="100%">
               <FormControl isRequired>
-                  <FormLabel>FirstName</FormLabel>
+                  <FormLabel>First Name</FormLabel>
                   <Input
                     type="text"
                     value={employeeFirstName}
@@ -165,10 +170,9 @@ const OnBoardingPage: FC = () => {
                     placeholder="firstname"
                   />
               </FormControl>
-            </Box>
-            <Box>
+
               <FormControl isRequired>
-                  <FormLabel>LastName</FormLabel>
+                  <FormLabel>Last Name</FormLabel>
                   <Input
                     type="text"
                     value={employeeLastName}
@@ -177,11 +181,9 @@ const OnBoardingPage: FC = () => {
                     placeholder="lastname"
                   />
               </FormControl>
-            </Box>
           </HStack>
 
-          <HStack>
-            <Box>
+          <HStack width="100%">
               <FormControl>
                 <FormLabel>Middle Name</FormLabel>
                 <Input
@@ -191,8 +193,6 @@ const OnBoardingPage: FC = () => {
                   {...inputStyles}
                 />
               </FormControl>
-            </Box>
-            <Box>
               <FormControl>
                   <FormLabel>Preferred Name</FormLabel>
                   <Input
@@ -202,28 +202,115 @@ const OnBoardingPage: FC = () => {
                     {...inputStyles}
                   />
               </FormControl>
-            </Box>
           </HStack>
 
-          
-            <FormControl>
-              <FormLabel>Profile Image</FormLabel>
-              <Avatar
-              //   name={employeeFirstName}
-                src={employeeProfilePicture}
-              />
-              <Button
-                size="sm"
-                colorScheme="red"
-                // TODO: 
-              >Upload Avatar</Button>
-            </FormControl>
-          
+          <FormControl >
+            <FormLabel>Profile Image</FormLabel>
+            <Stack direction={['column', 'row']} spacing={6}>
+              <Center>
+                <Avatar
+                  size="lg"
+                  // TODO: name={employeeFirstName}
+                  src={employeeProfilePicture}
+                />
+                </Center>
+                <Center>
+                <Button
+                  size="sm"
+                  colorScheme="red"
+                  // TODO: 
+                >Upload Avatar
+                </Button>
+              </Center>
+            </Stack>
+          </FormControl>
 
+          <FormControl isRequired isDisabled={true}>
+            <FormLabel>Email</FormLabel>
+            <Input
+              type="text"
+            //   TODO: value这里是传进来的值，不能修改的
+              {...inputStyles}
+            />
+          </FormControl>
+
+          <FormControl isRequired>
+            <FormLabel>SSN</FormLabel>
+            <Input
+              type="text"
+              value={employeeSSN}
+              onChange={(e) => setEmployeeSSN(e.target.value)}
+              {...inputStyles}
+            />
+          </FormControl>
+
+          <HStack width="100%">
+            <FormControl isRequired>
+              <FormLabel>Gender</FormLabel>
+              <Select
+                value={employeeGender}
+                onChange={(e) => setEmployeeGender(e.target.value)}
+                placeholder='Select option'
+                {...inputStyles}
+              >
+                <option value='male'>Male</option>
+                <option value='female'>Female</option>
+                <option value='no-response'>I do not wish to answer.</option>
+              </Select>
+            </FormControl>
+
+            <FormControl isRequired>
+              <FormLabel>Data of Birth</FormLabel>
+              <SingleDatepicker
+                date={employeeDOBDate}
+                onDateChange={date => setEmployeeDOBDate(date)}
+              />
+            </FormControl>
+          </HStack>
+
+          {/* ----- contact info part -----  */}
+          <Divider />
+          <Heading as="h3" fontSize="xl">
+            Contact Infos
+          </Heading>
+          <HStack width="100%">
+              <FormControl isRequired>
+                <FormLabel>Cell Phone Number</FormLabel>
+                <Input
+                  type="text"
+                  value={employeeCellPhoneContact}
+                  onChange={(e) => setEmployeeCellPhoneContact(e.target.value)}
+                  {...inputStyles}
+                  placeholder="+1 (___) __-___-___"
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>Work Phone Number</FormLabel>
+                <Input
+                  type="text"
+                  value={employeeWorkPhoneContact}
+                  onChange={(e) => setEmployeeWorkPhoneContact(e.target.value)}
+                  {...inputStyles}
+                />
+              </FormControl>
+          </HStack>
           
-          <Text fontSize="xl">
+          {/* ----- address part -----  */}
+          <Divider />
+          <Heading as="h3" fontSize="xl">
             Current Address
-          </Text>
+          </Heading>
+          <FormControl>
+            <FormLabel>Building / Apt Number</FormLabel>
+              <Input
+              type="text"
+              value={employeeBuildingAddress}
+              onChange={(e) => setEmployeeBuildingAddress(e.target.value)}
+              {...inputStyles}
+            />
+          </FormControl>
+
           <FormControl isRequired>
             <FormLabel>Street Address</FormLabel>
               <Input
@@ -244,6 +331,7 @@ const OnBoardingPage: FC = () => {
             />
           </FormControl>
 
+          <HStack width="100%">
           <FormControl isRequired>
             <FormLabel>State</FormLabel>
               <Input
@@ -263,77 +351,14 @@ const OnBoardingPage: FC = () => {
               {...inputStyles}
             />
           </FormControl>
-          
-
-          <HStack>
-            <Box>
-              <FormControl isRequired>
-                <FormLabel>Cell Phone Number</FormLabel>
-                <Input
-                  type="text"
-                  value={employeeCellPhoneContact}
-                  onChange={(e) => setEmployeeCellPhoneContact(e.target.value)}
-                  {...inputStyles}
-                />
-              </FormControl>
-            </Box>
-            <Box>
-              <FormControl>
-                <FormLabel>Work Phone Number</FormLabel>
-                <Input
-                  type="text"
-                  value={employeeWorkPhoneContact}
-                  onChange={(e) => setEmployeeWorkPhoneContact(e.target.value)}
-                  {...inputStyles}
-                />
-              </FormControl>
-            </Box>
           </HStack>
 
-          <FormControl isRequired isDisabled={true}>
-            <FormLabel>Email</FormLabel>
-            <Input
-              type="text"
-            //   TODO: value这里是传进来的值，不能修改的
-              {...inputStyles}
-            />
-          </FormControl>
-
-          <FormControl isRequired>
-            <FormLabel>Gender</FormLabel>
-            <Select
-              value={employeeGender}
-              onChange={(e) => setEmployeeGender(e.target.value)}
-              placeholder='Select option'
-              {...inputStyles}
-            >
-              <option value='male'>Male</option>
-              <option value='female'>Female</option>
-              <option value='no-response'>I do not wish to answer.</option>
-            </Select>
-          </FormControl>
-
-          <FormControl isRequired>
-            <FormLabel>SSN</FormLabel>
-            <Input
-              type="text"
-              value={employeeSSN}
-              onChange={(e) => setEmployeeSSN(e.target.value)}
-              {...inputStyles}
-            />
-          </FormControl>
-
-          <FormControl isRequired>
-            <FormLabel>Data of Birth</FormLabel>
-            <ReactDatePicker
-              selected={employeeDOBDate}
-              onChange={(date: Date | null) => setEmployeeDOBDate(date)}
-            />
-          </FormControl>
-
-          <Text fontSize="xl">
-            Work Authorization
-          </Text>
+          
+          {/* ----- work auth part -----  */}
+          <Divider />
+          <Heading as="h3" fontSize="xl">
+            Work Authoriation
+          </Heading>
           <FormControl isRequired>
             <FormLabel>Permanent resident or citizen of the U.S.?</FormLabel>
             <Select
@@ -359,7 +384,7 @@ const OnBoardingPage: FC = () => {
                   <option value="citizen">Citizen</option>
                 </Select>
                 </FormControl>
-          ) : (
+          ) : isPermanentResident === "no" ? (
               <>
               <FormControl isRequired>
                 <FormLabel>What is your work authorization?</FormLabel>
@@ -402,125 +427,173 @@ const OnBoardingPage: FC = () => {
                   <></>
               )}
 
-              <HStack>
+              <HStack width="100%">
+                <FormControl isRequired>
+                  <FormLabel>Start Date</FormLabel>
+                  <SingleDatepicker
+                    date={workAuthStartDate}
+                    onDateChange={date => setWorkAuthStartDate(date)}
+                  />
+                </FormControl>
+
+                <FormControl isRequired>
+                  <FormLabel>End Date</FormLabel>
+                  <SingleDatepicker
+                    date={workAuthEndDate}
+                    onDateChange={date => setWorkAuthEndDate(date)}
+                  />
+                </FormControl>
+              </HStack>
+              </>
+          ) : (
+            <></>
+          )}
+
+          {/* ----- reference part -----  */}
+          <Divider />
+            <Heading as="h3" fontSize="xl">
+              Reference Infos
+            </Heading>
+            <HStack width="100%">
               <FormControl isRequired>
-                <FormLabel>Start Date</FormLabel>
-                <ReactDatePicker 
-                  selected={workAuthStartDate}
-                  onChange={(date: Date | null) => setWorkAuthStartDate(date)}
+                <FormLabel>Referrer FirstName</FormLabel>
+                  <Input
+                  type="text"
+                  value={employeeReferenceFirstName}
+                  onChange={(e) => setEmployeeReferenceFirstName(e.target.value)}
+                  {...inputStyles}
+                  placeholder="referrer firstname"
                 />
               </FormControl>
 
               <FormControl isRequired>
-                <FormLabel>End Date</FormLabel>
-                <ReactDatePicker 
-                  selected={workAuthEndDate}
-                  onChange={(date: Date | null) => setWorkAuthEndDate(date)}
+                <FormLabel>Referrer LastName</FormLabel>
+                  <Input
+                  type="text"
+                  value={employeeReferenceLastName}
+                  onChange={(e) => setEmployeeReferenceLastName(e.target.value)}
+                  {...inputStyles}
+                  placeholder="referrer lastname"
+                />
+              </FormControl>
+            </HStack>
+
+            <HStack width="100%">
+              <FormControl>
+                <FormLabel>Referrer MiddleName</FormLabel>
+                  <Input
+                  type="text"
+                  value={employeeReferenceMiddleName}
+                  onChange={(e) => setEmployeeReferenceMiddleName(e.target.value)}
+                  {...inputStyles}
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>Referrer Phone</FormLabel>
+                  <Input
+                  type="text"
+                  value={employeeReferenceTele}
+                  onChange={(e) => setEmployeeReferenceTele(e.target.value)}
+                  {...inputStyles}
+                />
+              </FormControl>
+            </HStack>
+
+            <HStack width="100%">
+              <FormControl>
+                <FormLabel>Referrer Email</FormLabel>
+                  <Input
+                  type="text"
+                  value={employeeReferenceEmail}
+                  onChange={(e) => setEmployeeReferenceEmail(e.target.value)}
+                  {...inputStyles}
+                />
+              </FormControl>
+
+              <FormControl isRequired>
+                <FormLabel>Referrer Relationship</FormLabel>
+                  <Input
+                  type="text"
+                  value={employeeReferenceRelation}
+                  onChange={(e) => setEmployeeReferenceRelation(e.target.value)}
+                  {...inputStyles}
+                />
+              </FormControl>
+            </HStack>
+
+            {/* ----- emergency part -----  */}
+            <Divider />
+            <Heading as="h3" fontSize="xl">
+              Emergency Contact / ICE
+            </Heading>
+            <HStack width="100%">
+              <FormControl isRequired>
+                <FormLabel>ICE FirstName</FormLabel>
+                  <Input
+                  type="text"
+                  value={employeeEmergencyFirstName}
+                  onChange={(e) => setEmployeeEmergencyFirstName(e.target.value)}
+                  {...inputStyles}
+                  placeholder="emergency contact firstname"
+                />
+              </FormControl>
+
+              <FormControl isRequired>
+                <FormLabel>ICE LastName</FormLabel>
+                  <Input
+                  type="text"
+                  value={employeeEmergencyLastName}
+                  onChange={(e) => setEmployeeEmergencyLastName(e.target.value)}
+                  {...inputStyles}
+                  placeholder="emergency contact lastname"
                 />
               </FormControl>
               </HStack>
-              </>
-          )}
 
-            <Text fontSize="xl">
-              Reference Infos
-            </Text>
-            <FormControl isRequired>
-              <FormLabel>Referrer FirstName</FormLabel>
-                <Input
-                type="text"
-                value={employeeReferenceFirstName}
-                onChange={(e) => setEmployeeReferenceFirstName(e.target.value)}
-                {...inputStyles}
-                placeholder="referrer firstname"
-              />
-            </FormControl>
+              <HStack width="100%">
+              <FormControl>
+                <FormLabel>ICE MiddleName</FormLabel>
+                  <Input
+                  type="text"
+                  value={employeeEmergencyMiddleName}
+                  onChange={(e) => setEmployeeEmergencyMiddleName(e.target.value)}
+                  {...inputStyles}
+                />
+              </FormControl>
 
-            <FormControl isRequired>
-              <FormLabel>Referrer LastName</FormLabel>
-                <Input
-                type="text"
-                value={employeeReferenceLastName}
-                onChange={(e) => setEmployeeReferenceLastName(e.target.value)}
-                {...inputStyles}
-                placeholder="referrer lastname"
-              />
-            </FormControl>
+              <FormControl>
+                <FormLabel>ICE Phone</FormLabel>
+                  <Input
+                  type="text"
+                  value={employeeEmergencyPhone}
+                  onChange={(e) => setEmployeeEmergencyPhone(e.target.value)}
+                  {...inputStyles}
+                />
+              </FormControl>
+            </HStack>
 
-            <FormControl>
-              <FormLabel>Referrer Email</FormLabel>
-                <Input
-                type="text"
-                value={employeeReferenceEmail}
-                onChange={(e) => setEmployeeReferenceEmail(e.target.value)}
-                {...inputStyles}
-              />
-            </FormControl>
+            <HStack width="100%">
+              <FormControl>
+                <FormLabel>ICE Email</FormLabel>
+                  <Input
+                  type="text"
+                  value={employeeEmergencyEmail}
+                  onChange={(e) => setEmployeeEmergencyEmail(e.target.value)}
+                  {...inputStyles}
+                />
+              </FormControl>
 
-            <FormControl isRequired>
-              <FormLabel>Referrer Relationship</FormLabel>
-                <Input
-                type="text"
-                value={employeeReferenceRelation}
-                onChange={(e) => setEmployeeReferenceRelation(e.target.value)}
-                {...inputStyles}
-              />
-            </FormControl>
-
-            <Text fontSize="xl">
-              Emergency Contact
-            </Text>
-            <FormControl isRequired>
-              <FormLabel>Emergency Contact FirstName</FormLabel>
-                <Input
-                type="text"
-                value={employeeEmergencyFirstName}
-                onChange={(e) => setEmployeeEmergencyFirstName(e.target.value)}
-                {...inputStyles}
-                placeholder="emergency contact firstname"
-              />
-            </FormControl>
-
-            <FormControl isRequired>
-              <FormLabel>Emergency Contact LastName</FormLabel>
-                <Input
-                type="text"
-                value={employeeEmergencyLastName}
-                onChange={(e) => setEmployeeEmergencyLastName(e.target.value)}
-                {...inputStyles}
-                placeholder="emergency contact lastname"
-              />
-            </FormControl>
-
-            <FormControl isRequired>
-              <FormLabel>Emergency Contact Tele</FormLabel>
-                <Input
-                type="text"
-                value={employeeEmergencyPhone}
-                onChange={(e) => setEmployeeEmergencyPhone(e.target.value)}
-                {...inputStyles}
-              />
-            </FormControl>
-
-            <FormControl>
-              <FormLabel>Emergency Contact Email</FormLabel>
-                <Input
-                type="text"
-                value={employeeEmergencyEmail}
-                onChange={(e) => setEmployeeEmergencyEmail(e.target.value)}
-                {...inputStyles}
-              />
-            </FormControl>
-
-            <FormControl isRequired>
-              <FormLabel>Emergency Contact Relationship</FormLabel>
-                <Input
-                type="text"
-                value={employeeEmergencyRelation}
-                onChange={(e) => setEmployeeEmergencyRelation(e.target.value)}
-                {...inputStyles}
-              />
-            </FormControl>
+              <FormControl isRequired>
+                <FormLabel>ICE Relationship</FormLabel>
+                  <Input
+                  type="text"
+                  value={employeeEmergencyRelation}
+                  onChange={(e) => setEmployeeEmergencyRelation(e.target.value)}
+                  {...inputStyles}
+                />
+              </FormControl>
+            </HStack>
 
           {/* TODO: Summary */}
 
