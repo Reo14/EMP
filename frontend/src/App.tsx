@@ -12,6 +12,8 @@ import Footer from "./components/Layout/Footer";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import ErrorPage from "./pages/ErrorPage";
+import HRtest from "./pages/HRtest";
+import LoggedIn from "./pages/LoggedIn";
 
 const App: FC = () => {
   return (
@@ -30,8 +32,11 @@ const App: FC = () => {
           <Routes>
             <Route path="/" element={<Navigate to="/sign-in" replace />} />
             <Route path="/sign-in" element={<SignIn />} />
-            <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/sign-up/" element={<SignUp />} />
             <Route path="/error" element={<ErrorPage />} />
+            <Route path="/hrtest" element={<HRtest />} />
+            <Route path="/success" element={<LoggedIn />} />
+            <Route path="*" element={<ErrorPage />} />
           </Routes>
         </GridItem>
         <GridItem bg="#111827" area={"footer"}>
