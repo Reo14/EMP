@@ -5,6 +5,7 @@ const {signin, signup} = require('../controllers/auth');
 const {
     submitOnboardingApplication,
     getOnboardingApplicationStatus,
+    createPersonalInformation,
     getPersonalInformation,
     editPersonalInformation,
   } = require('../controllers/employeeControllers');
@@ -33,6 +34,7 @@ router.post("submit-onboardingapplication", submitOnboardingApplication );
 router.get("status/:id", getOnboardingApplicationStatus)
 router.get("personal-information/:id", getPersonalInformation);
 router.put("personal-information/:id/edit", editPersonalInformation);
+router.post("personal-information/:id/create", createPersonalInformation);
 
 // Emergence Contact Flow
 router.get("emergence-contact/:id", getAllEmergencyContacts);
