@@ -17,3 +17,16 @@ Backend的基础功能已完成
 ## Qixin
 create personal information之前忘记pull了
 error.message已经统一
+
+## Wenfeng
+1. 完成了后端HR发送邮件并且能够从收到的链接重定向到sign-up界面
+2. sign-up 的redux已经整合
+3. 增加了HRtest界面：用以发邮件，和LoggedIn界面，表示登录/注册成功
+4. 后端增加了一个query API（未测试），目前用以validation，以后可以拓展作用
+
+由于涉及一些关键改动，先请查看commit历史，了解改动以后再merge
+
+其他：
+1. 后端.env需要增加两行，会发在slack里
+2. 后端在merge后再运行下npm i，因为装了个新module
+
