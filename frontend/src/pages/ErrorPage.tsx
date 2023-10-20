@@ -2,7 +2,6 @@ import React, { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { VStack, Flex, Text, Button } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
-import { useSelector } from "react-redux";
 
 const ErrorPage: FC = () => {
   const navigate = useNavigate();
