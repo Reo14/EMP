@@ -98,7 +98,7 @@ const authSlice = createSlice({
     // query
     builder
       .addCase(queryInfo.fulfilled, (state, action) => {
-        state.query = action.payload;
+        state.query = action.payload.exists as boolean;
       })
       .addCase(queryInfo.rejected, (state, action) => {
         state.status = "failed";

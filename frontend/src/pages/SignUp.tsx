@@ -30,9 +30,6 @@ const SignUp: FC = () => {
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  // fetch from the store
-  const queryAuth = useSelector((state: RootState) => state.auth.query);
-
   // params
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -69,18 +66,34 @@ const SignUp: FC = () => {
       return;
     }
     try {
-      await dispatch(queryInfo({ type: "email", value: email })).unwrap();
-      if (queryAuth === true) {
+      const { exists: queryRes } = await dispatch(
+        queryInfo({ type: "email", value: email })
+      ).unwrap();
+      if (queryRes === true) {
         setEmailError("Email already exists");
+      } else {
+        setEmailError("");
       }
     } catch (error) {
       console.log("Got an error", error);
     }
   };
 
-  const onUsernameBlur = () => {
+  const onUsernameBlur = async () => {
     if (!username) {
       setUsernameError("This field is required");
+    }
+    try {
+      const { exists: queryRes } = await dispatch(
+        queryInfo({ type: "username", value: username })
+      ).unwrap();
+      if (queryRes === true) {
+        setUsernameError("Username already exists");
+      } else {
+        setUsernameError("");
+      }
+    } catch (error) {
+      console.log("Got an error", error);
     }
   };
 

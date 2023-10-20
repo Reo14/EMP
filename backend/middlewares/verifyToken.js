@@ -21,6 +21,7 @@ function verifyToken(req, res, next) {
 
     // Attach the decoded payload to the request for later use
     req.user = decoded;
+    console.log("verifyToken: req.user: ", req.user);
     next(); // Pass control to the next middleware
   });
 }
