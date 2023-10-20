@@ -197,48 +197,49 @@ const OnBoardingPage: FC = () => {
               Basic Infos
             </Heading>
             <HStack width="100%">
-                <FormControl isRequired>
-                    <FormLabel>First Name</FormLabel>
-                    <Input
-                      type="text"
-                      value={employeeFirstName}
-                      onChange={(e) => setEmployeeFirstName(e.target.value)}
-                      {...inputStyles}
-                      placeholder="firstname"
-                    />
-                </FormControl>
+              <FormControl isRequired>
+                  <FormLabel>First Name</FormLabel>
+                  <Input
+                    type="text"
+                    value={employeeFirstName}
+                    onChange={(e) => setEmployeeFirstName(e.target.value)}
+                    {...inputStyles}
+                    placeholder="firstname"
+                  />
+              </FormControl>
 
-                <FormControl isRequired>
-                    <FormLabel>Last Name</FormLabel>
-                    <Input
-                      type="text"
-                      value={employeeLastName}
-                      onChange={(e) => setEmployeeLastName(e.target.value)}
-                      {...inputStyles}
-                      placeholder="lastname"
-                    />
-                </FormControl>
+              <FormControl isRequired>
+                  <FormLabel>Last Name</FormLabel>
+                  <Input
+                    type="text"
+                    value={employeeLastName}
+                    onChange={(e) => setEmployeeLastName(e.target.value)}
+                    {...inputStyles}
+                    placeholder="lastname"
+                  />
+              </FormControl>
             </HStack>
 
             <HStack width="100%">
-                <FormControl>
-                  <FormLabel>Middle Name</FormLabel>
+              <FormControl>
+                <FormLabel>Middle Name</FormLabel>
+                <Input
+                  type="text"
+                  value={employeeMiddleName}
+                  onChange={(e) => setEmployeeMiddleName(e.target.value)}
+                  {...inputStyles}
+                />
+              </FormControl>
+
+              <FormControl>
+                  <FormLabel>Preferred Name</FormLabel>
                   <Input
                     type="text"
-                    value={employeeMiddleName}
-                    onChange={(e) => setEmployeeMiddleName(e.target.value)}
+                    value={employeePreferredName}
+                    onChange={(e) => setEmployeePreferredName(e.target.value)}
                     {...inputStyles}
                   />
-                </FormControl>
-                <FormControl>
-                    <FormLabel>Preferred Name</FormLabel>
-                    <Input
-                      type="text"
-                      value={employeePreferredName}
-                      onChange={(e) => setEmployeePreferredName(e.target.value)}
-                      {...inputStyles}
-                    />
-                </FormControl>
+              </FormControl>
             </HStack>
 
             <FormControl >
@@ -369,25 +370,25 @@ const OnBoardingPage: FC = () => {
             </FormControl>
 
             <HStack width="100%">
-            <FormControl isRequired>
-              <FormLabel>State</FormLabel>
-                <Input
-                type="text"
-                value={employeeStateAddress}
-                onChange={(e) => setEmployeeStateAddress(e.target.value)}
-                {...inputStyles}
-              />
-            </FormControl>
+              <FormControl isRequired>
+                <FormLabel>State</FormLabel>
+                  <Input
+                  type="text"
+                  value={employeeStateAddress}
+                  onChange={(e) => setEmployeeStateAddress(e.target.value)}
+                  {...inputStyles}
+                />
+              </FormControl>
 
-            <FormControl isRequired>
-              <FormLabel>Zip</FormLabel>
-                <Input
-                type="text"
-                value={employeeZipAddress}
-                onChange={(e) => setEmployeeZipAddress(e.target.value)}
-                {...inputStyles}
-              />
-            </FormControl>
+              <FormControl isRequired>
+                <FormLabel>Zip</FormLabel>
+                  <Input
+                  type="text"
+                  value={employeeZipAddress}
+                  onChange={(e) => setEmployeeZipAddress(e.target.value)}
+                  {...inputStyles}
+                />
+              </FormControl>
             </HStack>
 
             
@@ -440,17 +441,19 @@ const OnBoardingPage: FC = () => {
                 </FormControl>
 
                 {workAuthType === "f1" ? (
-                  <HStack>
-                    <FormControl isRequired>
-                      <input
+                  <FormControl isRequired>
+                    <HStack>
+                      <Input
                         type="file"
+                        width="40%"
+                        height="100%"
                       />
                       <Button
                         size="sm"
                         colorScheme="red"
                       >Upload OPT Receipt</Button>
-                    </FormControl>
-                  </HStack>
+                    </HStack>
+                  </FormControl>
                 ) : workAuthType === "other" ? (
                   <FormControl isRequired>
                     <Input
