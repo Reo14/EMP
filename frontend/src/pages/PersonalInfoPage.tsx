@@ -150,13 +150,13 @@ const NameForm: FC = () => {
               />
               </Center>
               <Center>
-              <Button
-                size="sm"
-                colorScheme="red"
+              <Input
+                type="file"
+                accept=".jpg,.jpeg,.png"
+                width="80%"
+                height="50%"
                 isDisabled={!isEditing}
-                // TODO: 
-              >Upload Avatar
-              </Button>
+              />
             </Center>
           </Stack>
         </FormControl>
@@ -509,22 +509,18 @@ const EmploymentForm: FC = () => {
 
           {workAuthType === "f1" ? (
             <FormControl isRequired margin="0.5rem 0">
-              <HStack>
-                <Input
-                  type="file"
-                  width="40%"
-                  height="100%"
-                  isDisabled={!isEditing}
-                />
-                <Button
-                  size="sm"
-                  colorScheme="red"
-                  isDisabled={!isEditing}
-                >Upload OPT Receipt</Button>
-              </HStack>
+              <FormLabel>Please upload your OPT receipt.</FormLabel>
+              <Input
+                type="file"
+                accept=".pdf"
+                width="40%"
+                height="100%"
+                isDisabled={!isEditing}
+              />
             </FormControl>
           ) : workAuthType === "other" ? (
             <FormControl isRequired>
+              <FormLabel>Please specify your working authoriation.</FormLabel>
               <Input
                 type="text"
                 value={workAuthType}

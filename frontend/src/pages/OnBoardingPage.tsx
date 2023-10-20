@@ -253,12 +253,21 @@ const OnBoardingPage: FC = () => {
                   />
                   </Center>
                   <Center>
-                  <Button
-                    size="sm"
-                    colorScheme="red"
-                    // TODO: 
-                  >Upload Avatar
-                  </Button>
+                    <Input
+                      type="file"
+                      accept=".jpg,.jpeg,.png"
+                      width="80%"
+                      height="50%"
+                    />
+                  {/* 不需要这个button，整个表一个submit
+                    <Button
+                      size="sm"
+                      colorScheme="red"
+                      // TODO: 
+                    >
+                      Upload Avatar
+                    </Button> 
+                  */}
                 </Center>
               </Stack>
             </FormControl>
@@ -442,20 +451,23 @@ const OnBoardingPage: FC = () => {
 
                 {workAuthType === "f1" ? (
                   <FormControl isRequired>
-                    <HStack>
-                      <Input
-                        type="file"
-                        width="40%"
-                        height="100%"
-                      />
-                      <Button
-                        size="sm"
-                        colorScheme="red"
-                      >Upload OPT Receipt</Button>
-                    </HStack>
+                    <FormLabel>Please upload your OPT receipt.</FormLabel>
+                    <Input
+                      type="file"
+                      accept=".pdf"
+                      width="40%"
+                      height="100%"
+                    />
+                    {/* 不需要这个button，整个表一个submit
+                    <Button
+                      size="sm"
+                      colorScheme="red"
+                    >Upload OPT Receipt</Button>
+                    */}
                   </FormControl>
                 ) : workAuthType === "other" ? (
                   <FormControl isRequired>
+                    <FormLabel>Please specify your working authoriation.</FormLabel>
                     <Input
                       type="text"
                       value={workAuthType}
