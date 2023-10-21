@@ -21,12 +21,14 @@ export const submitOnboarding = createAsyncThunk(
   "employee/submitOnboarding",
   async (onboardData: onboardData, { rejectWithValue }) => {
     try {
+      const regToken = localStorage.getItem("regToken");
       await axios.post(
         "http://localhost:3000/submit-onboardingapplication",
         onboardData,
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${regToken}`,
           },
         }
       );

@@ -33,8 +33,8 @@ const SignUp: FC = () => {
   // params
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const token = queryParams.get("token");
-  token && localStorage.setItem("token", token);
+  const regToken = queryParams.get("token");
+  regToken && localStorage.setItem("token", regToken);
 
   const inputStyles = {
     mt: "2",
