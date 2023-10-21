@@ -16,7 +16,7 @@ const Header: FC = () =>{
       >
         <>
         <HStack textColor="white" spacing="1">
-          <Heading as="h1">Management</Heading>
+          <Heading as="h1">Employee Management</Heading>
           <Text fontSize="lg" mt="4" fontWeight="bold">
             Chuwa
           </Text>
