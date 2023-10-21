@@ -21,7 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
 import { RootState } from "../store/configureStore";
-// import { createProduct } from "../store/reducers/productSlice";
+
 
 const OnBoardingPage: FC = () => {
   const dispatch = useDispatch();
@@ -29,6 +29,7 @@ const OnBoardingPage: FC = () => {
   const onboardingStatus = useSelector<RootState, string>(
     (state) => state.onboarding.onboardingStatus
   );
+  const email = useSelector<RootState, string>((state) => state.auth.email);
   // ----- basic info -----
   const [employeeFirstName, setEmployeeFirstName] = useState("");
   const [employeeLastName, setEmployeeLastName] = useState("");
@@ -38,7 +39,7 @@ const OnBoardingPage: FC = () => {
   // const [employeeEmail, setEmployeeEmail] = useState("");
   const [employeeSSN, setEmployeeSSN] = useState("");
   // ------ detail DOB Date -----
-  const [employeeDOB, setEmployeeDOB] = useState("");
+  // const [employeeDOB, setEmployeeDOB] = useState("");
   const [employeeDOBDate, setEmployeeDOBDate] = useState(new Date());
   const [employeeGender, setEmployeeGender] = useState("");
 
@@ -283,6 +284,8 @@ const OnBoardingPage: FC = () => {
                 <Input
                   type="text"
                   //   TODO: value这里是传进来的值，不能修改的
+                  // Done.
+                  value={email || "placeholder"}
                   {...inputStyles}
                 />
               </FormControl>

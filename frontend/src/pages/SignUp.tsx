@@ -16,7 +16,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import MyCard from "../components/MyCard";
-import { signUp, queryInfo, queryData } from "../store/reducers/auth";
+import { signUp, queryInfo, queryData, saveUser } from "../store/reducers/auth";
 import { RootState, AppDispatch } from "../store/configureStore";
 
 const SignUp: FC = () => {
@@ -152,8 +152,9 @@ const SignUp: FC = () => {
       return;
     }
     dispatch(signUp({ email, username, password }));
+    dispatch(saveUser({ email, username }));
     alert("Signed Up Successfully");
-    navigate("/success");
+    navigate("/employee-onboarding");
   };
 
   return (

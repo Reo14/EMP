@@ -1,5 +1,5 @@
+
 export type onboardData = {
-  registrationToken: string;
   employeeId: string;
   firstName: string;
   lastName: string;
@@ -9,7 +9,7 @@ export type onboardData = {
   phoneNumber: string;
   email: string;
   SSN: string;
-  DOB: string;
+  DOB: Date;
   gender: string;
   visaTitle: string;
 };

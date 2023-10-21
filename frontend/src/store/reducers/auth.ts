@@ -5,6 +5,8 @@ import { authData } from "../../types/auth";
 interface authState {
   status: "idle" | "loading" | "failed" | "succeeded";
   isLoggedIn: boolean;
+  email: string;
+  username: string;
   error: string | undefined | null;
   query: boolean | "standby";
 }
@@ -16,6 +18,8 @@ export interface queryData {
 
 const initialState: authState = {
   isLoggedIn: false,
+  email: "",
+  username: "",
   status: "idle",
   error: null,
   query: "standby",
@@ -93,6 +97,10 @@ const authSlice = createSlice({
       state.isLoggedIn = false;
       state.status = "idle";
     },
+    saveUser: (state, action) => {
+      state.email = action.payload.email;
+      state.username = action.payload.username;
+    },
   },
   extraReducers: (builder) => {
     // query
@@ -134,6 +142,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { logIn, logOut } = authSlice.actions;
+export const { logIn, logOut, saveUser } = authSlice.actions;
 
 export default authSlice.reducer;

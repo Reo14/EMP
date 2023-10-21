@@ -27,7 +27,6 @@ export type EmployeeInfo = {
   password: string; // delete after debugging
   email: string;
   role: string;
-  registrationToken: string;
   onboardingApplication: string;
   emergencyContact: string[];
   reference: string;
@@ -41,7 +40,7 @@ export type EmployeeInfo = {
   Contact: Contact;
   address: Address;
   SSN: string;
-  DOB: string;
+  DOB: Date;
   gender: string;
   employment: Employment;
   documents: Document[];
