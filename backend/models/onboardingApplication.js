@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const onboardingApplicationSchema = new mongoose.Schema({
-    registrationToken: { type: mongoose.Schema.Types.ObjectId, ref: 'RegistrationToken' },
+    registrationToken: { type: String},
+    // 这里其实是需要将token和schema绑定 但是registrationToken: Cast to ObjectId failed for value...，说明在验证时尝试将 registrationToken 的值转换为 MongoDB ObjectId 时出错。这是因为 registrationToken 的值是一个 JWT token 字符串，而不是 MongoDB ObjectId。 这里我要再改改
     employeeId: {type: String, required: true},
     status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
     firstName: {type: String, required: true },

@@ -17,18 +17,21 @@ async function createReference(req, res) {
       // Other details
     } = req.body;
    
-    const employee = await User.findOne({ userID: id });
+    const employee = await User.findOne({ userId: id });
 
     if (!employee) {
-      return res.status(400).json({ error: error.message });
+      return res.status(400).json({ error: "Employee not found" });
     }
-
+    console.log("Employee not found");
+    
     // Check if a reference already exists for the employee
-    const existingReference = await Reference.findOne({ employeeId:id });
-
+    const existingReference = await Reference.findOne({ employeeId: id });
+    
     if (existingReference) {
-      return res.status(400).json({ error: error.message });
+      return res.status(400).json({ error: "Reference already exists" });
     }
+    
+    // Reference exists
 
     const reference = new Reference({
       // referenceId: referenceId,
@@ -47,6 +50,7 @@ async function createReference(req, res) {
     res.status(200).json({ message: 'Reference created' });
 
   } catch (error) {
+    console.error(error); 
     res.status(500).json({ error: error.message });
   }
 }

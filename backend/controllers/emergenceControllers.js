@@ -1,4 +1,5 @@
 const EmergencyContact = require('../models/emergenceContact');
+const User = require("../models/user");
 
 // 创建新的紧急联系人
 async function createEmergencyContact(req, res) {
@@ -15,10 +16,10 @@ async function createEmergencyContact(req, res) {
       // Other details
     } = req.body;
    
-    const employee = await User.findOne({ userID: id });
+    const employee = await User.findOne({ userId: id });
 
     if (!employee) {
-      return res.status(400).json({ error: error.message });
+      return res.status(400).json({ error: "Invalid Employee Id" });
     }
 
     const emergenceContact = new EmergencyContact({

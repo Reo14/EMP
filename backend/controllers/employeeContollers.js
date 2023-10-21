@@ -2,6 +2,7 @@
 const User = require("../models/user");
 const RegistrationToken = require("../models/registrationToken");
 const OnboardingApplication = require("../models/onboardingApplication");
+const jwt = require('jsonwebtoken'); 
 
 // 提交入职申请
 async function submitOnboardingApplication(req, res) {
@@ -22,53 +23,62 @@ async function submitOnboardingApplication(req, res) {
       visaTitle,
       // Other onboarding application details
     } = req.body;
-    const registerationToken = req.headers.authorization.split(" ")[1];
 
-    if (!registerationToken) {
-      return res.status(400).json({ error: "Invalid token(onboarding)" });
+    // 从请求头中提取并验证令牌
+    const authorizationHeader = req.headers.authorization;
+
+    if (!authorizationHeader) {
+      return res.status(400).json({ error: "Authorization header is missing" });
     }
 
-    const employee = await User.findOne({ userID: employeeId });
+    const token = authorizationHeader.split(" ")[1];
 
+    if (!token) {
+      return res.status(400).json({ error: "Invalid token (onboarding)" });
+    }
+
+    const employee = await User.findOne({ userId: employeeId });
     if (!employee) {
-      return res.status(400).json({ error: error.message });
+      return res.status(400).json({ error: "Invalid employee ID" });
     }
 
     // 保存入职申请信息
     const application = new OnboardingApplication({
-      registrationToken: registrationToken,
-      employeeId: employeeId,
-      firstName: firstName,
-      lastName: lastName,
-      middleName: middleName,
-      preferredName: preferredName,
-      profilePicture: profilePicture,
-      phoneNumber: phoneNumber,
-      email: email,
-      SSN: SSN,
-      DOB: DOB,
-      gender: gender,
-      visaTitle: visaTitle,
+      registrationToken: token,
+      // employeeId // 我还没在本函数中获取这个
+      employeeId,
+      firstName,
+      lastName,
+      middleName,
+      preferredName,
+      profilePicture,
+      phoneNumber,
+      email,
+      SSN,
+      DOB,
+      gender,
+      visaTitle,
     });
 
     await application.save();
 
-    commonData = {
-      registrationToken: registrationToken,
-      hrId: hrId,
-      firstName: firstName,
-      lastName: lastName,
-      middleName: middleName,
-      preferredName: preferredName,
-      profilePicture: profilePicture,
-      SSN: SSN,
-      DOB: DOB,
-      gender: gender,
+    // 构建 commonData
+    const commonData = {
+      registrationToken: token,
+      // hrId: hrId, //这里我要再想想
+      firstName,
+      lastName,
+      middleName,
+      preferredName,
+      profilePicture,
+      SSN,
+      DOB,
+      gender,
     };
 
     res
       .status(200)
-      .json({ message: "Onboarding application submitted successfully" });
+      .json({ message: "Onboarding application submitted successfully", commonData });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -30,3 +30,6 @@ error.message已经统一
 1. 后端.env需要增加两行，会发在slack里
 2. 后端在merge后再运行下npm i，因为装了个新module
 
+## Qixin
+测试了下API 除了emergence和onboarding 我需要再想想逻辑以外 别的基本都没问题 当然我只用了postman 如果前端运行时有任何问题直接找我
+
