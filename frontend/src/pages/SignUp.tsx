@@ -139,6 +139,18 @@ const SignUp: FC = () => {
   };
 
   const handleSignUp = async () => {
+    if (!username) {
+      setUsernameError("This field is required");
+      return;
+    }
+    if (!password) {
+      setPasswordError("This field is required");
+      return;
+    }
+    if (!email) {
+      setEmailError("This field is required");
+      return;
+    }
     dispatch(signUp({ email, username, password }));
     alert("Signed Up Successfully");
     navigate("/success");

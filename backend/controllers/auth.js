@@ -47,10 +47,10 @@ async function signup(req, res) {
 
 async function signin(req, res) {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
     // Check if the user exists
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ username });
 
     if (!user) {
       return res.status(401).json({ message: "User Not exist" });
@@ -65,7 +65,7 @@ async function signin(req, res) {
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId: user._id, username: user.username },
+      { userId: user._id, username },
       process.env.JWT_SECRET,
       {
         expiresIn: "1h", // Token expiration time
