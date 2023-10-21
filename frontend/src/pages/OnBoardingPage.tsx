@@ -21,7 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
 import { RootState } from "../store/configureStore";
-
+import { Address, Contact, EmployeeInfo } from "../types/employee";
 
 const OnBoardingPage: FC = () => {
   const dispatch = useDispatch();
@@ -30,6 +30,9 @@ const OnBoardingPage: FC = () => {
     (state) => state.onboarding.onboardingStatus
   );
   const email = useSelector<RootState, string>((state) => state.auth.email);
+  const username = useSelector<RootState, string>(
+    (state) => state.auth.username
+  );
   // ----- basic info -----
   const [employeeFirstName, setEmployeeFirstName] = useState("");
   const [employeeLastName, setEmployeeLastName] = useState("");
@@ -92,6 +95,54 @@ const OnBoardingPage: FC = () => {
 
   // TODO: summary - no ideas how to handle
   const [employeeSummary, setEmployeeSummary] = useState([]);
+
+  // Integration
+  const employeeInfo: EmployeeInfo = {
+    username,
+    email,
+    firstName: employeeFirstName,
+    lastName: employeeLastName,
+    middleName: employeeMiddleName,
+    preferredName: employeePreferredName,
+    profilePicture: employeeProfilePicture,
+    SSN: employeeSSN,
+    DOB: employeeDOBDate,
+    gender: employeeGender,
+    Contact: {
+      cellPhoneNumber: employeeCellPhoneContact,
+      workPhoneNumber: employeeWorkPhoneContact,
+    },
+    address: {
+      buildingAptNumber: employeeBuildingAddress,
+      streetName: employeeStreetAddress,
+      city: employeeCityAddress,
+      state: employeeStateAddress,
+      zip: employeeZipAddress,
+    },
+    employment: {
+      visaTitle: workAuthType,
+      startDate: workAuthStartDate,
+      endDate: workAuthEndDate,
+    },
+    reference: {
+      firstName: employeeReferenceFirstName,
+      lastName: employeeReferenceLastName,
+      middleName: employeeReferenceMiddleName,
+      phone: employeeReferenceTele,
+      email: employeeReferenceEmail,
+      relationship: employeeReferenceRelation,
+      employeeId: "000000"  // Hardcode to the default HR
+    },
+    emergencyContact: {
+      firstName: employeeEmergencyFirstName,
+      lastName: employeeEmergencyLastName,
+      middleName: employeeEmergencyMiddleName,
+      email: employeeEmergencyEmail,
+      phone: employeeEmergencyPhone,
+      relationship: employeeEmergencyRelation,
+      employeeId: "000000"  // Hardcode to the default HR
+    }
+  };
 
   const inputStyles = {
     mt: "2",

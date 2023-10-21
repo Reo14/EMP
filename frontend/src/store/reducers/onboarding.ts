@@ -2,9 +2,10 @@ import axios, { AxiosError } from "axios";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { onboardData } from "../../types/onboarding";
 import { ErrorResponse } from "../../types/error";
+import { EmployeeInfo } from "../../types/employee";
 
 interface onboardingState {
-  data: onboardData | null;
+  data: EmployeeInfo | null;
   onboardingStatus: "Never submitted" | "Rejected" | "Pending" | "Approved";
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | undefined | null;
@@ -19,7 +20,7 @@ const initialState: onboardingState = {
 
 export const submitOnboarding = createAsyncThunk(
   "employee/submitOnboarding",
-  async (onboardData: onboardData, { rejectWithValue }) => {
+  async (onboardData: EmployeeInfo, { rejectWithValue }) => {
     try {
       const regToken = localStorage.getItem("regToken");
       await axios.post(

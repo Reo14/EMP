@@ -1,3 +1,23 @@
+export type Reference = {
+  employeeId: string;
+  firstName: string;
+  lastName: string;
+  middleName?: string;
+  phone?: string;
+  email?: string;
+  relationship: string;
+}
+
+export type EmergencyContact = {
+  employeeId: string;
+  firstName: string;
+  lastName: string;
+  middleName?: string;
+  phone?: string;
+  email?: string;
+  relationship: string;
+}
+
 export type Address = {
   buildingAptNumber: string;
   streetName: string;
@@ -24,14 +44,14 @@ export type Document = {
 
 export type EmployeeInfo = {
   username: string;
-  password: string; // delete after debugging
+  password?: string; // delete after debugging
   email: string;
-  role: string;
-  onboardingApplication: string;
-  emergencyContact: string[];
-  reference: string;
-  userId: string;
-  hrId: string;
+  role?: string;
+  onboardingApplication?: string;
+  emergencyContact: EmergencyContact;
+  reference: Reference;
+  userId?: string;
+  hrId?: string;
   firstName: string;
   lastName: string;
   middleName: string;
@@ -43,6 +63,6 @@ export type EmployeeInfo = {
   DOB: Date;
   gender: string;
   employment: Employment;
-  documents: Document[];
+  documents?: Document[];
 };
 

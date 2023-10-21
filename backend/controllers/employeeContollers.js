@@ -1,6 +1,6 @@
 // 引入模型
 const User = require("../models/user");
-const RegistrationToken = require("../models/registrationToken");
+const RegisterationToken = require("../models/registrationToken");
 const OnboardingApplication = require("../models/onboardingApplication");
 
 // 提交入职申请
@@ -36,7 +36,7 @@ async function submitOnboardingApplication(req, res) {
 
     // 保存入职申请信息
     const application = new OnboardingApplication({
-      registrationToken: registrationToken,
+      registrationToken: registerationToken,
       employeeId: employeeId,
       firstName: firstName,
       lastName: lastName,
@@ -54,7 +54,7 @@ async function submitOnboardingApplication(req, res) {
     await application.save();
 
     commonData = {
-      registrationToken: registrationToken,
+      registrationToken: registerationToken,
       hrId: hrId,
       firstName: firstName,
       lastName: lastName,
