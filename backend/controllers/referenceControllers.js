@@ -1,4 +1,5 @@
 const Reference = require('../models/reference');
+const User = require("../models/user");
 
 // 创建新的reference
 async function createReference(req, res) {
@@ -19,14 +20,14 @@ async function createReference(req, res) {
     const employee = await User.findOne({ userID: id });
 
     if (!employee) {
-      return res.status(400).json({ error: 'Invalid employee ID' });
+      return res.status(400).json({ error: error.message });
     }
 
     // Check if a reference already exists for the employee
     const existingReference = await Reference.findOne({ employeeId:id });
 
     if (existingReference) {
-      return res.status(400).json({ error: 'Reference already exists for this employee' });
+      return res.status(400).json({ error: error.message });
     }
 
     const reference = new Reference({
@@ -54,13 +55,14 @@ async function createReference(req, res) {
 async function getReference(req, res) {
   try {
     const { id } = req.params;
+    // 此id为被推荐的员工的id 也即：此函数是获取某个员工的推荐人的信息
     const employee = await User.findOne({ userId: id });
-
+    // 被推荐人必须已经注册
     if (!employee) {
-      return res.status(400).json({ error: 'Invalid employee ID' });
+      return res.status(400).json({ error: error.message });
     }
 
-    const reference = await Reference.find({ employeeId: id });
+    const reference = await Reference.findOne({ employeeId: id });
     res.json(reference);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -82,7 +84,7 @@ async function updateReference(req, res) {
     } = req.body;
 
     const updatedReference = await Reference.findOneAndUpdate(
-      { employeeIdid: id },
+      { employeeId: id },
       {
         firstName,
         lastName,
