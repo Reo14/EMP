@@ -714,7 +714,8 @@ const PersonalInfoPage: FC = () => {
       maxWidth={800}
       p={6}
       m="10px auto"
-      as="form">
+      as="form"
+    >
       <Progress hasStripe value={progress} mb="5%" mx="5%" isAnimated></Progress>
       { 
         step === 1 ? <NameForm /> : 
