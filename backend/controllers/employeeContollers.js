@@ -1,6 +1,6 @@
 // 引入模型
 const User = require("../models/user");
-const RegistrationToken = require("../models/registrationToken");
+const RegisterationToken = require("../models/registrationToken");
 const OnboardingApplication = require("../models/onboardingApplication");
 const jwt = require('jsonwebtoken'); 
 
@@ -58,6 +58,19 @@ async function submitOnboardingApplication(req, res) {
       DOB,
       gender,
       visaTitle,
+      registrationToken: registerationToken,
+      employeeId: employeeId,
+      firstName: firstName,
+      lastName: lastName,
+      middleName: middleName,
+      preferredName: preferredName,
+      profilePicture: profilePicture,
+      phoneNumber: phoneNumber,
+      email: email,
+      SSN: SSN,
+      DOB: DOB,
+      gender: gender,
+      visaTitle: visaTitle,
     });
 
     await application.save();
@@ -74,6 +87,17 @@ async function submitOnboardingApplication(req, res) {
       SSN,
       DOB,
       gender,
+    commonData = {
+      registrationToken: registerationToken,
+      hrId: hrId,
+      firstName: firstName,
+      lastName: lastName,
+      middleName: middleName,
+      preferredName: preferredName,
+      profilePicture: profilePicture,
+      SSN: SSN,
+      DOB: DOB,
+      gender: gender,
     };
 
     res
