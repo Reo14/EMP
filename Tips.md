@@ -33,3 +33,8 @@ error.message已经统一
 ## Qixin
 测试了下API 除了emergence和onboarding 我需要再想想逻辑以外 别的基本都没问题 当然我只用了postman 如果前端运行时有任何问题直接找我
 
+## Qixin
+Personal Information页的信息显示不全 而且没有和id绑定 已和xiaoxuan沟通
+Hr获取所有申请人信息时 <Td>{employee.Employment?.visaTitle || 'N/A'}</Td> 这一句由于目前还没有完成完整的信息注册 暂时难以test 待办
+
+

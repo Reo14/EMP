@@ -62,7 +62,7 @@ export type EmployeeInfo = {
   SSN: string;
   DOB: Date;
   gender: string;
-  employment: Employment;
+  Employment: Employment;
   documents?: Document[];
 };
 

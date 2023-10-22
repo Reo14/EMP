@@ -17,6 +17,7 @@ import HRtest from "./pages/HRtest";
 import LoggedIn from "./pages/LoggedIn";
 import PersonalInfoPage from "./pages/PersonalInfoPage";
 import EmployeeVisaPage from "./pages/EmployeeVisaPage";
+import EmployeeList from "./pages/AllEmployeesPage";
 
 const App: FC = () => {
   return (
@@ -40,6 +41,8 @@ const App: FC = () => {
             <Route path="/employee-infos" element={<PersonalInfoPage />} />
             <Route path="/employee-visa" element={<EmployeeVisaPage />} />
             <Route path="/error" element={<ErrorPage />} />
+
+            <Route path="/hr/all-employees" element={<EmployeeList/>} />
             <Route path="/hrtest" element={<HRtest />} />
             <Route path="/success" element={<LoggedIn />} />
             <Route path="*" element={<ErrorPage />} />
