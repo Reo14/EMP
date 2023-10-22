@@ -86,18 +86,7 @@ async function submitOnboardingApplication(req, res) {
       profilePicture,
       SSN,
       DOB,
-      gender,
-    commonData = {
-      registrationToken: registerationToken,
-      hrId: hrId,
-      firstName: firstName,
-      lastName: lastName,
-      middleName: middleName,
-      preferredName: preferredName,
-      profilePicture: profilePicture,
-      SSN: SSN,
-      DOB: DOB,
-      gender: gender,
+      gender
     };
 
     res
