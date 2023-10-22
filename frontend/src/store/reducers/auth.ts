@@ -119,7 +119,7 @@ const authSlice = createSlice({
       .addCase(signUp.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(signUp.fulfilled, (state) => {
+      .addCase(signUp.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.isLoggedIn = true;
         state.userId = action.payload.userId
