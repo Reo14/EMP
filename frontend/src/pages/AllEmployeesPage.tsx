@@ -79,7 +79,7 @@ const EmployeeList: React.FC = () => {
                 </Td>
                 <Td>{employee.email}</Td>
                 <Td>{employee.SSN}</Td>
-                <Td>{employee.Employment?.visaTitle || 'N/A'}</Td> 
+                <Td>{employee.employment?.visaTitle || 'N/A'}</Td> 
                 <Td>{employee.Contact.cellPhoneNumber}</Td>
                 <Td>
                   <Link
