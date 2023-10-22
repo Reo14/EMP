@@ -1,6 +1,5 @@
 import axios, { AxiosError } from "axios";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { onboardData } from "../../types/onboarding";
 import { ErrorResponse } from "../../types/error";
 import { EmployeeInfo } from "../../types/employee";
 

@@ -38,3 +38,5 @@ Personal Information页的信息显示不全 而且没有和id绑定 已和xiaox
 Hr获取所有申请人信息时 <Td>{employee.Employment?.visaTitle || 'N/A'}</Td> 这一句由于目前还没有完成完整的信息注册 暂时难以test 待办
 
 
+## Wenfeng
+onboardingPage经历了大改，现使用Formik库管理表单状态，之后的表单界面请参考本页面，并安装formik和yup这两个库

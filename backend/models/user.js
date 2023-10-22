@@ -7,16 +7,20 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ["Employee", "HR"], default: "Employee" },
 
   registrationToken: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "RegistrationToken",
+    type: String,
+    unique: true,
+    required: true,
   },
-  onboardingApplication: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "OnboardingApplication",
+  registrationStatus: {
+    type: String,
+    enum: ["Submitted", "Not Submitted"],
+    default: "Not Submitted",
   },
-  emergencyContact: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "EmergencyContact" },
-  ],
+
+  emergencyContact: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'EmergencyContact' 
+  }],
 
   reference: { type: mongoose.Schema.Types.ObjectId, ref: "Reference" },
 
@@ -43,7 +47,7 @@ const userSchema = new mongoose.Schema({
   },
 
   SSN: { type: String, unqiue: true },
-  DOB: { type: String },  // 生日不需要unique
+  DOB: { type: String }, // 生日不需要unique
   gender: {
     type: String,
     enum: ["Male", "Female", "I do not want to answer"],

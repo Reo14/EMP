@@ -7,6 +7,7 @@ interface authState {
   isLoggedIn: boolean;
   email: string;
   username: string;
+  userId: string;
   error: string | undefined | null;
   query: boolean | "standby";
 }
@@ -20,6 +21,7 @@ const initialState: authState = {
   isLoggedIn: false,
   email: "",
   username: "",
+  userId: "",
   status: "idle",
   error: null,
   query: "standby",
@@ -117,9 +119,10 @@ const authSlice = createSlice({
       .addCase(signUp.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(signUp.fulfilled, (state) => {
+      .addCase(signUp.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.isLoggedIn = true;
+        state.userId = action.payload.userId
       })
       .addCase(signUp.rejected, (state, action) => {
         state.status = "failed";

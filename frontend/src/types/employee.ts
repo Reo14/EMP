@@ -6,7 +6,7 @@ export type Reference = {
   phone?: string;
   email?: string;
   relationship: string;
-}
+};
 
 export type EmergencyContact = {
   employeeId: string;
@@ -16,7 +16,7 @@ export type EmergencyContact = {
   phone?: string;
   email?: string;
   relationship: string;
-}
+};
 
 export type Address = {
   buildingAptNumber: string;
@@ -62,7 +62,7 @@ export type EmployeeInfo = {
   SSN: string;
   DOB: Date;
   gender: string;
-  Employment: Employment;
+  isPermanentResident: string;
+  employment: Employment;
   documents?: Document[];
 };
-
