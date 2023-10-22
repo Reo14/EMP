@@ -2,107 +2,34 @@
 const User = require("../models/user");
 const RegisterationToken = require("../models/registrationToken");
 const OnboardingApplication = require("../models/onboardingApplication");
-const jwt = require('jsonwebtoken'); 
+const jwt = require("jsonwebtoken");
 
 // 提交入职申请
 async function submitOnboardingApplication(req, res) {
   try {
     // 获取员工信息
-    const {
-      employeeId,
-      firstName,
-      lastName,
-      middleName,
-      preferredName,
-      profilePicture,
-      phoneNumber,
-      email,
-      SSN,
-      DOB,
-      gender,
-      visaTitle,
-      // Other onboarding application details
-    } = req.body;
+    const employeeInfo = req.body;
 
     // 从请求头中提取并验证令牌
-    const authorizationHeader = req.headers.authorization;
-
-    if (!authorizationHeader) {
-      return res.status(400).json({ error: "Authorization header is missing" });
-    }
-
-    const token = authorizationHeader.split(" ")[1];
+    const token = req.headers.authorization.split(" ")[1];
 
     if (!token) {
       return res.status(400).json({ error: "Invalid token (onboarding)" });
     }
-
-    const employee = await User.findOne({ userId: employeeId });
+    console.log("userId", employeeInfo.userId);
+    const employee = await User.findOne({ userId: employeeInfo.userId });
     if (!employee) {
+      console.log("No User found");
       return res.status(400).json({ error: "Invalid employee ID" });
     }
 
     // 保存入职申请信息
-    const application = new OnboardingApplication({
-      registrationToken: token,
-      // employeeId // 我还没在本函数中获取这个
-      employeeId,
-      firstName,
-      lastName,
-      middleName,
-      preferredName,
-      profilePicture,
-      phoneNumber,
-      email,
-      SSN,
-      DOB,
-      gender,
-      visaTitle,
-      registrationToken: registerationToken,
-      employeeId: employeeId,
-      firstName: firstName,
-      lastName: lastName,
-      middleName: middleName,
-      preferredName: preferredName,
-      profilePicture: profilePicture,
-      phoneNumber: phoneNumber,
-      email: email,
-      SSN: SSN,
-      DOB: DOB,
-      gender: gender,
-      visaTitle: visaTitle,
-    });
+    const newEmployee = new User(employeeInfo);
 
-    await application.save();
-
-    // 构建 commonData
-    const commonData = {
-      registrationToken: token,
-      // hrId: hrId, //这里我要再想想
-      firstName,
-      lastName,
-      middleName,
-      preferredName,
-      profilePicture,
-      SSN,
-      DOB,
-      gender,
-    commonData = {
-      registrationToken: registerationToken,
-      hrId: hrId,
-      firstName: firstName,
-      lastName: lastName,
-      middleName: middleName,
-      preferredName: preferredName,
-      profilePicture: profilePicture,
-      SSN: SSN,
-      DOB: DOB,
-      gender: gender,
-    };
-
+    await newEmployee.save();
     res
       .status(200)
-      .json({ message: "Onboarding application submitted successfully", commonData });
+      .json({ message: "Onboarding application submitted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

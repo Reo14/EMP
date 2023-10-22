@@ -38,10 +38,11 @@ async function signup(req, res) {
 
     res.status(201).json({
       message: "Signup successful",
+      userId: newUser.userId
     });
   } catch (error) {
     console.log("auth.js: signUp error: ", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", });
   }
 }
 
