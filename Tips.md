@@ -33,3 +33,5 @@ error.message已经统一
 ## Qixin
 测试了下API 除了emergence和onboarding 我需要再想想逻辑以外 别的基本都没问题 当然我只用了postman 如果前端运行时有任何问题直接找我
 
+## Wenfeng
+onboardingPage经历了大改，现使用Formik库管理表单状态，之后的表单界面请参考本页面，并安装formik和yup这两个库
