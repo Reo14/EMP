@@ -2,8 +2,7 @@ import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Heading, 
-  Box, 
-  Text,
+  Box,
   Button,
   Progress,
   ButtonGroup,
@@ -286,6 +285,70 @@ const I20Form: FC = () => {
   return (
     <>
       <Heading as="h3" size="lg">I-20</Heading>
+      {/* ----- pending ----- */}
+      <Alert 
+        status='info'
+        display="flex"
+        flexDirection="row"
+        justifyContent="space-between"
+        padding="0.75rem 1.5rem"
+      >
+        <Box
+          display="flex"
+          flexDirection="row"
+        >
+          <AlertIcon />
+          Waiting for HR to approve your I-20.
+        </Box>
+      </Alert>
+
+      {/* ----- approve ----- */}
+      <Alert 
+        status='success'
+        display="flex"
+        flexDirection="row"
+        justifyContent="space-between"
+        padding="0.75rem 1.5rem"
+      >
+        <Box
+          display="flex"
+          flexDirection="column"
+        >
+          <Box
+            display="flex"
+            flexDirection="row"
+            marginBottom="1rem"
+          >
+            <AlertIcon />
+            All documents have been approved.
+          </Box>
+        </Box>
+      </Alert>
+
+      {/* ----- reject ----- */}
+      <Alert 
+        status='error'
+        display="flex"
+        flexDirection="row"
+        justifyContent="space-between"
+        padding="0.75rem 1.5rem"
+      >
+        <Box
+          display="flex"
+          flexDirection="row"
+        >
+          <AlertIcon />
+          Sorry, your application was rejected.
+        </Box>
+
+        <Box>
+          <Button
+            colorScheme="red"
+            size="sm"
+            // TODO: show feedback
+          >See Feedback</Button>
+        </Box>
+      </Alert>
     </>
   );
 }

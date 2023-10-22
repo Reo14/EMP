@@ -30,17 +30,6 @@ error.message已经统一
 1. 后端.env需要增加两行，会发在slack里
 2. 后端在merge后再运行下npm i，因为装了个新module
 
-## Qixin
-测试了下API 除了emergence和onboarding 我需要再想想逻辑以外 别的基本都没问题 当然我只用了postman 如果前端运行时有任何问题直接找我
-
-## Qixin
-Personal Information页的信息显示不全 而且没有和id绑定 已和xiaoxuan沟通
-Hr获取所有申请人信息时 <Td>{employee.Employment?.visaTitle || 'N/A'}</Td> 这一句由于目前还没有完成完整的信息注册 暂时难以test 待办
-
-
-## Wenfeng
-onboardingPage经历了大改，现使用Formik库管理表单状态，之后的表单界面请参考本页面，并安装formik和yup这两个库
-
 ## Xiaoxuan
 复用并修改了SignIn，但遇到了问题，也就是handleLogin这个method，可能是需要调整signIn里传入的输入
 
@@ -53,3 +42,14 @@ onboardingPage经历了大改，现使用Formik库管理表单状态，之后的
 
 其他：
 咱们每次个人push到自己的（或者哪个branch）可否在群里吱一声，我也每次说一下，这样我们在push之前都先rebase到对方最新的commit，然后再push。这样可以减少rebase时由于版本落后导致需要merge很多conflict的问题。
+
+## Qixin
+测试了下API 除了emergence和onboarding 我需要再想想逻辑以外 别的基本都没问题 当然我只用了postman 如果前端运行时有任何问题直接找我
+
+## Qixin
+Personal Information页的信息显示不全 而且没有和id绑定 已和xiaoxuan沟通
+Hr获取所有申请人信息时 <Td>{employee.Employment?.visaTitle || 'N/A'}</Td> 这一句由于目前还没有完成完整的信息注册 暂时难以test 待办
+
+
+## Wenfeng
+onboardingPage经历了大改，现使用Formik库管理表单状态，之后的表单界面请参考本页面，并安装formik和yup这两个库

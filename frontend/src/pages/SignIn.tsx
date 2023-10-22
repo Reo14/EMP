@@ -185,7 +185,7 @@ const SignIn: FC = () => {
           <Prompt
             status="success"
             title="Login Success!"
-            description="Redirecting to product list"
+            description="Redirecting to home!"
           />
           <ModalCloseButton />
         </ModalContent>
