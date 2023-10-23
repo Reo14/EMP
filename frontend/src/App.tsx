@@ -1,5 +1,5 @@
 import { Grid, GridItem } from "@chakra-ui/react";
-import { FC } from "react";
+import { FC, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -9,6 +9,7 @@ import {
 
 import Header from "./components/Layout/Header";
 import Footer from "./components/Layout/Footer";
+import Sidebar from "./components/Layout/SideBar";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import OnBoardingPage from "./pages/OnBoardingPage";
@@ -20,17 +21,22 @@ import EmployeeVisaPage from "./pages/EmployeeVisaPage";
 import EmployeeList from "./pages/AllEmployeesPage";
 
 const App: FC = () => {
+  const [navSize, setNavSize] = useState("large");
+
   return (
     <Router>
       <Grid
         h="100vh"
-        templateAreas={`"header" "main" "footer"`}
+        templateAreas={`"sidebar header" "sidebar main" "sidebar footer"`}
         gridTemplateRows={"auto 1fr 85px"}
-        gridTemplateColumns={"100%"}
-        autoFlow={"column"}
+        gridTemplateColumns={navSize === "small" ? "75px 1fr" : "200px 1fr"}
+        autoFlow={"row"}
       >
         <GridItem bg="#111827" area={"header"}>
           <Header />
+        </GridItem>
+        <GridItem bg="gray.200" area={"sidebar"}>
+          <Sidebar navSize={navSize} setNavSize={setNavSize} />
         </GridItem>
         <GridItem backgroundColor="gray.100" area={"main"}>
           <Routes>

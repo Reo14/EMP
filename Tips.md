@@ -53,3 +53,13 @@ Hr获取所有申请人信息时 <Td>{employee.Employment?.visaTitle || 'N/A'}</
 
 ## Wenfeng
 onboardingPage经历了大改，现使用Formik库管理表单状态，之后的表单界面请参考本页面，并安装formik和yup这两个库
+
+## Xiaoxuan
+1. Sidebar基本已经完成
+
+待办：
+1. 还需要身份区别那里和hr那部分url绑定，来实现所有跳转（这些点已和Wenfeng沟通过情况）
+
+2. 模仿大改后的onboardingPage，修改personal info page
+
+3. personal info没和userId绑定
