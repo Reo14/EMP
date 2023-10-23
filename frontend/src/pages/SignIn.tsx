@@ -19,6 +19,7 @@ import { signIn } from "../store/reducers/auth";
 import Prompt from "../components/Prompt";
 import MyCard from "../components/MyCard";
 import { AppDispatch } from "../store/configureStore";
+import { getOnboardingData } from "../store/reducers/onboarding";
 
 const SignIn: FC = () => {
   const navigate = useNavigate();
@@ -94,9 +95,20 @@ const SignIn: FC = () => {
       return;
     }
 
-    dispatch(signIn({ username, password }));
-    alert("Signed In Successfully");
-    navigate("/success");
+    try {
+      await dispatch(signIn({ username, password })).unwrap();
+      const { onBoardStatus } = await dispatch(
+        getOnboardingData(username)
+      ).unwrap();
+      alert("Signed In Successfully");
+      if (onBoardStatus === "Approved") {
+        navigate("/employee-infos");
+      } else {
+        navigate("/employee-onboarding");
+      }
+    } catch (error) {
+      console.log("login error: ", error);
+    }
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {

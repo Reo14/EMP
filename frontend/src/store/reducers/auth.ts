@@ -2,6 +2,7 @@ import axios, { AxiosError } from "axios";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { authData } from "../../types/auth";
 
+
 interface authState {
   status: "idle" | "loading" | "failed" | "succeeded";
   isLoggedIn: boolean;
@@ -31,8 +32,8 @@ export const signUp = createAsyncThunk(
   "auth/signUp",
   async (userData: authData, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
-
+      const token = localStorage.getItem("regToken");
+      console.log("signup token: ", token);
       const res = await axios.post("http://localhost:3000/sign-up", userData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -97,12 +98,16 @@ const authSlice = createSlice({
     },
     logOut: (state) => {
       state.isLoggedIn = false;
+      state.email = "";
+      state.username = "";
+      state.userId = "";
       state.status = "idle";
     },
-    saveUser: (state, action) => {
+    setAuth: (state, action) => {
       state.email = action.payload.email;
       state.username = action.payload.username;
-    },
+      state.userId = action.payload.userId;
+    }
   },
   extraReducers: (builder) => {
     // query
@@ -123,6 +128,8 @@ const authSlice = createSlice({
         state.status = "succeeded";
         state.isLoggedIn = true;
         state.userId = action.payload.userId
+        state.email = action.payload.email
+        state.username = action.payload.username
       })
       .addCase(signUp.rejected, (state, action) => {
         state.status = "failed";
@@ -136,7 +143,7 @@ const authSlice = createSlice({
       .addCase(signIn.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.isLoggedIn = true;
-        localStorage.setItem("regToken", action.payload.token);
+        localStorage.setItem("token", action.payload.token);
       })
       .addCase(signIn.rejected, (state, action) => {
         state.status = "failed";
@@ -145,6 +152,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { logIn, logOut, saveUser } = authSlice.actions;
+export const { logIn, logOut, setAuth } = authSlice.actions;
 
 export default authSlice.reducer;

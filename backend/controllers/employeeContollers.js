@@ -1,14 +1,12 @@
 // 引入模型
 const User = require("../models/user");
-const RegisterationToken = require("../models/registrationToken");
-const OnboardingApplication = require("../models/onboardingApplication");
 const jwt = require("jsonwebtoken");
 
 // 提交入职申请
-async function submitOnboardingApplication(req, res) {
+async function updateInfo(req, res) {
   try {
     // 获取员工信息
-    const employeeInfo = req.body;
+    let employeeInfo = req.body;
 
     // 从请求头中提取并验证令牌
     const token = req.headers.authorization.split(" ")[1];
@@ -17,221 +15,55 @@ async function submitOnboardingApplication(req, res) {
       return res.status(400).json({ error: "Invalid token (onboarding)" });
     }
     console.log("userId", employeeInfo.userId);
-    const employee = await User.findOne({ userId: employeeInfo.userId });
+
+    const employee = await User.findOneAndUpdate(
+      { userId: employeeInfo.userId },
+      employeeInfo
+    );
+    console.log("employee", employee);
     if (!employee) {
       console.log("No User found");
       return res.status(400).json({ error: "Invalid employee ID" });
     }
-
-    // 保存入职申请信息
-    const newEmployee = new User(employeeInfo);
-
-    await newEmployee.save();
     res
       .status(200)
       .json({ message: "Onboarding application submitted successfully" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-}
-
-// 获取入职申请的状态
-async function getOnboardingApplicationStatus(req, res) {
-  try {
-    const { id } = req.params;
-
-    // Check if the employee exists
-    const employee = await User.findOne({ userID: id });
-
-    if (!employee) {
-      return res.status(400).json({ error: "Invalid employee ID" });
-    }
-
-    // Find the onboarding application for the employee
-    const onboardingApplication = await OnboardingApplication.findOne({
-      employeeId,
-    });
-
-    if (!onboardingApplication) {
-      return res
-        .status(404)
-        .json({ error: "Onboarding application not found" });
-    }
-
-    // Return the status of the onboarding application
-    res.json({ status: onboardingApplication.status });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-}
-
-// 创建个人信息
-async function createPersonalInformation(req, res) {
-  const { id } = req.params;
-  try {
-    const {
-      // username, 这几个在auth中已经create了
-      // password,
-      // email,
-
-      // role,
-      // registrationToken,
-      // onboardingApplication,
-
-      // emergencyContact, 这两个有专门的api
-      // reference,
-
-      // userId,
-      // hrId, // Reference to his HR
-
-      // firstName,
-      // lastName,
-      // middleName,
-      // preferredName,
-      // profilePicture,
-
-      Contact,
-
-      address,
-
-      // SSN,
-      // DOB,
-      // gender,
-
-      employment,
-
-      documents,
-    } = req.body;
-
-    const personalInformation = await User.findOne({ userID: id });
-
-    if (personalInformation) {
-      return res.status(400).json({ error: error.message });
-    }
-
-    // 保存入职申请信息
-    const newInformation = new User({
-      ...commonData,
-      // emergencyContact: emergencyContact,
-      // reference: reference,
-
-      Contact: Contact,
-      address: address,
-      // SSN : SSN,
-      // DOB : DOB,
-      // gender : gender,
-      employment: employment,
-      documents: documents,
-    });
-
-    await newInformation.save();
-
-    res.status(200).json({ message: "Personal Profile created successfully" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.log(error);
+    res.status(500).json({ error: "Unkown Error" });
   }
 }
 
 // 获取个人信息
-async function getPersonalInformation(req, res) {
+async function getInfo(req, res) {
   try {
-    const { id } = req.params;
+    const { username } = req.params;
 
-    const employee = User.findOne({ userId: id })
-      .populate("RegistrationToken")
-      .populate("EmergencyContact")
-      .populate("Reference")
-      .populate("OnboardingApplication");
+    const employee = await User.findOne({ username })
+      .populate("emergencyContact")
+      .populate("reference");
 
     if (!employee) {
       return res.status(404).json({ error: error.message });
     }
+    console.log("Getting Information of Employee", employee);
 
-    const personalInformation = {
-      username: employee.username,
-      password: employee.password,
-      email: employee.email,
-      role: employee.role,
-      registrationToken: employee.registrationToken,
-      onboardingApplication: employee.OnboardingApplication,
-      emergencyContact: employee.emergencyContact,
-      reference: employee.reference,
-
-      userId: employee.userId,
-      hrId: employee.hrId, // Reference to his HR
-
-      firstName: employee.firstName,
-      lastName: employee.lastName,
-      middleName: employee.middleName,
-      preferredName: employee.preferredName,
-      profilePicture: employee.profilePicture, // 请在Chakra UI库中给它设置一个icon作为默认头像
-
-      Contact: employee.Contact,
-
-      address: employee.address,
-
-      SSN: employee.SSN,
-      DOB: employee.DOB,
-      gender: employee.gender,
-
-      employment: employee.employment,
-
-      documents: employee.document,
-    };
-
-    res.status(200).json({ personalInformation });
+    res.status(200).json({ employee });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 }
 
-// 编辑个人信息
-async function editPersonalInformation(req, res) {
+async function getOnboardStatus(req, res) {
   try {
     const { id } = req.params;
-    const updatedEmployee = req.body;
-
-    // Find the employee by userId
     const employee = await User.findOne({ userId: id });
-
-    // Check if the employee exists
     if (!employee) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ error: "No user found" });
     }
-
-    // Update employee fields with the data from the request body
-    // 请将无法被更改的个人信息注释掉
-    employee.username = updatedEmployee.username;
-    employee.password = updatedEmployee.password;
-    employee.email = updatedEmployee.email;
-    // employee.role = updatedEmployee.role;
-    // employee.registrationToken = updatedEmployee.registrationToken;
-    // employee.onboardingApplication = updatedEmployee.onboardingApplication;
-    // employee.emergencyContact = updatedEmployee.emergencyContact;
-    // employee.reference = updatedEmployee.reference;
-    // employee.userId = updatedEmployee.userId;
-    // employee.hrId = updatedEmployee.hrId;
-    employee.firstName = updatedEmployee.firstName;
-    employee.lastName = updatedEmployee.lastName;
-    employee.middleName = updatedEmployee.middleName;
-    employee.preferredName = updatedEmployee.preferredName;
-    employee.profilePicture = updatedEmployee.profilePicture;
-    employee.Contact = updatedEmployee.Contact;
-    employee.address = updatedEmployee.address;
-    employee.SSN = updatedEmployee.SSN;
-    employee.DOB = updatedEmployee.DOB;
-    employee.gender = updatedEmployee.gender;
-    employee.employment = updatedEmployee.employment;
-    employee.documents = updatedEmployee.documents;
-
-    // Save the updated employee document
-    await employee.save();
-
-    res
-      .status(200)
-      .json({ message: "Personal information updated successfully" });
+    res.status(200).json({ onboardStatus: employee.onboardStatus });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: "Internal Error" });
   }
 }
 
@@ -262,9 +94,7 @@ async function editPersonalInformation(req, res) {
 // }
 
 module.exports = {
-  submitOnboardingApplication,
-  getOnboardingApplicationStatus,
-  createPersonalInformation,
-  getPersonalInformation,
-  editPersonalInformation,
+  updateInfo,
+  getInfo,
+  getOnboardStatus,
 };

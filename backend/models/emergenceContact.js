@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 
 const emergencyContactSchema = new mongoose.Schema({
-    employeeId: {type: String, required: true},
-    firstName: {type: String, required: true},
-    lastName: {type: String, required: true},
+    employeeId: String,
+    firstName: String,
+    lastName: String,
     middleName: String,
     phone: String,
     email: String,
-    relationship: {type:String, required: true}
+    relationship: String
   });
 
 const EmergencyContact = mongoose.model('EmergencyContact', emergencyContactSchema);

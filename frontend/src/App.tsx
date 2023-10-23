@@ -18,6 +18,7 @@ import LoggedIn from "./pages/LoggedIn";
 import PersonalInfoPage from "./pages/PersonalInfoPage";
 import EmployeeVisaPage from "./pages/EmployeeVisaPage";
 import EmployeeList from "./pages/AllEmployeesPage";
+import ReviewOnboarding from "./pages/ReviewOnboarding";
 
 const App: FC = () => {
   return (
@@ -39,12 +40,13 @@ const App: FC = () => {
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/employee-onboarding" element={<OnBoardingPage />} />
             <Route path="/employee-infos" element={<PersonalInfoPage />} />
+            <Route path="/review-info" element={<ReviewOnboarding />} />
             <Route path="/employee-visa" element={<EmployeeVisaPage />} />
-            <Route path="/error" element={<ErrorPage />} />
 
-            <Route path="/hr/all-employees" element={<EmployeeList/>} />
+            <Route path="/hr/all-employees" element={<EmployeeList />} />
             <Route path="/hrtest" element={<HRtest />} />
             <Route path="/success" element={<LoggedIn />} />
+            <Route path="/error" element={<ErrorPage />} />
             <Route path="*" element={<ErrorPage />} />
           </Routes>
         </GridItem>
@@ -54,6 +56,6 @@ const App: FC = () => {
       </Grid>
     </Router>
   );
-}
+};
 
 export default App;

@@ -17,14 +17,13 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
-import { FormikProps, useFormik } from "formik";
-import { FC, useEffect } from "react";
+import { useFormik } from "formik";
+import { FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { AppDispatch, RootState } from "../store/configureStore";
 import { submitOnboarding } from "../store/reducers/onboarding";
-import { EmployeeInfo } from "../types/employee";
 
 const OnBoardingPage: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -47,6 +46,7 @@ const OnBoardingPage: FC = () => {
       username,
       email,
       userId,
+      onboardStatus: "Pending",
       // properties are to be filled in
       firstName: "",
       lastName: "",
@@ -233,6 +233,29 @@ const OnBoardingPage: FC = () => {
       {onboardingStatus === "Pending" && (
         <Alert
           status="warning"
+          display="flex"
+          flexDirection="row"
+          justifyContent="space-between"
+          padding="0.75rem 1.5rem"
+        >
+          <Box display="flex" flexDirection="row">
+            <AlertIcon />
+            Please wait for HR to review your application.
+          </Box>
+
+          <Button
+            colorScheme="teal"
+            size="sm"
+            onClick={() => navigate("/review-info")}
+          >
+            Review Infos
+          </Button>
+        </Alert>
+      )}
+
+      {onboardingStatus === "Approved" && (
+        <Alert
+          status="success"
           display="flex"
           flexDirection="row"
           justifyContent="space-between"
@@ -447,7 +470,7 @@ const OnBoardingPage: FC = () => {
                     name="DOB"
                     date={formik.values.DOB}
                     onDateChange={(selectedDate) => {
-                      formik.setFieldValue("DOB", selectedDate);
+                      formik.setFieldValue("DOB", selectedDate.toISOString());
                     }}
                   />
                   {formik.touched.DOB && formik.errors.DOB ? (
@@ -739,7 +762,7 @@ const OnBoardingPage: FC = () => {
                         onDateChange={(selectedDate) => {
                           formik.setFieldValue(
                             "employment.startDate",
-                            selectedDate
+                            selectedDate.toISOString()
                           );
                         }}
                       />
@@ -765,7 +788,7 @@ const OnBoardingPage: FC = () => {
                         onDateChange={(selectedDate) => {
                           formik.setFieldValue(
                             "employment.endDate",
-                            selectedDate
+                            selectedDate.toISOString()
                           );
                         }}
                       />

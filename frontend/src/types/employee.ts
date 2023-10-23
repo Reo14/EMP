@@ -47,7 +47,7 @@ export type EmployeeInfo = {
   password?: string; // delete after debugging
   email: string;
   role?: string;
-  onboardingApplication?: string;
+  onboardStatus: string;
   emergencyContact: EmergencyContact;
   reference: Reference;
   userId?: string;

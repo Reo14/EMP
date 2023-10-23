@@ -16,7 +16,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import MyCard from "../components/MyCard";
-import { signUp, queryInfo, queryData, saveUser } from "../store/reducers/auth";
+import { signUp, queryInfo, queryData} from "../store/reducers/auth";
 import { RootState, AppDispatch } from "../store/configureStore";
 
 const SignUp: FC = () => {
@@ -34,7 +34,7 @@ const SignUp: FC = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const regToken = queryParams.get("token");
-  regToken && localStorage.setItem("token", regToken);
+  regToken && localStorage.setItem("regToken", regToken);
 
   const inputStyles = {
     mt: "2",
@@ -151,10 +151,16 @@ const SignUp: FC = () => {
       setEmailError("This field is required");
       return;
     }
-    dispatch(signUp({ email, username, password }));
-    dispatch(saveUser({ email, username }));
-    alert("Signed Up Successfully");
-    navigate("/employee-onboarding");
+
+    try {
+      await dispatch(signUp({ email, username, password })).unwrap();
+      
+      alert("Signed Up Successfully");
+      navigate("/employee-onboarding");
+    } catch (error) {
+      console.log("Sign up error", error);
+      navigate("/error");
+    }
   };
 
   return (
