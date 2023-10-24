@@ -106,6 +106,7 @@ const SignIn: FC = () => {
                 {...formik.getFieldProps("username")}
                 placeholder="Enter your username"
                 {...inputStyles}
+                name="username"
                 borderColor={
                   formik.errors.username && formik.touched.username
                     ? "red.500"
@@ -126,6 +127,7 @@ const SignIn: FC = () => {
                   {...formik.getFieldProps("password")}
                   placeholder="Enter your password"
                   {...inputStyles}
+                  name="password"
                   borderColor={
                     formik.errors.username && formik.touched.username
                       ? "red.500"

@@ -9,6 +9,8 @@ import {
 } from "@chakra-ui/react";
 import React, { FC, useState, KeyboardEvent, ChangeEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import {
   useNavigate,
   Link as RouterLink,
@@ -16,25 +18,47 @@ import {
   useLocation,
 } from "react-router-dom";
 import MyCard from "../components/MyCard";
-import { signUp, queryInfo, queryData} from "../store/reducers/auth";
+import { signUp, queryInfo, queryData } from "../store/reducers/auth";
 import { RootState, AppDispatch } from "../store/configureStore";
 
 const SignUp: FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const [show, setShow] = useState(false);
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [username, setUsername] = useState("");
-  const [usernameError, setUsernameError] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
 
   // params
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const regToken = queryParams.get("token");
   regToken && localStorage.setItem("regToken", regToken);
+
+  // formik
+  const validationSchema = Yup.object().shape({
+    email: Yup.string()
+      .email("Invalid Email format")
+      .required("This field is required"),
+    username: Yup.string().required("This field is required"),
+    password: Yup.string().required("This field is required"),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      username: "",
+      password: "",
+    },
+    validationSchema,
+    onSubmit: async (values) => {
+      try {
+        await dispatch(signUp(values)).unwrap();
+        alert("Signed Up Successfully");
+        navigate("/employee-onboarding");
+      } catch (error) {
+        console.log("Sign up error", error);
+        navigate("/error");
+      }
+    },
+  });
 
   const inputStyles = {
     mt: "2",
@@ -60,176 +84,93 @@ const SignUp: FC = () => {
 
   const handleClick = () => setShow(!show);
 
-  const onEmailBlur = async () => {
-    if (!email) {
-      setEmailError("This field is required");
-      return;
-    }
-    try {
-      const { exists: queryRes } = await dispatch(
-        queryInfo({ type: "email", value: email })
-      ).unwrap();
-      if (queryRes === true) {
-        setEmailError("Email already exists");
-      } else {
-        setEmailError("");
-      }
-    } catch (error) {
-      console.log("Got an error", error);
-    }
-  };
-
-  const onUsernameBlur = async () => {
-    if (!username) {
-      setUsernameError("This field is required");
-    }
-    try {
-      const { exists: queryRes } = await dispatch(
-        queryInfo({ type: "username", value: username })
-      ).unwrap();
-      if (queryRes === true) {
-        setUsernameError("Username already exists");
-      } else {
-        setUsernameError("");
-      }
-    } catch (error) {
-      console.log("Got an error", error);
-    }
-  };
-
-  const onPasswordBlur = () => {
-    if (!password) {
-      setPasswordError("This field is required");
-    }
-  };
-
-  const onEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-    if (!e.target.value) {
-      setEmailError("This field is required");
-    } else if (!/\S+@\S+\.\S+/.test(e.target.value)) {
-      setEmailError("Invalid Email format");
-    } else {
-      setEmailError("");
-    }
-  };
-
-  const onUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setUsername(e.target.value);
-    if (!e.target.value) {
-      setUsernameError("This field is required");
-    } else {
-      setUsernameError("");
-    }
-  };
-
-  const onPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-    if (!e.target.value) {
-      setPasswordError("This field is required");
-    } else {
-      setPasswordError("");
-    }
-  };
-
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Enter") {
-      handleSignUp();
-    }
-  };
-
-  const handleSignUp = async () => {
-    if (!username) {
-      setUsernameError("This field is required");
-      return;
-    }
-    if (!password) {
-      setPasswordError("This field is required");
-      return;
-    }
-    if (!email) {
-      setEmailError("This field is required");
-      return;
-    }
-
-    try {
-      await dispatch(signUp({ email, username, password })).unwrap();
-      
-      alert("Signed Up Successfully");
-      navigate("/employee-onboarding");
-    } catch (error) {
-      console.log("Sign up error", error);
-      navigate("/error");
+      formik.handleSubmit();
     }
   };
 
   return (
     <Box display="flex" justifyContent="center" alignItems="center" h="100%">
       <MyCard title="Sign Up an Account">
-        <Box mb="5">
-          <Text textColor="gray">Email:</Text>
-          <Input
-            type="email"
-            value={email}
-            onChange={onEmailChange}
-            onBlur={onEmailBlur}
-            onKeyDown={handleKeyDown}
-            placeholder="Enter your email"
-            {...inputStyles}
-            borderColor={emailError ? "red.500" : "gray.300"}
-          />
-          {emailError && (
-            <Text color="red.500" fontSize="sm" float="right">
-              {emailError}
-            </Text>
-          )}
-        </Box>
-        <Box mb="5">
-          <Text textColor="gray">Username:</Text>
-          <Input
-            type="text"
-            value={username}
-            onChange={onUsernameChange}
-            onBlur={onUsernameBlur}
-            onKeyDown={handleKeyDown}
-            placeholder="Enter your username"
-            {...inputStyles}
-            borderColor={usernameError ? "red.500" : "gray.300"}
-          />
-          {usernameError && (
-            <Text color="red.500" fontSize="sm" float="right">
-              {usernameError}
-            </Text>
-          )}
-        </Box>
-        <Box mb="5">
-          <Text textColor="gray">Password:</Text>
-          <InputGroup>
+        <form onSubmit={formik.handleSubmit}>
+          <Box mb="5">
+            <Text textColor="gray">Email:</Text>
             <Input
-              type={show ? "text" : "password"}
-              value={password}
-              onChange={onPasswordChange}
-              onBlur={onPasswordBlur}
-              onKeyDown={handleKeyDown}
-              placeholder="Enter your password"
+              type="email"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              name="email"
+              placeholder="Enter your email"
               {...inputStyles}
+              borderColor={
+                formik.touched.email && formik.errors.email
+                  ? "red.500"
+                  : "gray.300"
+              }
             />
-            <InputRightElement mt="5px" mr="15px">
-              <Button color="gray.500" onClick={handleClick}>
-                <Text decoration="underline">{show ? "Hide" : "Show"}</Text>
-              </Button>
-            </InputRightElement>
-          </InputGroup>
-          {passwordError && (
-            <Text color="red.500" fontSize="sm" mt="1" float="right">
-              {passwordError}
-            </Text>
-          )}
-        </Box>
-        <Button {...buttonStyles} onClick={handleSignUp}>
-          Sign Up
-        </Button>
-
+            {formik.touched.email && formik.errors.email && (
+              <Text color="red.500" fontSize="sm" float="right">
+                {formik.errors.email}
+              </Text>
+            )}
+          </Box>
+          <Box mb="5">
+            <Text textColor="gray">Username:</Text>
+            <Input
+              type="text"
+              value={formik.values.username}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              name="username"
+              placeholder="Enter your username"
+              {...inputStyles}
+              borderColor={
+                formik.touched.username && formik.errors.username
+                  ? "red.500"
+                  : "gray.300"
+              }
+            />
+            {formik.touched.username && formik.errors.username && (
+              <Text color="red.500" fontSize="sm" float="right">
+                {formik.errors.username}
+              </Text>
+            )}
+          </Box>
+          <Box mb="5">
+            <Text textColor="gray">Password:</Text>
+            <InputGroup>
+              <Input
+                type={show ? "text" : "password"}
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                name="password"
+                placeholder="Enter your password"
+                {...inputStyles}
+                borderColor={
+                  formik.touched.password && formik.errors.password
+                    ? "red.500"
+                    : "gray.300"
+                }
+              />
+              <InputRightElement mt="5px" mr="15px">
+                <Button color="gray.500" onClick={handleClick}>
+                  <Text decoration="underline">{show ? "Hide" : "Show"}</Text>
+                </Button>
+              </InputRightElement>
+            </InputGroup>
+            {formik.touched.password && formik.errors.password && (
+              <Text color="red.500" fontSize="sm" float="right">
+                {formik.errors.password}
+              </Text>
+            )}
+          </Box>
+          <Button type="submit" {...buttonStyles} onKeyDown={handleKeyDown}>
+            Sign Up
+          </Button>
+        </form>
         <Text color="gray.500">
           Need help or report errors?
           <ChakraLink as={RouterLink} to="/error" color="blue.500">
