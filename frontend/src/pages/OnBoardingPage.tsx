@@ -21,7 +21,7 @@ import { SingleDatepicker } from "chakra-dayzed-datepicker";
 import { useFormik } from "formik";
 import { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, Redirect } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { AppDispatch, RootState } from "../store/configureStore";
 import { submitOnboarding } from "../store/reducers/onboarding";
@@ -290,9 +290,29 @@ const OnBoardingPage: FC = () => {
         </Alert>
       )}
 
+      {/* 应该是直接跳转到personal info界面 */} 
       {onboardingStatus === "Approved" && (
-        // 应该是直接跳转到personal info界面
-        <Redirect to="/employee-infos" />
+        <Alert
+          status="success"
+          display="flex"
+          flexDirection="row"
+          justifyContent="space-between"
+          padding="0.75rem 1.5rem"
+        >
+          <Box display="flex" flexDirection="row">
+            <AlertIcon />
+            Please wait for HR to review your application.
+          </Box>
+
+          <Button
+            colorScheme="teal"
+            size="sm"
+            // TODO: 
+            onClick={() => alert("Under development")}
+          >
+            Review Infos
+          </Button>
+        </Alert>
 
         // <Alert
         //   status="success"
@@ -303,17 +323,8 @@ const OnBoardingPage: FC = () => {
         // >
         //   <Box display="flex" flexDirection="row">
         //     <AlertIcon />
-        //     Please wait for HR to review your application.
-        //   </Box>
-
-        //   <Button
-        //     colorScheme="teal"
-        //     size="sm"
-        //     // TODO: 
-        //     onClick={() => alert("Under development")}
-        //   >
-        //     Review Infos
-        //   </Button>
+        //       Onbaording approved! Automatically direct to personal info page...
+        //     </Box>
         // </Alert>
       )}
 

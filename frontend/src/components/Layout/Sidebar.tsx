@@ -31,6 +31,9 @@ const Sidebar: FC<SidebarProps> = ({ navSize, setNavSize }) => {
     const isLoggedIn = useSelector<RootState, boolean>(
       (state) => state.auth.isLoggedIn
     );
+    const role = useSelector<RootState, string>(
+      (state) => state.onboarding.data?.role || ""
+    );
 
     return (
       <Flex 
@@ -62,23 +65,24 @@ const Sidebar: FC<SidebarProps> = ({ navSize, setNavSize }) => {
           />
           {
             isLoggedIn ? (
-              <>
-                <NavItem navSize={navSize} title="Personal Infos" icon={EditIcon} to="/employee-infos" />
-                <NavItem navSize={navSize} title="Visa Status" icon={InfoOutlineIcon} to="/employee-visa" />
-                <NavItem navSize={navSize} title="Log out" icon={UnlockIcon} to="/sign-in"  />
-              </>
-            ) :
+              role === "HR" ? (
+                <>
+                  <NavItem navSize={navSize} title="Employee Profiles" icon={EditIcon} to="/hr/all-employees" />
+                  <NavItem navSize={navSize} title="Visa Status Mgmt" icon={InfoOutlineIcon} to="" />
+                  <NavItem navSize={navSize} title="Hiring Mgmt" icon={StarIcon} to="" />
+                  <NavItem navSize={navSize} title="Log out" icon={UnlockIcon} to="/sign-in"  />
+                </>
+              ) : (
+                <>
+                  <NavItem navSize={navSize} title="Personal Infos" icon={EditIcon} to="/employee-infos" />
+                  <NavItem navSize={navSize} title="Visa Status" icon={InfoOutlineIcon} to="/employee-visa" />
+                  <NavItem navSize={navSize} title="Log out" icon={UnlockIcon} to="/sign-in"  />
+                </>
+              )
+            ) : (
               <NavItem navSize={navSize} title="Log in" icon={LockIcon} to="/sign-in" />
+            )
           }
-
-          {/* // TODO: 上面的判断，除了isLoggedIn，还需要结合身份Redux区分，如果是Admin，则显示下面内容：
-            <>
-              <NavItem navSize={navSize} title="Employee Profiles" icon={EditIcon} to="/hr/all-employees" />
-              <NavItem navSize={navSize} title="Visa Status Mgmt" icon={InfoOutlineIcon} to="" />
-              <NavItem navSize={navSize} title="Hiring Mgmt" icon={StarIcon} to="" />
-              <NavItem navSize={navSize} title="Log out" icon={UnlockIcon} to="/sign-in"  />
-            </>
-          */}
         </Flex>
 
         <Flex
@@ -95,7 +99,7 @@ const Sidebar: FC<SidebarProps> = ({ navSize, setNavSize }) => {
             <Avatar size="sm" src="https://bit.ly/dan-abramov" />
             <Flex flexDir="column" ml={4} display={navSize === "small" ? "none" : "flex"}>
               <Heading as="h3" size="sm">{username}</Heading>
-              <Text color="gray">Admin</Text>
+              <Text color="gray">{role}</Text>
             </Flex>
           </Flex>
         </Flex>
