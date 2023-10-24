@@ -38,19 +38,20 @@ async function updateInfo(req, res) {
 async function getInfo(req, res) {
   try {
     const { username } = req.params;
+    console.log("Getting Information of Employee", username);
 
-    const employee = await User.findOne({ username })
-      .populate("emergencyContact")
-      .populate("reference");
+    const employee = await User.findOne({ username });
+
 
     if (!employee) {
-      return res.status(404).json({ error: error.message });
+      return res.status(404).json({ error: "No user found" });
     }
     console.log("Getting Information of Employee", employee);
 
     res.status(200).json({ employee });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.log("Internal Error: ", error);
+    res.status(500).json({ error });
   }
 }
 
