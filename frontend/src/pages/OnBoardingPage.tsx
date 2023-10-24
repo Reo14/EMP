@@ -15,15 +15,17 @@ import {
   Select,
   Stack,
   VStack,
+  Text
 } from "@chakra-ui/react";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
 import { useFormik } from "formik";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { AppDispatch, RootState } from "../store/configureStore";
 import { submitOnboarding } from "../store/reducers/onboarding";
+import { Document } from "../types/employee";
 
 const OnBoardingPage: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -91,6 +93,7 @@ const OnBoardingPage: FC = () => {
         relationship: "",
         employeeId: "000000", // Hardcode to the default HR
       },
+      documents: []
     },
     validationSchema: Yup.object({
       firstName: Yup.string().required("First Name is required"),
@@ -173,6 +176,66 @@ const OnBoardingPage: FC = () => {
     },
   });
 
+  const [avatarSrc, setAvatarSrc] = useState("https://bit.ly/dan-abramov");
+  const [isAvatarUploaded, setIsAvatarUploaded] = useState<boolean>(false);
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files && event.target.files[0];
+    if (file) {
+      // 为了浏览上传的image
+      const url = URL.createObjectURL(file);
+      setAvatarSrc(url);
+      // 转换文件为Base64编码的字符串，为了存入后端及其它地方调用
+      const fileBase64 = await toBase64(file);
+      // 将Base64编码的字符串设置为profilePicture字段的值
+      formik.setFieldValue('profilePicture', fileBase64);
+      setIsAvatarUploaded(true);
+    }
+  };
+
+  const [optReceiptSrc, setoptReceiptSrc] = useState("");
+  const [isOptReceiptUploaded, setIsOptReceiptUploaded] = useState<boolean>(false);
+
+  const handleOptReceiptChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files && event.target.files[0];
+    if (file) {
+      // console.log(file)
+      const url = URL.createObjectURL(file);
+      setoptReceiptSrc(url);
+      formik.setFieldValue('workAuthfile', file);
+      // 转换文件为 Base64 编码字符串
+      const fileBase64 = await toBase64(file);
+      // 获取当前的 documents 数组
+      const currentDocuments: Document[] = formik.values.documents || [];
+      // 创建一个新的 Document 对象
+      const newDocument: Document = {
+        type: file.type,
+        file: fileBase64,
+      };
+      // 创建一个新的数组，包含当前的文档和新的文档
+      const newDocuments = currentDocuments.concat(newDocument);
+      // 将新数组设置回 formik 的 documents 字段
+      formik.setFieldValue('documents', newDocuments);
+      setIsOptReceiptUploaded(true);  // 更新状态
+    }
+  };
+
+  // 定义一个辅助函数来转换文件为Base64编码字符串
+  const toBase64 = (file: File) => new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve((reader.result as string).split(',')[1]);  // 仅获取Base64编码的部分
+    reader.onerror = error => reject(error);
+  });
+
+  const previewAvatar = () => {
+    window.open(avatarSrc, '_blank');
+  };
+
+  const previewOptReceipt = () => {
+    window.open(optReceiptSrc, '_blank');
+  };
+
   // useEffect(() => {
   //   console.log("isPermanentResident:", formik.values.isPermanentResident);
   //   console.log("employment.visaTitle:", formik.values.employment.visaTitle);
@@ -215,6 +278,7 @@ const OnBoardingPage: FC = () => {
               colorScheme="red"
               size="sm"
               // TODO: show feedback
+              onClick={() => alert("Under development")}
             >
               See Feedback
             </Button>
@@ -222,7 +286,8 @@ const OnBoardingPage: FC = () => {
               colorScheme="blue"
               size="sm"
               marginLeft="3"
-              // TODO: onClick={handleReSubmission}
+              // TODO: 
+              onClick={() => alert("Under development")}
             >
               Re-Submit Application
             </Button>
@@ -253,6 +318,7 @@ const OnBoardingPage: FC = () => {
         </Alert>
       )}
 
+      {/* 应该是直接跳转到personal info界面 */} 
       {onboardingStatus === "Approved" && (
         <Alert
           status="success"
@@ -263,21 +329,33 @@ const OnBoardingPage: FC = () => {
         >
           <Box display="flex" flexDirection="row">
             <AlertIcon />
-            Your application has been approved. Go to your profile page.
+            Please wait for HR to review your application.
           </Box>
 
           <Button
             colorScheme="teal"
             size="sm"
-            // TODO: onClick
-            onClick={() => navigate("/employee-infos")}
+            // TODO: 
+            onClick={() => alert("Under development")}
           >
-            Go to Profile
+            Review Infos
           </Button>
         </Alert>
+
+        // <Alert
+        //   status="success"
+        //   display="flex"
+        //   flexDirection="row"
+        //   justifyContent="space-between"
+        //   padding="0.75rem 1.5rem"
+        // >
+        //   <Box display="flex" flexDirection="row">
+        //     <AlertIcon />
+        //       Onbaording approved! Automatically direct to personal info page...
+        //     </Box>
+        // </Alert>
       )}
 
-      {/* {resubmit && ( */}
       {onboardingStatus === "Never submitted" && (
         <Box>
           <Heading as="h1" mb="4">
@@ -304,7 +382,6 @@ const OnBoardingPage: FC = () => {
                     onBlur={formik.handleBlur}
                     name="firstName"
                     {...inputStyles}
-                    placeholder="firstname"
                   />
                   {formik.touched.firstName && formik.errors.firstName ? (
                     <FormErrorMessage>
@@ -327,7 +404,7 @@ const OnBoardingPage: FC = () => {
                     onBlur={formik.handleBlur}
                     name="lastName"
                     {...inputStyles}
-                    placeholder="lastname"
+                    placeholder="+1 (___) __-___-___"
                   />
                   {formik.touched.lastName && formik.errors.lastName ? (
                     <FormErrorMessage>
@@ -389,21 +466,21 @@ const OnBoardingPage: FC = () => {
                     <Avatar
                       size="lg"
                       // hardcode here
-                      src={
-                        formik.values.profilePicture ||
-                        "https://bit.ly/dan-abramov"
-                      }
+                      // src={
+                      //   formik.values.profilePicture ||
+                      //   "https://bit.ly/dan-abramov"
+                      // }
+                      src={avatarSrc}
                     />
                   </Center>
                   <Center>
-                    <Button
-                      size="sm"
-                      colorScheme="red"
-                      onClick={() => alert("Under development")}
-                      // TODO:
-                    >
-                      Upload Avatar
-                    </Button>
+                    <Input
+                      type="file"
+                      accept=".jpg,.jpeg,.png"
+                      width="80%"
+                      height="50%"
+                      onChange={handleFileChange}
+                    />
                   </Center>
                 </Stack>
               </FormControl>
@@ -412,8 +489,6 @@ const OnBoardingPage: FC = () => {
                 <FormLabel>Email</FormLabel>
                 <Input
                   type="text"
-                  //   TODO: value这里是传进来的值，不能修改的
-                  // Done.
                   value={email || "placeholder"}
                   {...inputStyles}
                 />
@@ -731,10 +806,16 @@ const OnBoardingPage: FC = () => {
                   {formik.values.employment?.visaTitle === "f1" ? (
                     <HStack>
                       <FormControl>
-                        <Input type="file" />
-                        <Button size="sm" colorScheme="red">
+                        <Input 
+                          type="file" 
+                          accept=".pdf"
+                          width="80%"
+                          height="100%"
+                          onChange={handleOptReceiptChange} 
+                        />
+                        {/* <Button size="sm" colorScheme="red">
                           Upload OPT Receipt
-                        </Button>
+                        </Button> */}
                       </FormControl>
                     </HStack>
                   ) : formik.values.employment?.visaTitle === "other" ? (
@@ -1046,7 +1127,27 @@ const OnBoardingPage: FC = () => {
                 </FormControl>
               </HStack>
 
-              {/* TODO: Summary */}
+              {/* ----- summary ----- */}
+              <Divider />
+              <Heading as="h3" fontSize="xl">
+                Summary of Uploaded Files
+              </Heading>
+              <VStack spacing={4} align="left">
+                <Text size="lg">
+                    Avatar: {!isAvatarUploaded ? 'not applicable' : (
+                      <Button size="md" onClick={previewAvatar}>
+                        Preview Avatar
+                      </Button>
+                    )}
+                </Text>
+                <Text size="lg">
+                    OPT Receipt: {formik.values.employment?.visaTitle === 'f1' ? (!isOptReceiptUploaded ? 'not applicable' : (
+                      <Button size="md" onClick={previewOptReceipt}>
+                        Preview OPT Receipt
+                      </Button>
+                    )) : 'No need to upload'}
+                </Text>
+              </VStack>
 
               <Button
                 colorScheme="blue"
@@ -1061,7 +1162,6 @@ const OnBoardingPage: FC = () => {
           </Box>
         </Box>
       )}
-      {/* )} */}
     </Box>
   );
 };
