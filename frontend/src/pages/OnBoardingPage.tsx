@@ -15,12 +15,13 @@ import {
   Select,
   Stack,
   VStack,
+  Text
 } from "@chakra-ui/react";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
 import { useFormik } from "formik";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Redirect } from "react-router-dom";
 import * as Yup from "yup";
 import { AppDispatch, RootState } from "../store/configureStore";
 import { submitOnboarding } from "../store/reducers/onboarding";
@@ -173,6 +174,40 @@ const OnBoardingPage: FC = () => {
     },
   });
 
+  const [avatarSrc, setAvatarSrc] = useState("https://bit.ly/dan-abramov");
+  const [isAvatarUploaded, setIsAvatarUploaded] = useState<boolean>(false);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files && event.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setAvatarSrc(url);
+      formik.setFieldValue('profilePicture', file);
+      setIsAvatarUploaded(true);
+    }
+  };
+
+  const [optReceiptSrc, setoptReceiptSrc] = useState("");
+  const [isOptReceiptUploaded, setIsOptReceiptUploaded] = useState<boolean>(false);
+
+  const handleOptReceiptChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files && event.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setoptReceiptSrc(url);
+      // formik.setFieldValue('workAuthfile', file); // ？？？？？
+      setIsOptReceiptUploaded(true);  // 更新状态
+    }
+  };
+
+  const previewAvatar = () => {
+    window.open(avatarSrc, '_blank');
+  };
+
+  const previewOptReceipt = () => {
+    window.open(optReceiptSrc, '_blank');
+  };
+
   // useEffect(() => {
   //   console.log("isPermanentResident:", formik.values.isPermanentResident);
   //   console.log("employment.visaTitle:", formik.values.employment.visaTitle);
@@ -215,6 +250,7 @@ const OnBoardingPage: FC = () => {
               colorScheme="red"
               size="sm"
               // TODO: show feedback
+              onClick={() => alert("Under development")}
             >
               See Feedback
             </Button>
@@ -222,7 +258,8 @@ const OnBoardingPage: FC = () => {
               colorScheme="blue"
               size="sm"
               marginLeft="3"
-              // TODO: onClick={handleReSubmission}
+              // TODO: 
+              onClick={() => alert("Under development")}
             >
               Re-Submit Application
             </Button>
@@ -254,29 +291,32 @@ const OnBoardingPage: FC = () => {
       )}
 
       {onboardingStatus === "Approved" && (
-        <Alert
-          status="success"
-          display="flex"
-          flexDirection="row"
-          justifyContent="space-between"
-          padding="0.75rem 1.5rem"
-        >
-          <Box display="flex" flexDirection="row">
-            <AlertIcon />
-            Please wait for HR to review your application.
-          </Box>
+        // 应该是直接跳转到personal info界面
+        <Redirect to="/employee-infos" />
 
-          <Button
-            colorScheme="teal"
-            size="sm"
-            // TODO: onClick
-          >
-            Review Infos
-          </Button>
-        </Alert>
+        // <Alert
+        //   status="success"
+        //   display="flex"
+        //   flexDirection="row"
+        //   justifyContent="space-between"
+        //   padding="0.75rem 1.5rem"
+        // >
+        //   <Box display="flex" flexDirection="row">
+        //     <AlertIcon />
+        //     Please wait for HR to review your application.
+        //   </Box>
+
+        //   <Button
+        //     colorScheme="teal"
+        //     size="sm"
+        //     // TODO: 
+        //     onClick={() => alert("Under development")}
+        //   >
+        //     Review Infos
+        //   </Button>
+        // </Alert>
       )}
 
-      {/* {resubmit && ( */}
       {onboardingStatus === "Never submitted" && (
         <Box>
           <Heading as="h1" mb="4">
@@ -387,21 +427,21 @@ const OnBoardingPage: FC = () => {
                     <Avatar
                       size="lg"
                       // hardcode here
-                      src={
-                        formik.values.profilePicture ||
-                        "https://bit.ly/dan-abramov"
-                      }
+                      // src={
+                      //   formik.values.profilePicture ||
+                      //   "https://bit.ly/dan-abramov"
+                      // }
+                      src={avatarSrc}
                     />
                   </Center>
                   <Center>
-                    <Button
-                      size="sm"
-                      colorScheme="red"
-                      onClick={() => alert("Under development")}
-                      // TODO:
-                    >
-                      Upload Avatar
-                    </Button>
+                    <Input
+                      type="file"
+                      accept=".jpg,.jpeg,.png"
+                      width="80%"
+                      height="50%"
+                      onChange={handleFileChange}
+                    />
                   </Center>
                 </Stack>
               </FormControl>
@@ -410,8 +450,6 @@ const OnBoardingPage: FC = () => {
                 <FormLabel>Email</FormLabel>
                 <Input
                   type="text"
-                  //   TODO: value这里是传进来的值，不能修改的
-                  // Done.
                   value={email || "placeholder"}
                   {...inputStyles}
                 />
@@ -729,10 +767,16 @@ const OnBoardingPage: FC = () => {
                   {formik.values.employment?.visaTitle === "f1" ? (
                     <HStack>
                       <FormControl>
-                        <Input type="file" />
-                        <Button size="sm" colorScheme="red">
+                        <Input 
+                          type="file" 
+                          accept=".pdf"
+                          width="80%"
+                          height="100%"
+                          onChange={handleOptReceiptChange} 
+                        />
+                        {/* <Button size="sm" colorScheme="red">
                           Upload OPT Receipt
-                        </Button>
+                        </Button> */}
                       </FormControl>
                     </HStack>
                   ) : formik.values.employment?.visaTitle === "other" ? (
@@ -1044,7 +1088,27 @@ const OnBoardingPage: FC = () => {
                 </FormControl>
               </HStack>
 
-              {/* TODO: Summary */}
+              {/* ----- summary ----- */}
+              <Divider />
+              <Heading as="h3" fontSize="xl">
+                Summary of Uploaded Files
+              </Heading>
+              <VStack spacing={4} align="left">
+                <Text size="lg">
+                    Avatar: {!isAvatarUploaded ? 'not applicable' : (
+                      <Button size="md" onClick={previewAvatar}>
+                        Preview Avatar
+                      </Button>
+                    )}
+                </Text>
+                <Text size="lg">
+                    OPT Receipt: {formik.values.employment?.visaTitle === 'f1' ? (!isOptReceiptUploaded ? 'not applicable' : (
+                      <Button size="md" onClick={previewOptReceipt}>
+                        Preview OPT Receipt
+                      </Button>
+                    )) : 'No need to upload'}
+                </Text>
+              </VStack>
 
               <Button
                 colorScheme="blue"
@@ -1059,7 +1123,6 @@ const OnBoardingPage: FC = () => {
           </Box>
         </Box>
       )}
-      {/* )} */}
     </Box>
   );
 };

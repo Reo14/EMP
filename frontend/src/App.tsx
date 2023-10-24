@@ -22,7 +22,7 @@ import EmployeeList from "./pages/AllEmployeesPage";
 import ReviewOnboarding from "./pages/ReviewOnboarding";
 
 const App: FC = () => {
-  const [navSize, setNavSize] = useState("large");
+  const [navSize, setNavSize] = useState("small");
 
   return (
     <Router>
@@ -53,7 +53,6 @@ const App: FC = () => {
             <Route path="/hrtest" element={<HRtest />} />
             <Route path="/success" element={<LoggedIn />} />
             <Route path="/error" element={<ErrorPage />} />
-            <Route path="*" element={<ErrorPage />} />
           </Routes>
         </GridItem>
         <GridItem bg="#111827" area={"footer"}>
