@@ -23,7 +23,7 @@ async function getAllEmployeeSummaries(req, res) {
         emergencyContact: employee.emergencyContact,
         SSN: employee.SSN,
         DOB: employee.DOB,
-        workAuthorization: employee.employment,
+        employment: employee.employment,
         address: employee.address,
         Contact: employee.Contact,
         email: employee.email,

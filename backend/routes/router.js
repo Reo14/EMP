@@ -32,7 +32,6 @@ router.put("/update-info", updateInfo);
 router.get("/personal-information/:username", getInfo);
 
 
-
 // HR Flow
 router.get("/hr/all-employees", getAllEmployeeSummaries);
 router.post("/hr/registration/send", generateRegistrationToken);

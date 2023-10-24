@@ -2,10 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Flex, Input, Button, Text, Stack, Heading, Box, Image } from '@chakra-ui/react';
 import { EmployeeInfo as Employee } from '../types/employee';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { getOnboardingStatus } from '../store/reducers/onboarding';
 
 const VisaStatusManagementPage: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const dispatch = useDispatch();
+  const onboardingStatus = useSelector((state: { onboarding: {onboardingState} }) => state.onboarding.onboardingStatus);
+
+
 
   // Fetch employees from the backend API
   useEffect(() => {
@@ -22,7 +28,10 @@ const VisaStatusManagementPage: React.FC = () => {
     };
 
     fetchEmployees();
-  }, []);
+
+    dispatch(getOnboardingStatus(Employee.userId)); 
+
+  }, [dispatch]);
 
   const calculateRemainingDays = (endDate: string) => {
     const today = new Date();
@@ -120,19 +129,20 @@ const VisaStatusManagementPage: React.FC = () => {
           <Box key={employee.userId} borderWidth="1px" p="4" borderRadius="md" width="100%">
             <Text fontWeight="bold">{`${employee.firstName} ${employee.lastName}`}</Text>
             <Text>
-            <b>Title:</b> {employee.employment ? employee.employment.visaTitle : 'Not specified'}
+                <b>Title:</b> {employee.employment?.visaTitle || 'Not specified'}
             </Text>
             <Text>
-            <b>Start Date:</b> {employee.employment ? employee.employment.startDate.toString() : 'Not specified'}
+              <b>Start Date:</b> {employee.employment?.startDate ? new Date(employee.employment.startDate).toLocaleDateString() : 'Not specified'}
             </Text>
             <Text>
-            <b>End Date:</b> {employee.employment ? employee.employment.endDate.toString() : 'Not specified'}
+              <b>End Date:</b> {employee.employment?.endDate ? new Date(employee.employment.endDate).toLocaleDateString() : 'Not specified'}
             </Text>
             <Text>
-            <b>Number of Days Remaining:</b> {employee.employment ? calculateRemainingDays(employee.employment.endDate.toString()) : 'Not specified'}
+              <b>Number of Days Remaining:</b> {employee.employment?.endDate ? calculateRemainingDays(new Date(employee.employment.endDate).toLocaleDateString()) : 'Not specified'}
             </Text>
+
             <Text mt="2">
-              <b>Next Steps:</b> {getNextStepsDescription(employee)}
+                <b>Next Steps:</b> {getNextStepsDescription(employee)}
             </Text>
 
             {employee.nextStep === 'HR Approval' && (
