@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
 import { useFormik } from "formik";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
@@ -26,11 +26,16 @@ import { AppDispatch, RootState } from "../store/configureStore";
 import { EmployeeInfo } from "../types/employee";
 
 const ReviewOnboarding = () => {
-
   const navigate = useNavigate();
   const formData = useSelector<RootState, EmployeeInfo>(
     (state) => state.onboarding.data as EmployeeInfo
   );
+  const isPermanentResident =
+    formData.employment.visaTitle === "green-card" ||
+    formData.employment.visaTitle === "citizen"
+      ? "Yes"
+      : "No";
+  useEffect(() => console.log("formData: ", formData), [formData]);
   const inputStyles = {
     mt: "2",
     variant: "outline",
@@ -42,7 +47,7 @@ const ReviewOnboarding = () => {
       boxShadow: "0 0 0 1px #3182ce",
     },
   };
-  
+
   return (
     <Box p={{ base: 2, md: 4 }} maxW="800px" mx="auto" textColor="black">
       <Button colorScheme="blue" onClick={() => navigate(-1)}>
@@ -149,11 +154,7 @@ const ReviewOnboarding = () => {
 
               <FormControl isRequired isDisabled>
                 <FormLabel>Date of Birth</FormLabel>
-                <SingleDatepicker
-                  name="DOB"
-                  date={formData.DOB}
-                  onDateChange={() => {}}
-                />
+                <Input value={formData.DOB.toString().slice(0, 10)} />
               </FormControl>
             </HStack>
 
@@ -248,13 +249,13 @@ const ReviewOnboarding = () => {
             </Heading>
             <FormControl isRequired isDisabled>
               <FormLabel>Permanent resident or citizen of the U.S.?</FormLabel>
-              <Select value={formData.isPermanentResident} {...inputStyles}>
+              <Select value={isPermanentResident} {...inputStyles}>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
               </Select>
             </FormControl>
 
-            {formData.isPermanentResident === "Yes" ? (
+            {isPermanentResident === "Yes" ? (
               <FormControl isRequired isDisabled>
                 <FormLabel>Type</FormLabel>
                 <Select value={formData.employment.visaTitle} {...inputStyles}>
@@ -262,7 +263,7 @@ const ReviewOnboarding = () => {
                   <option value="citizen">Citizen</option>
                 </Select>
               </FormControl>
-            ) : formData.isPermanentResident === "No" ? (
+            ) : isPermanentResident === "No" ? (
               <>
                 <FormControl isRequired isDisabled>
                   <FormLabel>What is your work authorization?</FormLabel>
@@ -301,19 +302,19 @@ const ReviewOnboarding = () => {
                 <HStack width="100%">
                   <FormControl isRequired isDisabled>
                     <FormLabel>Start Date</FormLabel>
-                    <SingleDatepicker
-                      name="employment.startDate"
-                      date={formData.employment.startDate}
-                      onDateChange={() => {}}
+                    <Input
+                      value={formData.employment.startDate
+                        .toString()
+                        .slice(0, 10)}
                     />
                   </FormControl>
 
                   <FormControl isRequired isDisabled>
                     <FormLabel>End Date</FormLabel>
-                    <SingleDatepicker
-                      name="employment.endDate"
-                      date={formData.employment.endDate}
-                      onDateChange={() => {}}
+                    <Input
+                      value={formData.employment.endDate
+                        .toString()
+                        .slice(0, 10)}
                     />
                   </FormControl>
                 </HStack>
