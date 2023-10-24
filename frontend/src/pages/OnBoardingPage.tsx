@@ -263,15 +263,16 @@ const OnBoardingPage: FC = () => {
         >
           <Box display="flex" flexDirection="row">
             <AlertIcon />
-            Please wait for HR to review your application.
+            Your application has been approved. Go to your profile page.
           </Box>
 
           <Button
             colorScheme="teal"
             size="sm"
             // TODO: onClick
+            onClick={() => navigate("/employee-infos")}
           >
-            Review Infos
+            Go to Profile
           </Button>
         </Alert>
       )}
