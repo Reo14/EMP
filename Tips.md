@@ -63,3 +63,15 @@ onboardingPage经历了大改，现使用Formik库管理表单状态，之后的
 2. 模仿大改后的onboardingPage，修改personal info page
 
 3. personal info没和userId绑定
+
+## Xiaoxuan
+1. Sidebar已经绑定身份区别，最后结合一下hr那部分页面跳转就行，最后可以测试一下，sidebar有任何问题或者需要添加的 随时找我；
+
+2. nboardingPage增加了头像image和opt receipt document上传，document这块可能后端需要修改，同样需要测试。
+
+待办：
+1. personal info page和userId绑定
+
+2. personal info page增加document那里
+
+3. 增加auth Layout，目的是防止用户自己输入url，以及url保护
