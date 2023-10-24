@@ -12,7 +12,7 @@ interface EmployeeState {
 }
 
 interface EmployeeInfoResponse {
-  personalInformation: EmployeeInfo;
+  employee: EmployeeInfo;
 }
 
 const initialState: EmployeeState = {
@@ -33,7 +33,7 @@ export const fetchEmployeeInfo = createAsyncThunk<
     const res = await axios.get<EmployeeInfoResponse>(
       `http://localhost:3000/personal-information/${userId}`
     );
-    return res.data.personalInformation;
+    return res.data.employee;
   } catch (err) {
     const axiosErr = err as AxiosError<ErrorResponse>;
     if (!axiosErr.response || !axiosErr.response.data.error) {

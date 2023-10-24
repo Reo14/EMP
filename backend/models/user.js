@@ -6,6 +6,12 @@ const userSchema = new mongoose.Schema({
   email: { type: String, unique: true, required: true },
   role: { type: String, enum: ["Employee", "HR"], default: "Employee" },
 
+  onboardStatus: {
+    type: String,
+    enum: ["Never submitted", "Rejected", "Pending", "Approved"],
+    default: "Never submitted",
+  },
+
   registrationToken: {
     type: String,
     unique: true,
@@ -17,18 +23,29 @@ const userSchema = new mongoose.Schema({
     default: "Not Submitted",
   },
 
-  emergencyContact: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'EmergencyContact' 
-  }],
+  emergencyContact: {
+    firstName: String,
+    lastName: String,
+    middleName: String,
+    phone: String,
+    email: String,
+    relationship: String,
+  },
 
-  reference: { type: mongoose.Schema.Types.ObjectId, ref: "Reference" },
+  reference: {
+    firstName: String,
+    lastName: String,
+    middleName: String,
+    phone: String,
+    email: String,
+    relationship: String,
+  },
 
   userId: { type: String, default: generateID, unique: true },
-  hrId: { type: String, unique: true }, // Reference to his HR
+  hrId: {type: String, unique: false}, // Reference to his HR
 
-  firstName: { type: String, required: true },
-  lastName: { type: String, reuqire: true },
+  firstName: { type: String },
+  lastName: { type: String },
   middleName: String,
   preferredName: String,
   profilePicture: { type: String }, // 请在Chakra UI库中给它设置一个icon作为默认头像
@@ -47,7 +64,7 @@ const userSchema = new mongoose.Schema({
   },
 
   SSN: { type: String, unqiue: true },
-  DOB: { type: String }, // 生日不需要unique
+  DOB: String, // 生日不需要unique
   gender: {
     type: String,
     enum: ["Male", "Female", "I do not want to answer"],
@@ -62,8 +79,8 @@ const userSchema = new mongoose.Schema({
 
   documents: [
     {
-      type: { type: String, required: true }, // Type of document (e.g., 'driverLicense', 'workAuthorization')
-      file: { type: String }, // File path or URL
+      type: String, // Type of document (e.g., 'driverLicense', 'workAuthorization')
+      file: String, // File path or URL
     },
   ],
 });

@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 function verifyToken(req, res, next) {
   const authHeader = req.headers.authorization;
   let token = null;
-
+  console.log("authHeader: ", authHeader);
   if (authHeader && authHeader.startsWith("Bearer ")) {
     token = authHeader.split(" ")[1];
   }
@@ -16,6 +16,7 @@ function verifyToken(req, res, next) {
   // Verify the token
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
+      console.log("verifyToken: err: ", err);
       return res.status(401).json({ error: "Unauthorized: Invalid token" });
     }
 

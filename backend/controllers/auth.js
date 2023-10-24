@@ -3,11 +3,16 @@ const bcrypt = require("bcrypt");
 const User = require("../models/user");
 require("dotenv").config();
 
-// sign up
+// sign up (就是创建personal info)
 async function signup(req, res) {
   try {
-    const { username, password, email, firstName, lastName } = req.body;
+    const { username, password, email } = req.body;
     console.log("auth.js signup: req.body", req.body);
+
+    const token = req.headers.authorization.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
 
     const existingUser = await User.findOne({ email });
     console.log("auth.js signUp: existing user", existingUser);
@@ -23,22 +28,18 @@ async function signup(req, res) {
       username,
       password: hashedPassword,
       email,
-      firstName,
-      lastName,
-      documents: [],
+      registrationToken: token,
+      registrationStatus: "Submitted",
     });
 
     await newUser.save();
     console.log("New user", newUser);
 
-    // 不需要再生成token了吧
-    // const token = jwt.sign(newUser, process.env.JWT_SECRET, {
-    //   expiresIn: "1h", // Token expiration time
-    // });
-
     res.status(201).json({
       message: "Signup successful",
-      userId: newUser.userId
+      userId: newUser.userId,
+      email: newUser.email,
+      username: newUser.username,
     });
   } catch (error) {
     console.log("auth.js: signUp error: ", error);
