@@ -30,7 +30,6 @@ async function signup(req, res) {
       email,
       registrationToken: token,
       registrationStatus: "Submitted",
-      hrId: "000000"
     });
 
     await newUser.save();

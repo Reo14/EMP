@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema({
   },
 
   userId: { type: String, default: generateID, unique: true },
-  hrId: String, // Reference to his HR
+  hrId: {type: String, unique: false}, // Reference to his HR
 
   firstName: { type: String },
   lastName: { type: String },

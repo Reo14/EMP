@@ -470,7 +470,7 @@ const OnBoardingPage: FC = () => {
                     name="DOB"
                     date={formik.values.DOB}
                     onDateChange={(selectedDate) => {
-                      formik.setFieldValue("DOB", selectedDate.toISOString());
+                      formik.setFieldValue("DOB", selectedDate);
                     }}
                   />
                   {formik.touched.DOB && formik.errors.DOB ? (
@@ -762,7 +762,7 @@ const OnBoardingPage: FC = () => {
                         onDateChange={(selectedDate) => {
                           formik.setFieldValue(
                             "employment.startDate",
-                            selectedDate.toISOString()
+                            selectedDate
                           );
                         }}
                       />
@@ -788,7 +788,7 @@ const OnBoardingPage: FC = () => {
                         onDateChange={(selectedDate) => {
                           formik.setFieldValue(
                             "employment.endDate",
-                            selectedDate.toISOString()
+                            selectedDate
                           );
                         }}
                       />
