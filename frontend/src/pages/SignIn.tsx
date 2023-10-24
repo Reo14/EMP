@@ -14,6 +14,9 @@ import {
 } from "@chakra-ui/react";
 import React, { FC, useState, ChangeEvent, KeyboardEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { signIn } from "../store/reducers/auth";
 import Prompt from "../components/Prompt";
@@ -30,6 +33,36 @@ const SignIn: FC = () => {
   const [usernameError, setUsernameError] = useState("");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
+
+  const validationSchema = Yup.object({
+    username: Yup.string().required("This field is required"),
+    password: Yup.string().required("This field is required"),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+      password: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: async (values) => {
+      // adjusted to use formik values
+      try {
+        await dispatch(signIn(values)).unwrap();
+        const { onBoardStatus } = await dispatch(
+          getOnboardingData(values.username)
+        ).unwrap();
+        alert("Signed In Successfully");
+        if (onBoardStatus === "Approved") {
+          navigate("/employee-infos");
+        } else {
+          navigate("/employee-onboarding");
+        }
+      } catch (error) {
+        console.log("login error: ", error);
+      }
+    },
+  });
 
   const inputStyles = {
     mt: "2",
@@ -55,65 +88,9 @@ const SignIn: FC = () => {
 
   const handleClick = () => setShowPassword(!showPassword);
 
-  const onUsernameBlur = () => {
-    if (!username) {
-      setUsernameError("This field is required");
-    }
-  };
-
-  const onPasswordBlur = () => {
-    if (!password) {
-      setPasswordError("This field is required");
-    }
-  };
-
-  const onUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setUsername(e.target.value);
-    if (!e.target.value) {
-      setUsernameError("This field is required");
-    } else {
-      setUsernameError("");
-    }
-  };
-
-  const onPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-    if (!e.target.value) {
-      setPasswordError("This field is required");
-    } else {
-      setPasswordError("");
-    }
-  };
-
-  const handleLogin = async () => {
-    if (!username) {
-      setUsernameError("This field is required");
-      return;
-    }
-    if (!password) {
-      setPasswordError("This field is required");
-      return;
-    }
-
-    try {
-      await dispatch(signIn({ username, password })).unwrap();
-      const { onBoardStatus } = await dispatch(
-        getOnboardingData(username)
-      ).unwrap();
-      alert("Signed In Successfully");
-      if (onBoardStatus === "Approved") {
-        navigate("/employee-infos");
-      } else {
-        navigate("/employee-onboarding");
-      }
-    } catch (error) {
-      console.log("login error: ", error);
-    }
-  };
-
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Enter") {
-      handleLogin();
+      formik.handleSubmit();
     }
   };
 
@@ -121,53 +98,58 @@ const SignIn: FC = () => {
     <>
       <Box display="flex" justifyContent="center" alignItems="center" h="100%">
         <MyCard title="Welcome">
-          <Box mb="5">
-            <Text textColor="gray">Username:</Text>
-            <Input
-              type="text"
-              value={username}
-              onChange={onUsernameChange}
-              onKeyDown={handleKeyDown}
-              onBlur={onUsernameBlur}
-              placeholder="Enter your username"
-              {...inputStyles}
-              borderColor={usernameError ? "red.500" : "gray.300"}
-            />
-            {usernameError && (
-              <Text color="red.500" fontSize="sm" float="right">
-                {usernameError}
-              </Text>
-            )}
-          </Box>
-          <Box mb="5">
-            <Text textColor="gray">Password:</Text>
-            <InputGroup>
+          <form onSubmit={formik.handleSubmit}>
+            <Box mb="5">
+              <Text textColor="gray">Username:</Text>
               <Input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={onPasswordChange}
-                onKeyDown={handleKeyDown}
-                onBlur={onPasswordBlur}
-                placeholder="Enter your password"
+                type="text"
+                {...formik.getFieldProps("username")}
+                placeholder="Enter your username"
                 {...inputStyles}
+                borderColor={
+                  formik.errors.username && formik.touched.username
+                    ? "red.500"
+                    : "gray.300"
+                }
               />
-              <InputRightElement mt="5px" mr="15px">
-                <Button color="gray.500" onClick={handleClick}>
-                  <Text decoration="underline">
-                    {showPassword ? "Hide" : "Show"}
-                  </Text>
-                </Button>
-              </InputRightElement>
-            </InputGroup>
-            {passwordError && (
-              <Text color="red.500" fontSize="sm" mt="1" float="right">
-                {passwordError}
-              </Text>
-            )}
-          </Box>
-          <Button {...buttonStyles} onClick={handleLogin}>
-            Sign In
-          </Button>
+              {formik.errors.username && formik.touched.username && (
+                <Text color="red.500" fontSize="sm" float="right">
+                  {formik.errors.username}
+                </Text>
+              )}
+            </Box>
+            <Box mb="5">
+              <Text textColor="gray">Password:</Text>
+              <InputGroup>
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  {...formik.getFieldProps("password")}
+                  placeholder="Enter your password"
+                  {...inputStyles}
+                  borderColor={
+                    formik.errors.username && formik.touched.username
+                      ? "red.500"
+                      : "gray.300"
+                  }
+                />
+                <InputRightElement mt="5px" mr="15px">
+                  <Button color="gray.500" onClick={handleClick}>
+                    <Text decoration="underline">
+                      {showPassword ? "Hide" : "Show"}
+                    </Text>
+                  </Button>
+                </InputRightElement>
+              </InputGroup>
+              {formik.errors.password && formik.touched.password && (
+                <Text color="red.500" fontSize="sm" float="right">
+                  {formik.errors.password}
+                </Text>
+              )}
+            </Box>
+            <Button {...buttonStyles} type="submit" onKeyDown={handleKeyDown}>
+              Sign In
+            </Button>
+          </form>
           <Box
             display="flex"
             justifyContent="space-between"
