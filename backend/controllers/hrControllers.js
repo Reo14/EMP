@@ -162,11 +162,11 @@ async function getRegistrationTokenHistory(req, res) {
 // 审批入职申请（批准或拒绝）
 async function processOnboardingApplication(req, res) {
   try {
-    const { applicationId } = req.params;
+    const { employeeId } = req.params;
     const { feedback, action } = req.body;
 
     // 获取入职申请
-    const application = await OnboardingApplication.findById(applicationId);
+    const application = await OnboardingApplication.findById(employeeId);
     if (!application) {
       return res.status(404).json({ message: "Application not found" });
     }

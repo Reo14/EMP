@@ -34,10 +34,10 @@ router.get("/personal-information/:username", getInfo);
 
 
 // HR Flow
-// router.get("/hr/all-employees", getAllEmployeeSummaries);
+router.get("/hr/all-employees", getAllEmployeeSummaries);
 router.post("/hr/registration/send", generateRegistrationToken);
-// router.get("/hr/registration/history", getRegistrationTokenHistory);
-// router.get("/hr/onboardapplication", getAllOnboardingApplications);
-// router.put("/hr/onboardapplication/process", processOnboardingApplication);
+router.get("/hr/registration/history", getRegistrationTokenHistory);
+router.get("/hr/onboardapplication", getAllOnboardingApplications);
+router.put("/hr/onboardapplication/process/:employeeId", processOnboardingApplication);
 
 module.exports = router;

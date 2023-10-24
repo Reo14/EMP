@@ -19,6 +19,8 @@ import PersonalInfoPage from "./pages/PersonalInfoPage";
 import EmployeeVisaPage from "./pages/EmployeeVisaPage";
 import EmployeeList from "./pages/AllEmployeesPage";
 import ReviewOnboarding from "./pages/ReviewOnboarding";
+import VisaStatusManagementPage from "./pages/VisaManagementPage"
+import HiringManagementPage from "./pages/HiringManagementPage"
 
 const App: FC = () => {
   return (
@@ -44,6 +46,8 @@ const App: FC = () => {
             <Route path="/employee-visa" element={<EmployeeVisaPage />} />
 
             <Route path="/hr/all-employees" element={<EmployeeList />} />
+            <Route path="hr/hiring-management" element={<HiringManagementPage />} />
+            <Route path="hr/visa-management" element={<VisaStatusManagementPage />} />
             <Route path="/hrtest" element={<HRtest />} />
             <Route path="/success" element={<LoggedIn />} />
             <Route path="/error" element={<ErrorPage />} />
