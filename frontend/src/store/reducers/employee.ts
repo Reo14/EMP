@@ -77,6 +77,9 @@ const employeeSlice = createSlice({
         state.info.employment.endDate =
           state.info.employment.endDate.toISOString();
     },
+    reset: () => {
+      return { ...initialState };
+    },
   },
   extraReducers: (builder) => {
     // fetch employee info
@@ -114,7 +117,7 @@ const employeeSlice = createSlice({
   },
 });
 
-export const { date2string } = employeeSlice.actions;
+export const { date2string, reset } = employeeSlice.actions;
 
 // selectors
 export const isHR = (state: { employee: EmployeeState }) =>

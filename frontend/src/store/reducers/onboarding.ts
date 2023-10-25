@@ -97,6 +97,9 @@ const onboardSlice = createSlice({
         state.data.employment.endDate =
           state.data.employment.endDate.toISOString();
     },
+    reset: () => {
+      return { ...initialState };
+    },
   },
   extraReducers: (builder) => {
     // submit onboarding
@@ -141,5 +144,5 @@ const onboardSlice = createSlice({
   },
 });
 
-export const { date2string } = onboardSlice.actions;
+export const { date2string, reset } = onboardSlice.actions;
 export default onboardSlice.reducer;
