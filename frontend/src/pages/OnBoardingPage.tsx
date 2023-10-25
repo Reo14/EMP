@@ -15,7 +15,7 @@ import {
   Select,
   Stack,
   VStack,
-  Text
+  Text,
 } from "@chakra-ui/react";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
 import { useFormik } from "formik";
@@ -26,6 +26,7 @@ import * as Yup from "yup";
 import { AppDispatch, RootState } from "../store/configureStore";
 import { submitOnboarding } from "../store/reducers/onboarding";
 import { Document } from "../types/employee";
+import { initialValues, validationSchema } from "../utils/formikConfig";
 
 const OnBoardingPage: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -45,131 +46,13 @@ const OnBoardingPage: FC = () => {
     validateOnChange: false,
     initialValues: {
       // properties from registeration
+      ...initialValues,
       username,
       email,
       userId,
       onboardStatus: "Pending",
-      // properties are to be filled in
-      firstName: "",
-      lastName: "",
-      middleName: "",
-      preferredName: "",
-      profilePicture: "",
-      SSN: "",
-      DOB: new Date(),
-      gender: "",
-      Contact: {
-        cellPhoneNumber: "",
-        workPhoneNumber: "",
-      },
-      address: {
-        buildingAptNumber: "",
-        streetName: "",
-        city: "",
-        state: "",
-        zip: "",
-      },
-      isPermanentResident: "",
-      employment: {
-        visaTitle: "",
-        startDate: new Date(),
-        endDate: new Date(),
-      },
-      reference: {
-        firstName: "",
-        lastName: "",
-        middleName: "",
-        phone: "",
-        email: "",
-        relationship: "",
-        employeeId: "000000", // Hardcode to the default HR
-      },
-      emergencyContact: {
-        firstName: "",
-        lastName: "",
-        middleName: "",
-        email: "",
-        phone: "",
-        relationship: "",
-        employeeId: "000000", // Hardcode to the default HR
-      },
-      documents: []
     },
-    validationSchema: Yup.object({
-      firstName: Yup.string().required("First Name is required"),
-      lastName: Yup.string().required("Last Name is required"),
-      SSN: Yup.string()
-        .matches(/^\d{3}-\d{2}-\d{4}$/, "SSN must be in the format xxx-yy-zzzz")
-        .required("SSN is required"),
-      DOB: Yup.date()
-        .max(new Date(), "Date of Birth cannot be in the future")
-        .required("Date of Birth is required"),
-      Contact: Yup.object().shape({
-        cellPhoneNumber: Yup.string()
-          .matches(
-            /^\d{3}-\d{3}-\d{4}$/,
-            "Phone number must be in the format xxx-xxx-xxxx"
-          )
-          .required("Phone number is required"),
-      }),
-      gender: Yup.string().required("Gender is required"),
-      address: Yup.object().shape({
-        buildingAptNumber: Yup.string().required(
-          "Builidng Address is required"
-        ),
-        streetName: Yup.string().required("Street Address is required"),
-        city: Yup.string().required("City Address is required"),
-        state: Yup.string().required("State Address is required"),
-        zip: Yup.string().required("Zip Address is required"),
-      }),
-      isPermanentResident: Yup.string()
-        .oneOf(["Yes", "No"], "Invalid selection")
-        .required("This field is required"),
-      employment: Yup.object().shape({
-        visaTitle: Yup.string().when(
-          "isPermanentResident",
-          ([isPermanentResident], schema) => {
-            if (isPermanentResident === "Yes") {
-              return schema.required("Visa Title is required");
-            } else {
-              return schema.required("Visa Title is required");
-            }
-          }
-        ),
-        startDate: Yup.date().when(
-          "isPermanentResident",
-          ([isPermanentResident], schema) => {
-            if (isPermanentResident === "No") {
-              return schema
-                .max(new Date(), "Start date cannot be in the future")
-                .required("Start Date is required");
-            }
-            return schema.notRequired().nullable();
-          }
-        ),
-        endDate: Yup.date().when(
-          "isPermanentResident",
-          ([isPermanentResident], schema) => {
-            if (isPermanentResident === "No") {
-              return schema
-                .min(new Date(), "End date cannot be in the past")
-                .required("End Date is required");
-            }
-            return schema.notRequired().nullable();
-          }
-        ),
-      }),
-      emergencyContact: Yup.object().shape({
-        firstName: Yup.string().required("First Name is required"),
-        lastName: Yup.string().required("Last Name is required"),
-        relationship: Yup.string().required("Relationship is required"),
-      }),
-      reference: Yup.object().shape({
-        firstName: Yup.string().required("First Name is required"),
-        lastName: Yup.string().required("Last Name is required"),
-        relationship: Yup.string().required("Relationship is required"),
-      }),
-    }),
+    validationSchema: validationSchema,
     onSubmit: (values) => {
       console.log(values);
       dispatch(submitOnboarding(values));
@@ -179,7 +62,9 @@ const OnBoardingPage: FC = () => {
   const [avatarSrc, setAvatarSrc] = useState("https://bit.ly/dan-abramov");
   const [isAvatarUploaded, setIsAvatarUploaded] = useState<boolean>(false);
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
       // 为了浏览上传的image
@@ -188,21 +73,24 @@ const OnBoardingPage: FC = () => {
       // 转换文件为Base64编码的字符串，为了存入后端及其它地方调用
       const fileBase64 = await toBase64(file);
       // 将Base64编码的字符串设置为profilePicture字段的值
-      formik.setFieldValue('profilePicture', fileBase64);
+      formik.setFieldValue("profilePicture", fileBase64);
       setIsAvatarUploaded(true);
     }
   };
 
   const [optReceiptSrc, setoptReceiptSrc] = useState("");
-  const [isOptReceiptUploaded, setIsOptReceiptUploaded] = useState<boolean>(false);
+  const [isOptReceiptUploaded, setIsOptReceiptUploaded] =
+    useState<boolean>(false);
 
-  const handleOptReceiptChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOptReceiptChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
       // console.log(file)
       const url = URL.createObjectURL(file);
       setoptReceiptSrc(url);
-      formik.setFieldValue('workAuthfile', file);
+      formik.setFieldValue("workAuthfile", file);
       // 转换文件为 Base64 编码字符串
       const fileBase64 = await toBase64(file);
       // 获取当前的 documents 数组
@@ -215,25 +103,26 @@ const OnBoardingPage: FC = () => {
       // 创建一个新的数组，包含当前的文档和新的文档
       const newDocuments = currentDocuments.concat(newDocument);
       // 将新数组设置回 formik 的 documents 字段
-      formik.setFieldValue('documents', newDocuments);
-      setIsOptReceiptUploaded(true);  // 更新状态
+      formik.setFieldValue("documents", newDocuments);
+      setIsOptReceiptUploaded(true); // 更新状态
     }
   };
 
   // 定义一个辅助函数来转换文件为Base64编码字符串
-  const toBase64 = (file: File) => new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve((reader.result as string).split(',')[1]);  // 仅获取Base64编码的部分
-    reader.onerror = error => reject(error);
-  });
+  const toBase64 = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve((reader.result as string).split(",")[1]); // 仅获取Base64编码的部分
+      reader.onerror = (error) => reject(error);
+    });
 
   const previewAvatar = () => {
-    window.open(avatarSrc, '_blank');
+    window.open(avatarSrc, "_blank");
   };
 
   const previewOptReceipt = () => {
-    window.open(optReceiptSrc, '_blank');
+    window.open(optReceiptSrc, "_blank");
   };
 
   // useEffect(() => {
@@ -286,7 +175,7 @@ const OnBoardingPage: FC = () => {
               colorScheme="blue"
               size="sm"
               marginLeft="3"
-              // TODO: 
+              // TODO:
               onClick={() => alert("Under development")}
             >
               Re-Submit Application
@@ -318,7 +207,7 @@ const OnBoardingPage: FC = () => {
         </Alert>
       )}
 
-      {/* 应该是直接跳转到personal info界面 */} 
+      {/* 应该是直接跳转到personal info界面 */}
       {onboardingStatus === "Approved" && (
         <Alert
           status="success"
@@ -335,7 +224,7 @@ const OnBoardingPage: FC = () => {
           <Button
             colorScheme="teal"
             size="sm"
-            // TODO: 
+            // TODO:
             onClick={() => alert("Under development")}
           >
             Review Infos
@@ -404,7 +293,7 @@ const OnBoardingPage: FC = () => {
                     onBlur={formik.handleBlur}
                     name="lastName"
                     {...inputStyles}
-                    placeholder="+1 (___) __-___-___"
+                    placeholder="last name"
                   />
                   {formik.touched.lastName && formik.errors.lastName ? (
                     <FormErrorMessage>
@@ -715,6 +604,11 @@ const OnBoardingPage: FC = () => {
                     name="address.zip"
                     {...inputStyles}
                   />
+                  {formik.touched.address?.zip && formik.errors.address?.zip ? (
+                    <FormErrorMessage>
+                      {formik.errors.address?.zip}
+                    </FormErrorMessage>
+                  ) : null}
                 </FormControl>
               </HStack>
 
@@ -806,12 +700,12 @@ const OnBoardingPage: FC = () => {
                   {formik.values.employment?.visaTitle === "f1" ? (
                     <HStack>
                       <FormControl>
-                        <Input 
-                          type="file" 
+                        <Input
+                          type="file"
                           accept=".pdf"
                           width="80%"
                           height="100%"
-                          onChange={handleOptReceiptChange} 
+                          onChange={handleOptReceiptChange}
                         />
                         {/* <Button size="sm" colorScheme="red">
                           Upload OPT Receipt
@@ -1134,18 +1028,28 @@ const OnBoardingPage: FC = () => {
               </Heading>
               <VStack spacing={4} align="left">
                 <Text size="lg">
-                    Avatar: {!isAvatarUploaded ? 'not applicable' : (
-                      <Button size="md" onClick={previewAvatar}>
-                        Preview Avatar
-                      </Button>
-                    )}
+                  Avatar:{" "}
+                  {!isAvatarUploaded ? (
+                    "not applicable"
+                  ) : (
+                    <Button size="md" onClick={previewAvatar}>
+                      Preview Avatar
+                    </Button>
+                  )}
                 </Text>
                 <Text size="lg">
-                    OPT Receipt: {formik.values.employment?.visaTitle === 'f1' ? (!isOptReceiptUploaded ? 'not applicable' : (
+                  OPT Receipt:{" "}
+                  {formik.values.employment?.visaTitle === "f1" ? (
+                    !isOptReceiptUploaded ? (
+                      "not applicable"
+                    ) : (
                       <Button size="md" onClick={previewOptReceipt}>
                         Preview OPT Receipt
                       </Button>
-                    )) : 'No need to upload'}
+                    )
+                  ) : (
+                    "No need to upload"
+                  )}
                 </Text>
               </VStack>
 

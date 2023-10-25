@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema({
   },
 
   userId: { type: String, default: generateID, unique: true },
-  hrId: {type: String, unique: false}, // Reference to his HR
+  hrId: { type: String, unique: false }, // Reference to his HR
 
   firstName: { type: String },
   lastName: { type: String },
@@ -70,7 +70,7 @@ const userSchema = new mongoose.Schema({
     enum: ["Male", "Female", "I do not want to answer"],
     default: "I do not want to answer",
   },
-
+  isPermanentResident: { type: String, enum: ["Yes", "No"], default: "No" },
   employment: {
     visaTitle: String,
     startDate: Date,

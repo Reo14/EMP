@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const registrationTokenSchema = new mongoose.Schema({
-    email: { type: String, unique: true, required: true },
+    email: { type: String, unique: false, required: true },
     employeeName: String,
     registrationLink: String,
     status: { type: String, enum: ['Submitted', 'Not Submitted'], default: 'Not Submitted' },

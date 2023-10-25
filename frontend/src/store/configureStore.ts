@@ -5,6 +5,7 @@ import storage from "redux-persist/lib/storage";
 import authSlice from "./reducers/auth";
 import employeeSlice from "./reducers/employee";
 import onboardingSlice from "./reducers/onboarding";
+import resetStates from "./middlewares/resetStates";
 
 const persistConfig = {
   key: "root",
@@ -21,6 +22,12 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ["persist/PERSIST"],
+      },
+    }).concat(resetStates),
 });
 
 export const persistor = persistStore(store);

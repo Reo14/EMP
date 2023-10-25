@@ -7,13 +7,6 @@ async function updateInfo(req, res) {
   try {
     // 获取员工信息
     let employeeInfo = req.body;
-
-    // 从请求头中提取并验证令牌
-    const token = req.headers.authorization.split(" ")[1];
-
-    if (!token) {
-      return res.status(400).json({ error: "Invalid token (onboarding)" });
-    }
     console.log("userId", employeeInfo.userId);
 
     const employee = await User.findOneAndUpdate(

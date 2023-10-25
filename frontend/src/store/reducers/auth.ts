@@ -2,7 +2,6 @@ import axios, { AxiosError } from "axios";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { authData } from "../../types/auth";
 
-
 interface authState {
   status: "idle" | "loading" | "failed" | "succeeded";
   isLoggedIn: boolean;
@@ -102,12 +101,14 @@ const authSlice = createSlice({
       state.username = "";
       state.userId = "";
       state.status = "idle";
+      localStorage.removeItem("token");
+      localStorage.removeItem("persist:root");
     },
     setAuth: (state, action) => {
       state.email = action.payload.email;
       state.username = action.payload.username;
       state.userId = action.payload.userId;
-    }
+    },
   },
   extraReducers: (builder) => {
     // query
@@ -127,9 +128,9 @@ const authSlice = createSlice({
       .addCase(signUp.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.isLoggedIn = true;
-        state.userId = action.payload.userId
-        state.email = action.payload.email
-        state.username = action.payload.username
+        state.userId = action.payload.userId;
+        state.email = action.payload.email;
+        state.username = action.payload.username;
       })
       .addCase(signUp.rejected, (state, action) => {
         state.status = "failed";

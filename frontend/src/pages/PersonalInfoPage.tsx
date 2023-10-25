@@ -1,21 +1,33 @@
-import { FC, useState } from "react";
-import { 
-  Heading, 
-  Box, 
-  Button, 
-  FormControl, 
-  FormLabel, 
-  Input, 
-  HStack, 
+import { FC, useEffect, useState } from "react";
+import {
+  Heading,
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  HStack,
   Avatar,
   Select,
   Stack,
   Center,
   Progress,
   ButtonGroup,
-  Flex
+  Flex,
+  FormErrorMessage,
 } from "@chakra-ui/react";
+import { parseISO } from "date-fns";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
+import { FormikProps, useFormik } from "formik";
+import * as Yup from "yup";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store/configureStore";
+import { EmployeeInfo } from "../types/employee";
+import { validationSchema } from "../utils/formikConfig";
+import {
+  editEmployeeInfo,
+  fetchEmployeeInfo,
+} from "../store/reducers/employee";
 
 const inputStyles = {
   mt: "2",
@@ -30,136 +42,151 @@ const inputStyles = {
   autoFocus: true,
 };
 
-const NameForm: FC = () => {
-  const [isEditing, setIsEditing] = useState(false);
+interface Props {
+  formik: FormikProps<EmployeeInfo>;
+}
 
-  const [employeeFirstName, setEmployeeFirstName] = useState("");
-  const [employeeLastName, setEmployeeLastName] = useState("");
-  const [employeeMiddleName, setEmployeeMiddleName] = useState("");
-  const [employeePreferredName, setEmployeePreferredName] = useState("");
-  const [employeeProfilePicture, setEmployeeProfilePicture] = useState("");
-  // const [employeeEmail, setEmployeeEmail] = useState("");
-  const [employeeSSN, setEmployeeSSN] = useState("");
-  // ------ detail DOB Date -----
-  const [employeeDOB, setEmployeeDOB] = useState("");
-  const [employeeDOBDate, setEmployeeDOBDate] = useState(new Date());
-  const [employeeGender, setEmployeeGender] = useState("");
+const NameForm: FC<Props> = ({ formik }) => {
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleEditOnClick = () => {
     setIsEditing(true);
   };
 
   const handleCancelOnClick = () => {
+    formik.resetForm();
     setIsEditing(false);
   };
 
   const handleSaveOnClick = () => {
     // TODO: save logic
     setIsEditing(false);
-  }
+  };
 
   return (
     <>
       <HStack>
-        <Heading as="h3" size="lg">Name Infos</Heading>
+        <Heading as="h3" size="lg">
+          Name Infos
+        </Heading>
         {isEditing ? (
           <>
-            <Button
-              size="sm"
-              colorScheme="blue"
-              onClick={handleCancelOnClick}
-            >
+            <Button size="sm" colorScheme="blue" onClick={handleCancelOnClick}>
               Cancel
             </Button>
-            <Button
-              size="sm"
-              colorScheme="red"
-              onClick={handleSaveOnClick}
-            >
+            <Button size="sm" colorScheme="red" onClick={handleSaveOnClick}>
               Save
             </Button>
           </>
         ) : (
-          <Button
-            size="sm"
-            colorScheme="teal"
-            onClick={handleEditOnClick}
-          >
+          <Button size="sm" colorScheme="teal" onClick={handleEditOnClick}>
             Edit
           </Button>
         )}
       </HStack>
 
       <HStack>
-        <FormControl isRequired>
-        <FormLabel>First Name</FormLabel>
-        <Input
-          type="text"
-          value={employeeFirstName}
-          onChange={(e) => setEmployeeFirstName(e.target.value)}
-          {...inputStyles}
-          placeholder="firstname"
-          isDisabled={!isEditing}
-        />
+        <FormControl
+          isRequired
+          isInvalid={formik.touched.firstName && !!formik.errors.firstName}
+        >
+          <FormLabel>First Name</FormLabel>
+          <Input
+            type="text"
+            value={formik.values.firstName}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            name="firstName"
+            {...inputStyles}
+            placeholder="firstname"
+            isDisabled={!isEditing}
+          />
+          {formik.touched.firstName && formik.errors.firstName ? (
+            <FormErrorMessage>{formik.errors.firstName}</FormErrorMessage>
+          ) : null}
         </FormControl>
 
-        <FormControl isRequired>
+        <FormControl
+          isRequired
+          isInvalid={formik.touched.lastName && !!formik.errors.lastName}
+        >
           <FormLabel>Last Name</FormLabel>
           <Input
             type="text"
-            value={employeeLastName}
-            onChange={(e) => setEmployeeLastName(e.target.value)}
+            value={formik.values.lastName}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            name="lastName"
             {...inputStyles}
             placeholder="lastname"
             isDisabled={!isEditing}
           />
-          </FormControl>
+          {formik.touched.lastName && formik.errors.lastName ? (
+            <FormErrorMessage>{formik.errors.lastName}</FormErrorMessage>
+          ) : null}
+        </FormControl>
       </HStack>
 
       <HStack>
-          <FormControl>
-            <FormLabel>Middle Name</FormLabel>
-            <Input
-              type="text"
-              value={employeeMiddleName}
-              onChange={(e) => setEmployeeMiddleName(e.target.value)}
-              {...inputStyles}
-              isDisabled={!isEditing}
-            />
-          </FormControl>
-          <FormControl>
-              <FormLabel>Preferred Name</FormLabel>
-              <Input
-                type="text"
-                value={employeePreferredName}
-                onChange={(e) => setEmployeePreferredName(e.target.value)}
-                {...inputStyles}
-                isDisabled={!isEditing}
-              />
-          </FormControl>
+        <FormControl
+          isInvalid={formik.touched.middleName && !!formik.errors.middleName}
+        >
+          <FormLabel>Middle Name</FormLabel>
+          <Input
+            type="text"
+            value={formik.values.middleName}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            name="middleName"
+            {...inputStyles}
+            isDisabled={!isEditing}
+          />
+          {formik.touched.middleName && formik.errors.middleName ? (
+            <FormErrorMessage>{formik.errors.middleName}</FormErrorMessage>
+          ) : null}
+        </FormControl>
+        <FormControl
+          isInvalid={
+            formik.touched.preferredName && !!formik.errors.preferredName
+          }
+        >
+          <FormLabel>Preferred Name</FormLabel>
+          <Input
+            type="text"
+            value={formik.values.preferredName}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            name="preferredName"
+            {...inputStyles}
+            isDisabled={!isEditing}
+          />
+          {formik.touched.preferredName && formik.errors.preferredName ? (
+            <FormErrorMessage>{formik.errors.preferredName}</FormErrorMessage>
+          ) : null}
+        </FormControl>
       </HStack>
 
-      <FormControl >
-          <FormLabel>Profile Image</FormLabel>
-          <Stack direction={['column', 'row']} spacing={6}>
-            <Center>
-              <Avatar
-                size="lg"
-                // TODO: name={employeeFirstName}
-                src={employeeProfilePicture}
-              />
-              </Center>
-              <Center>
-              <Input
-                type="file"
-                accept=".jpg,.jpeg,.png"
-                width="80%"
-                height="50%"
-                isDisabled={!isEditing}
-              />
-            </Center>
-          </Stack>
-        </FormControl>
+      <FormControl>
+        <FormLabel>Profile Image</FormLabel>
+        <Stack direction={["column", "row"]} spacing={6}>
+          <Center>
+            <Avatar
+              size="lg"
+              // TODO: name={employeeFirstName}
+              src={formik.values.profilePicture || "https://bit.ly/dan-abramov"}
+            />
+          </Center>
+          <Center>
+            <Input
+              type="file"
+              accept=".jpg,.jpeg,.png"
+              width="80%"
+              height="50%"
+              isDisabled={!isEditing}
+            />
+          </Center>
+        </Stack>
+      </FormControl>
 
       {/* <FormControl isRequired isDisabled={true}>
           <FormLabel>Email</FormLabel>
@@ -170,232 +197,299 @@ const NameForm: FC = () => {
           />
         </FormControl> */}
 
-        <FormControl isRequired>
-          <FormLabel>SSN</FormLabel>
-          <Input
-            type="text"
-            value={employeeSSN}
-            onChange={(e) => setEmployeeSSN(e.target.value)}
-            {...inputStyles}
-            isDisabled={!isEditing}
-          />
-        </FormControl>
+      <FormControl
+        isRequired
+        isInvalid={formik.touched.SSN && !!formik.errors.SSN}
+      >
+        <FormLabel>SSN</FormLabel>
+        <Input
+          type="text"
+          value={formik.values.SSN}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          name="SSN"
+          {...inputStyles}
+          isDisabled={!isEditing}
+        />
+        {formik.touched.SSN && formik.errors.SSN ? (
+          <FormErrorMessage>{formik.errors.SSN}</FormErrorMessage>
+        ) : null}
+      </FormControl>
 
       <HStack>
-        <FormControl isRequired>
+        <FormControl
+          isRequired
+          isInvalid={formik.touched.gender && !!formik.errors.gender}
+        >
           <FormLabel>Gender</FormLabel>
           <Select
-            value={employeeGender}
-            onChange={(e) => setEmployeeGender(e.target.value)}
-            placeholder='Select option'
+            value={formik.values.gender}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            name="gender"
+            placeholder="Select option"
             {...inputStyles}
             isDisabled={!isEditing}
           >
-            <option value='male'>Male</option>
-            <option value='female'>Female</option>
-            <option value='no-response'>I do not wish to answer.</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="no-response">I do not wish to answer.</option>
           </Select>
+          {formik.touched.gender && formik.errors.gender ? (
+            <FormErrorMessage>{formik.errors.gender}</FormErrorMessage>
+          ) : null}
         </FormControl>
 
-        <FormControl isRequired>
+        <FormControl
+          isRequired
+          isInvalid={formik.touched.DOB && !!formik.errors.DOB}
+        >
           <FormLabel>Data of Birth</FormLabel>
           <SingleDatepicker
-            date={employeeDOBDate}
-            onDateChange={date => setEmployeeDOBDate(date)}
+            date={new Date(formik.values.DOB)}
+            onDateChange={(date) => formik.setFieldValue("DOB", date)}
+            name="DOB"
             disabled={!isEditing}
           />
+          {formik.touched.DOB && formik.errors.DOB ? (
+            <FormErrorMessage>{formik.errors.DOB as string}</FormErrorMessage>
+          ) : null}
         </FormControl>
       </HStack>
     </>
   );
-}
+};
 
-const AddressForm: FC = () => {
+const AddressForm: FC<Props> = ({ formik }) => {
   const [isEditing, setIsEditing] = useState(false);
-
-  // const [employeeAddress, setEmployeeAddress] = useState("");
-  const [employeeBuildingAddress, setEmployeeBuildingAddress] = useState("");
-  const [employeeStreetAddress, setEmployeeStreetAddress] = useState("");
-  const [employeeCityAddress, setEmployeeCityAddress] = useState("");
-  const [employeeStateAddress, setEmployeeStateAddress] = useState("");
-  const [employeeZipAddress, setEmployeeZipAddress] = useState("");
 
   const handleEditOnClick = () => {
     setIsEditing(true);
   };
 
   const handleCancelOnClick = () => {
+    formik.resetForm();
     setIsEditing(false);
   };
 
   const handleSaveOnClick = () => {
     // TODO: save logic
     setIsEditing(false);
-  }
+  };
 
   return (
     <>
       <HStack>
-        <Heading as="h3" size="lg">Address Infos</Heading>
+        <Heading as="h3" size="lg">
+          Address Infos
+        </Heading>
         {isEditing ? (
           <>
-            <Button
-              size="sm"
-              colorScheme="blue"
-              onClick={handleCancelOnClick}
-            >
+            <Button size="sm" colorScheme="blue" onClick={handleCancelOnClick}>
               Cancel
             </Button>
-            <Button
-              size="sm"
-              colorScheme="red"
-              onClick={handleSaveOnClick}
-            >
+            <Button size="sm" colorScheme="red" onClick={handleSaveOnClick}>
               Save
             </Button>
           </>
         ) : (
-          <Button
-            size="sm"
-            colorScheme="teal"
-            onClick={handleEditOnClick}
-          >
+          <Button size="sm" colorScheme="teal" onClick={handleEditOnClick}>
             Edit
           </Button>
         )}
       </HStack>
 
-      <FormControl>
+      <FormControl
+        isRequired
+        isInvalid={
+          formik.touched.address?.buildingAptNumber &&
+          !!formik.errors.address?.buildingAptNumber
+        }
+      >
         <FormLabel>Building / Apt Number</FormLabel>
-          <Input
+        <Input
           type="text"
-          value={employeeBuildingAddress}
-          onChange={(e) => setEmployeeBuildingAddress(e.target.value)}
+          value={formik.values.address.buildingAptNumber}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          name="address.buildingAptNumber"
           {...inputStyles}
           isDisabled={!isEditing}
         />
+        {formik.touched.address?.buildingAptNumber &&
+        formik.errors.address?.buildingAptNumber ? (
+          <FormErrorMessage>
+            {formik.errors.address?.buildingAptNumber}
+          </FormErrorMessage>
+        ) : null}
       </FormControl>
 
-      <FormControl isRequired>
+      <FormControl
+        isRequired
+        isInvalid={
+          formik.touched.address?.city && !!formik.errors.address?.city
+        }
+      >
         <FormLabel>Street Address</FormLabel>
-          <Input
+        <Input
           type="text"
-          value={employeeStreetAddress}
-          onChange={(e) => setEmployeeStreetAddress(e.target.value)}
+          value={formik.values.address?.streetName}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          name="address.streetName"
           {...inputStyles}
           isDisabled={!isEditing}
         />
+        {formik.touched.address?.streetName &&
+        formik.errors.address?.streetName ? (
+          <FormErrorMessage>
+            {formik.errors.address?.streetName}
+          </FormErrorMessage>
+        ) : null}
       </FormControl>
 
-      <FormControl isRequired>
+      <FormControl
+        isRequired
+        isInvalid={
+          formik.touched.address?.city && !!formik.errors.address?.city
+        }
+      >
         <FormLabel>City</FormLabel>
-          <Input
-            type="text"
-            value={employeeCityAddress}
-            onChange={(e) => setEmployeeCityAddress(e.target.value)}
-            {...inputStyles}
-            isDisabled={!isEditing}
+        <Input
+          type="text"
+          value={formik.values.address?.city}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          name="address.city"
+          {...inputStyles}
+          isDisabled={!isEditing}
         />
+        {formik.touched.address?.city && formik.errors.address?.city ? (
+          <FormErrorMessage>{formik.errors.address?.city}</FormErrorMessage>
+        ) : null}
       </FormControl>
 
       <HStack width="100%">
-        <FormControl isRequired>
+        <FormControl
+          isRequired
+          isInvalid={
+            formik.touched.address?.state && !!formik.errors.address?.state
+          }
+        >
           <FormLabel>State</FormLabel>
-            <Input
+          <Input
             type="text"
-            value={employeeStateAddress}
-            onChange={(e) => setEmployeeStateAddress(e.target.value)}
+            value={formik.values.address?.state}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            name="address.state"
             {...inputStyles}
             isDisabled={!isEditing}
           />
+          {formik.touched.address?.state && formik.errors.address?.state ? (
+            <FormErrorMessage>{formik.errors.address?.state}</FormErrorMessage>
+          ) : null}
         </FormControl>
 
-        <FormControl isRequired>
+        <FormControl
+          isRequired
+          isInvalid={
+            formik.touched.address?.zip && !!formik.errors.address?.zip
+          }
+        >
           <FormLabel>Zip</FormLabel>
-            <Input
+          <Input
             type="text"
-            value={employeeZipAddress}
-            onChange={(e) => setEmployeeZipAddress(e.target.value)}
+            value={formik.values.address?.zip}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            name="address.zip"
             {...inputStyles}
             isDisabled={!isEditing}
           />
+          {formik.touched.address?.zip && formik.errors.address?.zip ? (
+            <FormErrorMessage>{formik.errors.address?.zip}</FormErrorMessage>
+          ) : null}
         </FormControl>
       </HStack>
     </>
   );
-}
+};
 
-const ContactInfoForm: FC = () => {
+const ContactInfoForm: FC<Props> = ({ formik }) => {
   const [isEditing, setIsEditing] = useState(false);
-
-  // const [employeeContact, setEmployeeContact] = useState("");
-  const [employeeCellPhoneContact, setEmployeeCellPhoneContact] = useState("");
-  const [employeeWorkPhoneContact, setEmployeeWorkPhoneContact] = useState("");
 
   const handleEditOnClick = () => {
     setIsEditing(true);
   };
 
   const handleCancelOnClick = () => {
+    formik.resetForm();
     setIsEditing(false);
   };
 
   const handleSaveOnClick = () => {
     // TODO: save logic
     setIsEditing(false);
-  }
+  };
 
   return (
     <>
       <HStack>
-        <Heading as="h3" size="lg">Contact Infos</Heading>
+        <Heading as="h3" size="lg">
+          Contact Infos
+        </Heading>
         {isEditing ? (
           <>
-            <Button
-              size="sm"
-              colorScheme="blue"
-              onClick={handleCancelOnClick}
-            >
+            <Button size="sm" colorScheme="blue" onClick={handleCancelOnClick}>
               Cancel
             </Button>
-            <Button
-              size="sm"
-              colorScheme="red"
-              onClick={handleSaveOnClick}
-            >
+            <Button size="sm" colorScheme="red" onClick={handleSaveOnClick}>
               Save
             </Button>
           </>
         ) : (
-          <Button
-            size="sm"
-            colorScheme="teal"
-            onClick={handleEditOnClick}
-          >
+          <Button size="sm" colorScheme="teal" onClick={handleEditOnClick}>
             Edit
           </Button>
         )}
       </HStack>
 
       <HStack width="100%">
-        <FormControl isRequired>
+        <FormControl
+          isRequired
+          isInvalid={
+            formik.touched.Contact?.cellPhoneNumber &&
+            !!formik.errors.Contact?.cellPhoneNumber
+          }
+        >
           <FormLabel>Cell Phone Number</FormLabel>
           <Input
             type="text"
-            value={employeeCellPhoneContact}
-            onChange={(e) => setEmployeeCellPhoneContact(e.target.value)}
+            value={formik.values.Contact?.cellPhoneNumber}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            name="Contact.cellPhoneNumber"
             {...inputStyles}
             placeholder="+1 (___) __-___-___"
             isDisabled={!isEditing}
           />
+          {formik.touched.Contact?.cellPhoneNumber &&
+          formik.errors.Contact?.cellPhoneNumber ? (
+            <FormErrorMessage>
+              {formik.errors.Contact?.cellPhoneNumber}
+            </FormErrorMessage>
+          ) : null}
         </FormControl>
 
         <FormControl>
           <FormLabel>Work Phone Number</FormLabel>
           <Input
             type="text"
-            value={employeeWorkPhoneContact}
-            onChange={(e) => setEmployeeWorkPhoneContact(e.target.value)}
+            value={formik.values.Contact?.workPhoneNumber}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            name="Contact.workPhoneNumber"
             {...inputStyles}
             isDisabled={!isEditing}
           />
@@ -403,99 +497,111 @@ const ContactInfoForm: FC = () => {
       </HStack>
     </>
   );
-}
+};
 
-const EmploymentForm: FC = () => {
+const EmploymentForm: FC<Props> = ({ formik }) => {
   const [isEditing, setIsEditing] = useState(false);
-
-  // const [employeeContact, setEmployeeContact] = useState("");
-  const [employeeEmployment, setEmployeeEmployment] = useState("");  
-  const [isPermanentResident, setIsPermanentResident] = useState("");
-  const [perminantType, setPerminantType] = useState("");
-  const [workAuthType, setWorkAuthType] = useState("");
-  const [workAuthStartDate, setWorkAuthStartDate] = useState(new Date());
-  const [workAuthEndDate, setWorkAuthEndDate] = useState(new Date());
 
   const handleEditOnClick = () => {
     setIsEditing(true);
   };
 
   const handleCancelOnClick = () => {
+    formik.resetForm();
     setIsEditing(false);
   };
 
   const handleSaveOnClick = () => {
     // TODO: save logic
     setIsEditing(false);
-  }
+  };
 
   return (
     <>
       <HStack>
-        <Heading as="h3" size="lg">Employment Infos</Heading>
+        <Heading as="h3" size="lg">
+          Employment Infos
+        </Heading>
         {isEditing ? (
           <>
-            <Button
-              size="sm"
-              colorScheme="blue"
-              onClick={handleCancelOnClick}
-            >
+            <Button size="sm" colorScheme="blue" onClick={handleCancelOnClick}>
               Cancel
             </Button>
-            <Button
-              size="sm"
-              colorScheme="red"
-              onClick={handleSaveOnClick}
-            >
+            <Button size="sm" colorScheme="red" onClick={handleSaveOnClick}>
               Save
             </Button>
           </>
         ) : (
-          <Button
-            size="sm"
-            colorScheme="teal"
-            onClick={handleEditOnClick}
-          >
+          <Button size="sm" colorScheme="teal" onClick={handleEditOnClick}>
             Edit
           </Button>
         )}
       </HStack>
 
-      <FormControl isRequired>
+      <FormControl
+        isRequired
+        isInvalid={
+          formik.touched.isPermanentResident &&
+          !!formik.errors.isPermanentResident
+        }
+      >
         <FormLabel>Permanent resident or citizen of the U.S.?</FormLabel>
         <Select
-          onChange={(e) => setIsPermanentResident(e.target.value)}
-          placeholder='Select option'
+          name="isPermanentResident"
+          onChange={formik.handleChange}
+          placeholder="Select option"
           {...inputStyles}
           isDisabled={!isEditing}
         >
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
         </Select>
       </FormControl>
 
-      {isPermanentResident === "yes" ? (
-          <FormControl isRequired>
-            <FormLabel>Type</FormLabel>
-            <Select
-              value={perminantType}
-              onChange={(e) => setPerminantType(e.target.value)}
-              placeholder='Select option'
-              {...inputStyles}
-              isDisabled={!isEditing}
-            >
-              <option value="green-card">Green Card</option>
-              <option value="citizen">Citizen</option>
-            </Select>
-            </FormControl>
-      ) : isPermanentResident === "no" ? (
-          <>
-          <FormControl isRequired>
+      {formik.values.isPermanentResident === "Yes" ? (
+        <FormControl
+          isRequired
+          isInvalid={
+            formik.touched.employment?.visaTitle &&
+            !!formik.errors.employment?.visaTitle
+          }
+        >
+          <FormLabel>Type</FormLabel>
+          <Select
+            value={formik.values.employment?.visaTitle}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            name="employment.visaTitle"
+            placeholder="Select option"
+            {...inputStyles}
+            isDisabled={!isEditing}
+          >
+            <option value="green-card">Green Card</option>
+            <option value="citizen">Citizen</option>
+          </Select>
+          {formik.touched.employment?.visaTitle &&
+          formik.errors.employment?.visaTitle ? (
+            <FormErrorMessage>
+              {formik.errors.employment?.visaTitle}
+            </FormErrorMessage>
+          ) : null}
+        </FormControl>
+      ) : formik.values.isPermanentResident === "No" ? (
+        <>
+          <FormControl
+            isRequired
+            isInvalid={
+              formik.touched.employment?.visaTitle &&
+              !!formik.errors.employment?.visaTitle
+            }
+          >
             <FormLabel>What is your work authorization?</FormLabel>
             <Select
-              value={workAuthType}
-              onChange={(e) => setWorkAuthType(e.target.value)}
-              placeholder='Select option'
+              value={formik.values.employment?.visaTitle}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              name="employment.visaTitle"
+              placeholder="Select option"
               {...inputStyles}
               isDisabled={!isEditing}
             >
@@ -505,9 +611,15 @@ const EmploymentForm: FC = () => {
               <option value="h4">H4</option>
               <option value="other">Other</option>
             </Select>
+            {formik.touched.employment?.visaTitle &&
+            formik.errors.employment?.visaTitle ? (
+              <FormErrorMessage>
+                {formik.errors.employment?.visaTitle}
+              </FormErrorMessage>
+            ) : null}
           </FormControl>
 
-          {workAuthType === "f1" ? (
+          {formik.values.employment?.visaTitle === "f1" ? (
             <FormControl isRequired margin="0.5rem 0">
               <FormLabel>Please upload your OPT receipt.</FormLabel>
               <Input
@@ -518,137 +630,180 @@ const EmploymentForm: FC = () => {
                 isDisabled={!isEditing}
               />
             </FormControl>
-          ) : workAuthType === "other" ? (
+          ) : formik.values.employment?.visaTitle === "other" ? (
             <FormControl isRequired>
               <FormLabel>Please specify your working authoriation.</FormLabel>
               <Input
                 type="text"
-                value={workAuthType}
-                onChange={(e) => setWorkAuthType(e.target.value)}
+                value={formik.values.employment?.visaTitle}
+                readOnly
                 {...inputStyles}
                 isDisabled={!isEditing}
               />
             </FormControl>
           ) : (
-              <></>
+            <></>
           )}
 
           <HStack width="100%">
-            <FormControl isRequired>
+            <FormControl
+              isRequired
+              isInvalid={
+                formik.touched.employment?.startDate &&
+                !!formik.errors.employment?.startDate
+              }
+            >
               <FormLabel>Start Date</FormLabel>
               <SingleDatepicker
-                date={workAuthStartDate}
-                onDateChange={date => setWorkAuthStartDate(date)}
+                name="employment.startDate"
+                date={new Date(formik.values.employment?.startDate)}
+                onDateChange={(selectedDate) => {
+                  formik.setFieldValue("employment.startDate", selectedDate);
+                }}
                 disabled={!isEditing}
               />
+              {formik.touched.employment?.startDate &&
+              formik.errors.employment?.startDate ? (
+                <FormErrorMessage>
+                  {formik.errors.employment?.startDate as string}
+                </FormErrorMessage>
+              ) : null}
             </FormControl>
 
-            <FormControl isRequired>
+            <FormControl
+              isRequired
+              isInvalid={
+                formik.touched.employment?.endDate &&
+                !!formik.errors.employment?.endDate
+              }
+            >
               <FormLabel>End Date</FormLabel>
               <SingleDatepicker
-                date={workAuthEndDate}
-                onDateChange={date => setWorkAuthEndDate(date)}
+                name="employment.endDate"
+                date={new Date(formik.values.employment?.endDate)}
+                onDateChange={(selectedDate) => {
+                  formik.setFieldValue("employment.endDate", selectedDate);
+                }}
                 disabled={!isEditing}
               />
+              {formik.touched.employment?.endDate &&
+              formik.errors.employment?.endDate ? (
+                <FormErrorMessage>
+                  {formik.errors.employment?.endDate as string}
+                </FormErrorMessage>
+              ) : null}
             </FormControl>
           </HStack>
-          </>
+        </>
       ) : (
         <></>
       )}
     </>
   );
-}
+};
 
-const EmergencyContactForm: FC = () => {
+const EmergencyContactForm: FC<Props> = ({ formik }) => {
   const [isEditing, setIsEditing] = useState(false);
-
-  const [employeeEmergencyContact, setEmployeeEmergencyContact] = useState([]);
-  const [employeeEmergencyFirstName, setEmployeeEmergencyFirstName] = useState("");
-  const [employeeEmergencyLastName, setEmployeeEmergencyLastName] = useState("");
-  const [employeeEmergencyMiddleName, setEmployeeEmergencyMiddleName] = useState("");
-  const [employeeEmergencyEmail, setEmployeeEmergencyEmail] = useState("");
-  const [employeeEmergencyPhone, setEmployeeEmergencyPhone] = useState("");
-  const [employeeEmergencyRelation, setEmployeeEmergencyRelation] = useState("");
 
   const handleEditOnClick = () => {
     setIsEditing(true);
   };
 
   const handleCancelOnClick = () => {
+    formik.resetForm();
     setIsEditing(false);
   };
 
   const handleSaveOnClick = () => {
     // TODO: save logic
     setIsEditing(false);
-  }
+  };
 
   return (
     <>
       <HStack>
-        <Heading as="h3" size="lg">Contact Infos</Heading>
+        <Heading as="h3" size="lg">
+          Contact Infos
+        </Heading>
         {isEditing ? (
           <>
-            <Button
-              size="sm"
-              colorScheme="blue"
-              onClick={handleCancelOnClick}
-            >
+            <Button size="sm" colorScheme="blue" onClick={handleCancelOnClick}>
               Cancel
             </Button>
-            <Button
-              size="sm"
-              colorScheme="red"
-              onClick={handleSaveOnClick}
-            >
+            <Button size="sm" colorScheme="red" onClick={handleSaveOnClick}>
               Save
             </Button>
           </>
         ) : (
-          <Button
-            size="sm"
-            colorScheme="teal"
-            onClick={handleEditOnClick}
-          >
+          <Button size="sm" colorScheme="teal" onClick={handleEditOnClick}>
             Edit
           </Button>
         )}
       </HStack>
 
       <HStack width="100%">
-        <FormControl isRequired>
+        <FormControl
+          isRequired
+          isInvalid={
+            formik.touched.emergencyContact?.firstName &&
+            !!formik.errors.emergencyContact?.firstName
+          }
+        >
           <FormLabel>ICE FirstName</FormLabel>
-            <Input
+          <Input
             type="text"
-            value={employeeEmergencyFirstName}
-            onChange={(e) => setEmployeeEmergencyFirstName(e.target.value)}
+            value={formik.values.emergencyContact?.firstName}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            name="emergencyContact.firstName"
             {...inputStyles}
             placeholder="emergency contact firstname"
             isDisabled={!isEditing}
           />
+          {formik.touched.emergencyContact?.firstName &&
+          formik.errors.emergencyContact?.firstName ? (
+            <FormErrorMessage>
+              {formik.errors.emergencyContact?.firstName}
+            </FormErrorMessage>
+          ) : null}
         </FormControl>
 
-        <FormControl isRequired>
+        <FormControl
+          isRequired
+          isInvalid={
+            formik.touched.emergencyContact?.lastName &&
+            !!formik.errors.emergencyContact?.lastName
+          }
+        >
           <FormLabel>ICE LastName</FormLabel>
-            <Input
+          <Input
             type="text"
-            value={employeeEmergencyLastName}
-            onChange={(e) => setEmployeeEmergencyLastName(e.target.value)}
+            value={formik.values.emergencyContact?.lastName}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            name="emergencyContact.lastName"
             {...inputStyles}
             placeholder="emergency contact lastname"
             isDisabled={!isEditing}
           />
         </FormControl>
-        </HStack>
+        {formik.touched.emergencyContact?.lastName &&
+        formik.errors.emergencyContact?.lastName ? (
+          <FormErrorMessage>
+            {formik.errors.emergencyContact?.lastName}
+          </FormErrorMessage>
+        ) : null}
+      </HStack>
 
-        <HStack width="100%">
+      <HStack width="100%">
         <FormControl>
           <FormLabel>ICE MiddleName</FormLabel>
-            <Input
+          <Input
             type="text"
-            value={employeeEmergencyMiddleName}
-            onChange={(e) => setEmployeeEmergencyMiddleName(e.target.value)}
+            value={formik.values.emergencyContact?.middleName}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            name="emergencyContact.middleName"
             {...inputStyles}
             isDisabled={!isEditing}
           />
@@ -656,10 +811,12 @@ const EmergencyContactForm: FC = () => {
 
         <FormControl>
           <FormLabel>ICE Phone</FormLabel>
-            <Input
+          <Input
             type="text"
-            value={employeeEmergencyPhone}
-            onChange={(e) => setEmployeeEmergencyPhone(e.target.value)}
+            value={formik.values.emergencyContact?.phone}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            name="emergencyContact.phone"
             {...inputStyles}
             isDisabled={!isEditing}
           />
@@ -669,42 +826,94 @@ const EmergencyContactForm: FC = () => {
       <HStack width="100%">
         <FormControl>
           <FormLabel>ICE Email</FormLabel>
-            <Input
+          <Input
             type="text"
-            value={employeeEmergencyEmail}
-            onChange={(e) => setEmployeeEmergencyEmail(e.target.value)}
+            value={formik.values.emergencyContact?.email}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            name="emergencyContact.email"
             {...inputStyles}
             isDisabled={!isEditing}
           />
         </FormControl>
 
-        <FormControl isRequired>
+        <FormControl
+          isRequired
+          isInvalid={
+            formik.touched.emergencyContact?.relationship &&
+            !!formik.errors.emergencyContact?.relationship
+          }
+        >
           <FormLabel>ICE Relationship</FormLabel>
-            <Input
+          <Input
             type="text"
-            value={employeeEmergencyRelation}
-            onChange={(e) => setEmployeeEmergencyRelation(e.target.value)}
+            value={formik.values.emergencyContact?.relationship}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            name="emergencyContact.relationship"
             {...inputStyles}
             isDisabled={!isEditing}
           />
+          {formik.touched.emergencyContact?.relationship &&
+          formik.errors.emergencyContact?.relationship ? (
+            <FormErrorMessage>
+              {formik.errors.emergencyContact?.relationship}
+            </FormErrorMessage>
+          ) : null}
         </FormControl>
       </HStack>
     </>
   );
-}
+};
 
-// TODO: 
+// TODO:
 const DocumentForm: FC = () => {
   return (
     <>
       <Heading>Documents</Heading>
     </>
   );
-}
+};
 
 const PersonalInfoPage: FC = () => {
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(1);
   const [progress, setProgress] = useState(16.67);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // redux
+  const dispatch = useDispatch<AppDispatch>();
+  const username = useSelector<RootState, string>(
+    (state) => state.auth.username
+  );
+  const employeeInfo = useSelector<RootState, EmployeeInfo>(
+    (state) => state.employee.info
+  );
+
+  useEffect(() => {
+    dispatch(fetchEmployeeInfo(username))
+      .unwrap()
+      .then(() => {
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.log("Failed to fetch employee info: ", error);
+        setIsLoading(false);
+      });
+  }, [dispatch]);
+
+  // formik
+
+  const formik = useFormik({
+    initialValues: employeeInfo,
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      dispatch(editEmployeeInfo(values));
+    },
+  });
+
+  if (isLoading) {
+    return <Heading>Loading Info...</Heading>;
+  }
 
   return (
     <Box
@@ -716,15 +925,26 @@ const PersonalInfoPage: FC = () => {
       m="10px auto"
       as="form"
     >
-      <Progress hasStripe value={progress} mb="5%" mx="5%" isAnimated></Progress>
-      { 
-        step === 1 ? <NameForm /> : 
-        step === 2 ? <AddressForm /> : 
-        step === 3 ? <ContactInfoForm /> :
-        step === 4 ? <EmploymentForm /> :
-        step === 5 ? <EmergencyContactForm /> :
+      <Progress
+        hasStripe
+        value={progress}
+        mb="5%"
+        mx="5%"
+        isAnimated
+      ></Progress>
+      {step === 1 ? (
+        <NameForm formik={formik} />
+      ) : step === 2 ? (
+        <AddressForm formik={formik} />
+      ) : step === 3 ? (
+        <ContactInfoForm formik={formik} />
+      ) : step === 4 ? (
+        <EmploymentForm formik={formik} />
+      ) : step === 5 ? (
+        <EmergencyContactForm formik={formik} />
+      ) : (
         <DocumentForm />
-      }
+      )}
 
       <ButtonGroup mt="5%" w="100%">
         <Flex w="100%" justifyContent="space-between">
@@ -760,12 +980,7 @@ const PersonalInfoPage: FC = () => {
             </Button>
           </Flex>
           {step === 6 ? (
-            <Button
-              w="7rem"
-              colorScheme="red"
-              variant="solid"
-              // TODO: onClick={() => {}}
-            >
+            <Button w="7rem" colorScheme="red" variant="solid" type="submit">
               Submit
             </Button>
           ) : null}

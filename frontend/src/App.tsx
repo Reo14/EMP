@@ -9,7 +9,7 @@ import {
 
 import Header from "./components/Layout/Header";
 import Footer from "./components/Layout/Footer";
-import Sidebar from "./components/Layout/SideBar";
+import Sidebar from "./components/Layout/Sidebar";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import OnBoardingPage from "./pages/OnBoardingPage";
