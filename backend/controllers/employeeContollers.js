@@ -37,9 +37,9 @@ async function updateInfo(req, res) {
 // 获取个人信息
 async function getInfo(req, res) {
   try {
-    const { username } = req.params;
+    const { userId } = req.params;
 
-    const employee = await User.findOne({ username })
+    const employee = await User.findOne({ userId : userId })
       .populate("emergencyContact")
       .populate("reference");
 

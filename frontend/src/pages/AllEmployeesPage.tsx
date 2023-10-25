@@ -38,12 +38,17 @@ const EmployeeList: React.FC = () => {
     fetchEmployees();
   }, []);
 
-  const filteredEmployees = employees.filter(
-    (employee) =>
-      employee.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      employee.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      employee.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredEmployees = employees.filter((employee) => {
+    const firstName = employee?.firstName || '';
+    const lastName = employee?.lastName || '';
+    const email = employee?.email || '';
+
+    return (
+      firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  });
 
   return (
     <Box p={8}>

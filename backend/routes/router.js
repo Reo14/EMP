@@ -31,7 +31,7 @@ router.post("/sign-in", signin);
 
 // Employee Flow
 router.put("/update-info", updateInfo);
-router.get("/personal-information/:username", getInfo);
+router.get("/personal-information/:userId", getInfo);
 router.get("/onboardstatus/:id", getOnboardStatus );
 
 

@@ -53,26 +53,26 @@ const HiringManagementPage: React.FC = () => {
     setFilterStatus(event.target.value);
   };
 
-  const handleViewApplication = (registrationLink: string) => {
-    window.open(registrationLink, '_blank');
+  const handleViewApplication = () => {
+    navigate('/employee-onboarding');
   };
 
-  const handleApprove = (email: string) => {
-    // Implement logic to send approval to the server
-    // For example, send a PUT request to update the onboardStatus
-  };
+  // const handleApprove = (email: string) => {
+  //   // Implement logic to send approval to the server
+  //   // For example, send a PUT request to update the onboardStatus
+  // };
 
-  const handleReject = async (email: string) => {
-    // Implement logic to send rejection to the server
-    // For example, send a PUT request to update the onboardStatus
-    const feedback = prompt('Enter feedback for rejection:');
-    if (feedback !== null) {
-      // Send feedback to the server
-      await axios.put(`http://localhost:3000/hr/reject-application/${email}`, {
-        feedback: feedback,
-      });
-    }
-  };
+  // const handleReject = async (email: string) => {
+  //   // Implement logic to send rejection to the server
+  //   // For example, send a PUT request to update the onboardStatus
+  //   const feedback = prompt('Enter feedback for rejection:');
+  //   if (feedback !== null) {
+  //     // Send feedback to the server
+  //     await axios.put(`http://localhost:3000/hr/reject-application/${email}`, {
+  //       feedback: feedback,
+  //     });
+  //   }
+  // };
 
   const filteredData = filterStatus
     ? registrationTokenHistory.filter(token => token.onboardStatus === filterStatus)
@@ -109,7 +109,7 @@ const HiringManagementPage: React.FC = () => {
               <Text>
                 <b>Status:</b> {token.status}
               </Text>
-              
+
               <Button
                 colorScheme={token.status === 'Submitted' ? 'green' : 'red'}
                 onClick={() => toggleExpand(token.email)}
@@ -130,15 +130,15 @@ const HiringManagementPage: React.FC = () => {
               )}
               {token.onboardStatus === 'Pending' && (filterStatus == 'Pending') && (
                 <>
-                  <Button onClick={() => handleViewApplication(token.registrationLink)}>
+                  <Button onClick={() => handleViewApplication()}>
                     View Application
                   </Button>
-                  <Button colorScheme="green" onClick={() => handleApprove(token.email)}>
+                  {/* <Button colorScheme="green" onClick={() => handleApprove(token.email)}>
                     Approve
                   </Button>
                   <Button colorScheme="red" onClick={() => handleReject(token.email)}>
                     Reject
-                  </Button>
+                  </Button> */}
                 </>
               )}
               
