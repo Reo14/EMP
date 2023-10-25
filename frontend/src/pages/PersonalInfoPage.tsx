@@ -15,6 +15,7 @@ import {
   ButtonGroup,
   Flex,
   FormErrorMessage,
+  Text
 } from "@chakra-ui/react";
 import { parseISO } from "date-fns";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
@@ -867,10 +868,52 @@ const EmergencyContactForm: FC<Props> = ({ formik }) => {
 };
 
 // TODO:
-const DocumentForm: FC = () => {
+const DocumentForm: FC<Props> = ({ formik }) => {
+  const { documents } = formik.values;
   return (
     <>
-      <Heading>Documents</Heading>
+      <Heading as="h3" size="lg">
+        Documents
+      </Heading>
+      {documents && documents.length > 0 ? (
+        documents.map((doc, index) => {
+          <Box
+            marginTop="1rem"
+            display="flex"
+            flexDir="row"
+            marginBottom="1rem"
+          >
+              <Text size="lg">
+                File Name: {doc.name}
+              </Text>
+              <Button
+                size="sm"
+                colorScheme="blue"
+                onClick={() => {
+                  // 实现下载逻辑，可以使用浏览器的下载功能
+                  window.open(`data:${doc.type};base64,${doc.file}`, '_blank');
+                }}
+              >
+                Preview
+              </Button>
+              <Button
+                size="sm"
+                colorScheme="blue"
+                onClick={() => {
+                  // 实现下载逻辑，可以使用浏览器的下载功能
+                  const link = document.createElement('a');
+                  link.href = `data:${doc.type};base64,${doc.file}`;
+                  link.download = doc.name;
+                  link.click();
+                }}
+              >
+                Download
+              </Button>
+            </Box>
+        })
+      ) : (
+        <Text size="xl" marginTop="1rem">No documents to display</Text>
+      )}
     </>
   );
 };
@@ -943,7 +986,7 @@ const PersonalInfoPage: FC = () => {
       ) : step === 5 ? (
         <EmergencyContactForm formik={formik} />
       ) : (
-        <DocumentForm />
+        <DocumentForm formik={formik} />
       )}
 
       <ButtonGroup mt="5%" w="100%">

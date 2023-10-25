@@ -36,6 +36,7 @@ export type Employment = {
 };
 
 export type Document = {
+  name: string;
   type: string;
   file: string;
 };
