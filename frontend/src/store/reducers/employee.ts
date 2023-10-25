@@ -5,10 +5,9 @@ import { EmployeeInfo } from "../../types/employee";
 import { ErrorResponse } from "../../types/error";
 
 interface EmployeeState {
-  info: EmployeeInfo | null;
+  info: EmployeeInfo;
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | undefined | null;
-  buffer: EmployeeInfo | null;
 }
 
 interface EmployeeInfoResponse {
@@ -16,46 +15,43 @@ interface EmployeeInfoResponse {
 }
 
 const initialState: EmployeeState = {
-  info: null,
+  info: {} as EmployeeInfo,
   status: "idle",
   error: null,
-  buffer: null,
 };
 
 export const fetchEmployeeInfo = createAsyncThunk<
-  EmployeeInfo, // Return type on success
-  string, // First argument to the payload creator (userId in this case)
-  {
-    rejectValue: ErrorResponse; // Type for the rejectWithValue
-  }
->("employee/fetchInfo", async (userId: string, { rejectWithValue }) => {
-  try {
-    const res = await axios.get<EmployeeInfoResponse>(
-      `http://localhost:3000/personal-information/${userId}`
-    );
-    return res.data.employee;
-  } catch (err) {
-    const axiosErr = err as AxiosError<ErrorResponse>;
-    if (!axiosErr.response || !axiosErr.response.data.error) {
-      throw err; // Some network or unknown error, let it go to the fallback error handling
+  EmployeeInfo,
+  string,
+  { rejectValue: ErrorResponse }
+>(
+  "employee/fetchInfo",
+  async (username: string, { rejectWithValue, dispatch }) => {
+    try {
+      dispatch(date2string());
+      const res = await axios.get<EmployeeInfoResponse>(
+        `http://localhost:3000/personal-information/${username}`
+      );
+      return res.data.employee;
+    } catch (err) {
+      const axiosErr = err as AxiosError<ErrorResponse>;
+      if (!axiosErr.response || !axiosErr.response.data.error) {
+        throw err; // Some network or unknown error, let it go to the fallback error handling
+      }
+      return rejectWithValue(axiosErr.response.data);
     }
-    return rejectWithValue(axiosErr.response.data);
   }
-});
+);
 
-const editEmployeeInfo = createAsyncThunk(
+export const editEmployeeInfo = createAsyncThunk(
   "employee/edit",
   async (updatedInfo: EmployeeInfo, { rejectWithValue }) => {
     try {
-      await axios.put(
-        `http://localhost:3000/personal-information/${updatedInfo.userId}/edit`,
-        updatedInfo,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      await axios.put("http://localhost:3000/update-info", updatedInfo, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       return updatedInfo;
     } catch (err) {
       const axiosErr = err as AxiosError<ErrorResponse>;
@@ -71,15 +67,15 @@ const employeeSlice = createSlice({
   name: "employee",
   initialState,
   reducers: {
-    startEdit: (state) => {
-      if (state.info) {
-        state.buffer = cloneDeep(state.info); // Create a deep copy of info to buffer
-      }
-    },
-    cancelEdit: (state) => {
-      if (state.buffer) {
-        state.info = cloneDeep(state.buffer); // Restore info from buffer
-      }
+    date2string: (state) => {
+      if (state.info.DOB instanceof Date)
+        state.info.DOB = state.info.DOB.toISOString();
+      if (state.info.employment.startDate instanceof Date)
+        state.info.employment.startDate =
+          state.info.employment.startDate.toISOString();
+      if (state.info.employment.endDate instanceof Date)
+        state.info.employment.endDate =
+          state.info.employment.endDate.toISOString();
     },
   },
   extraReducers: (builder) => {
@@ -118,7 +114,7 @@ const employeeSlice = createSlice({
   },
 });
 
-export const { startEdit, cancelEdit } = employeeSlice.actions;
+export const { date2string } = employeeSlice.actions;
 
 // selectors
 export const isHR = (state: { employee: EmployeeState }) =>

@@ -29,10 +29,6 @@ const SignIn: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [showPassword, setShowPassword] = useState(false);
-  const [username, setUsername] = useState("");
-  const [usernameError, setUsernameError] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
 
   const validationSchema = Yup.object({
     username: Yup.string().required("This field is required"),

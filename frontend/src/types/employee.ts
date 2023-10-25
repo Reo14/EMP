@@ -1,5 +1,4 @@
 export type Reference = {
-  employeeId: string;
   firstName: string;
   lastName: string;
   middleName?: string;
@@ -9,7 +8,6 @@ export type Reference = {
 };
 
 export type EmergencyContact = {
-  employeeId: string;
   firstName: string;
   lastName: string;
   middleName?: string;
@@ -33,8 +31,8 @@ export type Contact = {
 
 export type Employment = {
   visaTitle: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: Date | string;
+  endDate: Date | string;
 };
 
 export type Document = {
@@ -60,7 +58,7 @@ export type EmployeeInfo = {
   Contact: Contact;
   address: Address;
   SSN: string;
-  DOB: Date;
+  DOB: Date | string;
   gender: string;
   isPermanentResident: string;
   employment: Employment;

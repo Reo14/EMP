@@ -5,14 +5,14 @@ import { EmployeeInfo } from "../../types/employee";
 import { setAuth } from "./auth";
 
 interface onboardingState {
-  data: EmployeeInfo | null;
+  data: EmployeeInfo;
   onboardingStatus: "Never submitted" | "Rejected" | "Pending" | "Approved";
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | undefined | null;
 }
 
 const initialState: onboardingState = {
-  data: null,
+  data: {} as EmployeeInfo,
   onboardingStatus: "Never submitted",
   status: "idle",
   error: null,
@@ -20,13 +20,12 @@ const initialState: onboardingState = {
 
 export const submitOnboarding = createAsyncThunk(
   "employee/submitOnboarding",
-  async (onboardData: EmployeeInfo, { rejectWithValue }) => {
+  async (onboardData: EmployeeInfo, { rejectWithValue, dispatch }) => {
     try {
-      const regToken = localStorage.getItem("regToken");
+      dispatch(date2string());
       await axios.put("http://localhost:3000/update-info", onboardData, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${regToken}`,
         },
       });
       return onboardData;
@@ -71,7 +70,7 @@ export const getOnboardingData = createAsyncThunk(
           username: res.data.employee.username,
           userId: res.data.employee.userId,
         })
-      )
+      );
       return res.data;
     } catch (err) {
       const axiosErr = err as AxiosError<ErrorResponse>;
@@ -87,7 +86,18 @@ export const getOnboardingData = createAsyncThunk(
 const onboardSlice = createSlice({
   name: "onboarding",
   initialState,
-  reducers: {},
+  reducers: {
+    date2string: (state) => {
+      if (state.data.DOB instanceof Date)
+        state.data.DOB = state.data.DOB.toISOString();
+      if (state.data.employment.startDate instanceof Date)
+        state.data.employment.startDate =
+          state.data.employment.startDate.toISOString();
+      if (state.data.employment.endDate instanceof Date)
+        state.data.employment.endDate =
+          state.data.employment.endDate.toISOString();
+    },
+  },
   extraReducers: (builder) => {
     // submit onboarding
     builder.addCase(submitOnboarding.fulfilled, (state, action) => {
@@ -131,4 +141,5 @@ const onboardSlice = createSlice({
   },
 });
 
+export const { date2string } = onboardSlice.actions;
 export default onboardSlice.reducer;
