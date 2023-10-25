@@ -25,7 +25,7 @@ const EmployeeList: React.FC = () => {
     const fetchEmployees = async () => {
       try {
         const response = await axios.get<Employee[]>('http://localhost:3000/hr/all-employees'); 
-        console.log('Employees:', response.data);
+
         // Order employees alphabetically by last name
         const sortedEmployees = response.data.sort((a, b) => a.lastName.localeCompare(b.lastName));
 
@@ -38,12 +38,17 @@ const EmployeeList: React.FC = () => {
     fetchEmployees();
   }, []);
 
-  const filteredEmployees = employees.filter(
-    (employee) =>
-      employee.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      employee.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      employee.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredEmployees = employees.filter((employee) => {
+    const firstName = employee?.firstName || '';
+    const lastName = employee?.lastName || '';
+    const email = employee?.email || '';
+
+    return (
+      firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  });
 
   return (
     <Box p={8}>
@@ -62,7 +67,6 @@ const EmployeeList: React.FC = () => {
               <Th>SSN</Th>
               <Th>Work Authorization Title</Th>
               <Th>Phone Number</Th>
-              <Th>Profile</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -79,17 +83,8 @@ const EmployeeList: React.FC = () => {
                 </Td>
                 <Td>{employee.email}</Td>
                 <Td>{employee.SSN}</Td>
-                <Td>{employee.employment?.visaTitle || 'N/A'}</Td> 
+                <Td>{employee.employment?.visaTitle}</Td> 
                 <Td>{employee.Contact.cellPhoneNumber}</Td>
-                <Td>
-                  <Link
-                    as={RouterLink} // Use RouterLink from React Router
-                    to={`/personal-information/${employee.userId}`} // Adjust the route parameter
-                    target="_blank"
-                  >
-                    View Profile
-                  </Link>
-                </Td>
               </Tr>
             ))}
           </Tbody>
