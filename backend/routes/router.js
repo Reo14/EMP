@@ -5,10 +5,12 @@ const { signin, signup } = require("../controllers/auth");
 const {
   updateInfo,
   getInfo,
+  getOnboardStatus,
 } = require("../controllers/employeeContollers");
 
 const {
   getAllEmployeeSummaries,
+  sendNotification,
   generateRegistrationToken,
   getRegistrationTokenHistory,
   processOnboardingApplication,
@@ -29,15 +31,17 @@ router.post("/sign-in", signin);
 
 // Employee Flow
 router.put("/update-info", updateInfo);
-router.get("/personal-information/:username", getInfo);
-
+router.get("/personal-information/:userId", getInfo);
+router.get("/onboardstatus/:id", getOnboardStatus );
 
 
 // HR Flow
-// router.get("/hr/all-employees", getAllEmployeeSummaries);
+router.get("/hr/all-employees", getAllEmployeeSummaries);
 router.post("/hr/registration/send", generateRegistrationToken);
-// router.get("/hr/registration/history", getRegistrationTokenHistory);
-// router.get("/hr/onboardapplication", getAllOnboardingApplications);
-// router.put("/hr/onboardapplication/process", processOnboardingApplication);
+router.post("hr/send-notification/:employeeId", sendNotification);
+router.get("/hr/registration/history", getRegistrationTokenHistory);
+router.get("/hr/onboardapplication", getAllOnboardingApplications);
+router.get("/hr/onboardapplication/:status", getOnboardingApplicationsByStatus);
+router.put("/hr/onboardapplication/process/:employeeId", processOnboardingApplication);
 
 module.exports = router;

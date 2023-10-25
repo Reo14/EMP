@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     required: true,
   },
+  
   registrationStatus: {
     type: String,
     enum: ["Submitted", "Not Submitted"],
