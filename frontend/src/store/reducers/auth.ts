@@ -103,8 +103,6 @@ const authSlice = createSlice({
       state.username = "";
       state.userId = "";
       state.status = "idle";
-      localStorage.removeItem("token");
-      localStorage.removeItem("persist:root");
     },
     setAuth: (state, action) => {
       state.email = action.payload.email;

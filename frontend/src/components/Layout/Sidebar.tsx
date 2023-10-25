@@ -31,9 +31,7 @@ const Sidebar: FC<SidebarProps> = ({ navSize, setNavSize }) => {
   const isLoggedIn = useSelector<RootState, boolean>(
     (state) => state.auth.isLoggedIn
   );
-  const role = useSelector<RootState, string>(
-    (state) => state.onboarding.data?.role || ""
-  );
+  const role = useSelector<RootState, string>((state) => state.auth.role);
 
   return (
     <Flex
@@ -76,13 +74,13 @@ const Sidebar: FC<SidebarProps> = ({ navSize, setNavSize }) => {
                 navSize={navSize}
                 title="Visa Status Mgmt"
                 icon={InfoOutlineIcon}
-                to=""
+                to="/hr/visa-management"
               />
               <NavItem
                 navSize={navSize}
                 title="Hiring Mgmt"
                 icon={StarIcon}
-                to=""
+                to="/hr/hiring-management"
               />
               <NavItem
                 navSize={navSize}

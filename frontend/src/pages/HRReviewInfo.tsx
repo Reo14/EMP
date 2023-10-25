@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { fetchEmployeeInfo } from "../store/reducers/employee";
 import { useDispatch } from "react-redux";
@@ -8,7 +8,7 @@ import { EmployeeInfo } from "../types/employee";
 import {
   Avatar,
   Box,
-  Button,
+  Text,
   Center,
   Divider,
   FormControl,
@@ -23,9 +23,10 @@ import {
 const HRReviewInfo = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const employeeInfo = useSelector<RootState, EmployeeInfo>(
-    (state) => state.employee.info
-  );
+
+  const [employeeInfo, setEmployeeInfo] = useState({} as EmployeeInfo);
+  const [isLoading, setIsLoading] = useState(true);
+
   // get params
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -34,11 +35,14 @@ const HRReviewInfo = () => {
   useEffect(() => {
     (async () => {
       try {
-        await dispatch(fetchEmployeeInfo(userId)).unwrap();
+        const res = await dispatch(fetchEmployeeInfo(userId)).unwrap();
+        setEmployeeInfo(res);
+        setIsLoading(false);
       } catch (error) {
         console.log("Review Info Error: ", error);
       }
     })();
+    console.log("Employee Info: ", employeeInfo);
   }, []);
 
   const inputStyles = {
@@ -53,11 +57,22 @@ const HRReviewInfo = () => {
     },
   };
 
+  if (isLoading) {
+    return (
+      <Box
+        w="100%"
+        h="100%"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Heading>Loading...</Heading>
+      </Box>
+    );
+  }
+
   return (
     <Box p={{ base: 2, md: 4 }} maxW="800px" mx="auto" textColor="black">
-      <Button colorScheme="blue" onClick={() => navigate(-1)}>
-        Go Back
-      </Button>
       <Box>
         <Heading as="h1" mb="4">
           Review Infos
@@ -161,7 +176,7 @@ const HRReviewInfo = () => {
 
               <FormControl isRequired isDisabled>
                 <FormLabel>Date of Birth</FormLabel>
-                <Input value={employeeInfo.DOB.toString().slice(0, 10)} />
+                <Input value={employeeInfo.DOB?.toString().slice(0, 10)} />
               </FormControl>
             </HStack>
 
@@ -175,7 +190,7 @@ const HRReviewInfo = () => {
                 <FormLabel>Cell Phone Number</FormLabel>
                 <Input
                   type="text"
-                  value={employeeInfo.Contact.cellPhoneNumber}
+                  value={employeeInfo.Contact?.cellPhoneNumber}
                   {...inputStyles}
                   readOnly
                 />
@@ -185,7 +200,7 @@ const HRReviewInfo = () => {
                 <FormLabel>Work Phone Number</FormLabel>
                 <Input
                   type="text"
-                  value={employeeInfo.Contact.workPhoneNumber}
+                  value={employeeInfo.Contact?.workPhoneNumber}
                   {...inputStyles}
                   readOnly
                 />
@@ -201,7 +216,7 @@ const HRReviewInfo = () => {
               <FormLabel>Building / Apt Number</FormLabel>
               <Input
                 type="text"
-                value={employeeInfo.address.buildingAptNumber}
+                value={employeeInfo.address?.buildingAptNumber}
                 {...inputStyles}
                 readOnly
               />
@@ -211,7 +226,7 @@ const HRReviewInfo = () => {
               <FormLabel>Street Address</FormLabel>
               <Input
                 type="text"
-                value={employeeInfo.address.streetName}
+                value={employeeInfo.address?.streetName}
                 {...inputStyles}
                 readOnly
               />
@@ -221,7 +236,7 @@ const HRReviewInfo = () => {
               <FormLabel>City</FormLabel>
               <Input
                 type="text"
-                value={employeeInfo.address.city}
+                value={employeeInfo.address?.city}
                 {...inputStyles}
                 readOnly
               />
@@ -232,7 +247,7 @@ const HRReviewInfo = () => {
                 <FormLabel>State</FormLabel>
                 <Input
                   type="text"
-                  value={employeeInfo.address.state}
+                  value={employeeInfo.address?.state}
                   {...inputStyles}
                   readOnly
                 />
@@ -242,7 +257,7 @@ const HRReviewInfo = () => {
                 <FormLabel>Zip</FormLabel>
                 <Input
                   type="text"
-                  value={employeeInfo.address.zip}
+                  value={employeeInfo.address?.zip}
                   readOnly
                   {...inputStyles}
                 />
@@ -266,7 +281,7 @@ const HRReviewInfo = () => {
               <FormControl isRequired isDisabled>
                 <FormLabel>Type</FormLabel>
                 <Select
-                  value={employeeInfo.employment.visaTitle}
+                  value={employeeInfo.employment?.visaTitle}
                   {...inputStyles}
                 >
                   <option value="green-card">Green Card</option>
@@ -278,7 +293,7 @@ const HRReviewInfo = () => {
                 <FormControl isRequired isDisabled>
                   <FormLabel>What is your work authorization?</FormLabel>
                   <Select
-                    value={employeeInfo.employment.visaTitle}
+                    value={employeeInfo.employment?.visaTitle}
                     {...inputStyles}
                   >
                     <option value="h1b">H1-B</option>
@@ -289,16 +304,11 @@ const HRReviewInfo = () => {
                   </Select>
                 </FormControl>
 
-                {employeeInfo.employment.visaTitle === "f1" ? (
+                {employeeInfo.employment?.visaTitle === "f1" ? (
                   <HStack>
-                    <FormControl>
-                      <Input type="file" />
-                      <Button size="sm" colorScheme="red">
-                        Upload OPT Receipt
-                      </Button>
-                    </FormControl>
+                    <Text>PLACEHOLDER: Uploaded Files</Text>
                   </HStack>
-                ) : employeeInfo.employment.visaTitle === "other" ? (
+                ) : employeeInfo.employment?.visaTitle === "other" ? (
                   <FormControl>
                     <Input
                       type="text"
@@ -313,7 +323,7 @@ const HRReviewInfo = () => {
                   <FormControl isRequired isDisabled>
                     <FormLabel>Start Date</FormLabel>
                     <Input
-                      value={employeeInfo.employment.startDate
+                      value={employeeInfo.employment?.startDate
                         .toString()
                         .slice(0, 10)}
                     />
@@ -322,7 +332,7 @@ const HRReviewInfo = () => {
                   <FormControl isRequired isDisabled>
                     <FormLabel>End Date</FormLabel>
                     <Input
-                      value={employeeInfo.employment.endDate
+                      value={employeeInfo.employment?.endDate
                         .toString()
                         .slice(0, 10)}
                     />
@@ -351,7 +361,7 @@ const HRReviewInfo = () => {
                 <FormLabel>Referrer LastName</FormLabel>
                 <Input
                   type="text"
-                  value={employeeInfo.reference.lastName}
+                  value={employeeInfo.reference?.lastName}
                   readOnly
                   {...inputStyles}
                 />
@@ -363,7 +373,7 @@ const HRReviewInfo = () => {
                 <FormLabel>Referrer MiddleName</FormLabel>
                 <Input
                   type="text"
-                  value={employeeInfo.reference.middleName}
+                  value={employeeInfo.reference?.middleName}
                   {...inputStyles}
                   readOnly
                 />
@@ -373,7 +383,7 @@ const HRReviewInfo = () => {
                 <FormLabel>Referrer Phone</FormLabel>
                 <Input
                   type="text"
-                  value={employeeInfo.reference.phone}
+                  value={employeeInfo.reference?.phone}
                   readOnly
                   {...inputStyles}
                 />
@@ -385,7 +395,7 @@ const HRReviewInfo = () => {
                 <FormLabel>Referrer Email</FormLabel>
                 <Input
                   type="text"
-                  value={employeeInfo.reference.phone}
+                  value={employeeInfo.reference?.phone}
                   {...inputStyles}
                   readOnly
                 />
@@ -395,7 +405,7 @@ const HRReviewInfo = () => {
                 <FormLabel>Referrer Relationship</FormLabel>
                 <Input
                   type="text"
-                  value={employeeInfo.reference.relationship}
+                  value={employeeInfo.reference?.relationship}
                   {...inputStyles}
                   readOnly
                 />
@@ -412,7 +422,7 @@ const HRReviewInfo = () => {
                 <FormLabel>ICE FirstName</FormLabel>
                 <Input
                   type="text"
-                  value={employeeInfo.emergencyContact.firstName}
+                  value={employeeInfo.emergencyContact?.firstName}
                   {...inputStyles}
                   readOnly
                 />
@@ -422,7 +432,7 @@ const HRReviewInfo = () => {
                 <FormLabel>ICE LastName</FormLabel>
                 <Input
                   type="text"
-                  value={employeeInfo.emergencyContact.lastName}
+                  value={employeeInfo.emergencyContact?.lastName}
                   {...inputStyles}
                   readOnly
                 />
@@ -434,7 +444,7 @@ const HRReviewInfo = () => {
                 <FormLabel>ICE MiddleName</FormLabel>
                 <Input
                   type="text"
-                  value={employeeInfo.emergencyContact.middleName}
+                  value={employeeInfo.emergencyContact?.middleName}
                   {...inputStyles}
                   readOnly
                 />
@@ -456,7 +466,7 @@ const HRReviewInfo = () => {
                 <FormLabel>ICE Email</FormLabel>
                 <Input
                   type="text"
-                  value={employeeInfo.emergencyContact.email}
+                  value={employeeInfo.emergencyContact?.email}
                   {...inputStyles}
                   readOnly
                 />
@@ -466,7 +476,7 @@ const HRReviewInfo = () => {
                 <FormLabel>ICE Relationship</FormLabel>
                 <Input
                   type="text"
-                  value={employeeInfo.emergencyContact.relationship}
+                  value={employeeInfo.emergencyContact?.relationship}
                   {...inputStyles}
                   readOnly
                 />

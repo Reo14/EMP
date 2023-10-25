@@ -28,6 +28,7 @@ export const fetchEmployeeInfo = createAsyncThunk<
   "employee/fetchInfo",
   async (userId: string, { rejectWithValue }) => {
     try {
+      console.log("userId: ", userId);
       const res = await axios.get<EmployeeInfoResponse>(
         `http://localhost:3000/personal-information/${userId}`
       );

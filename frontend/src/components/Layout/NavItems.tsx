@@ -24,6 +24,8 @@ const NavItem: FC<NavItemProps> = ({ navSize, title, icon, to }) => {
   const handleLogout = () => {
     if (to === "/sign-in") {
       dispatch(logOut());
+      localStorage.removeItem("token");
+      localStorage.removeItem("persist:root");
     }
   };
   return (
