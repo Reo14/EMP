@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Flex, Input, Button, Text, Stack, Heading, Box, Image } from '@chakra-ui/react';
+import { Flex, Input, Button, Text, Stack, Heading, Box, Image, Link } from '@chakra-ui/react';
 import { EmployeeInfo as Employee } from '../types/employee';
 import axios from 'axios';
 
 const VisaStatusManagementPage: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [showAllApplicants, setShowAllApplicants] = useState<boolean>(false);
  
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -72,11 +73,17 @@ const VisaStatusManagementPage: React.FC = () => {
   const filteredEmployees = employees.filter((employee) => {
     const fullName = `${employee.firstName} ${employee.lastName}`;
     return fullName.toLowerCase().includes(searchTerm.toLowerCase());
-    // 这里还需要添加一个逻辑 fliter掉位于状态13的employees
+    
   });
 
   return (
     <Flex direction="column" align="center" justify="center" minHeight="100vh" padding="4">
+      <Flex align="center" justify="flex-end" width="100%">
+        <Button onClick={() => setShowAllApplicants(!showAllApplicants)} m="2">
+          {showAllApplicants ? 'Show In Progress Applicants' : 'Show All Applicants'}
+        </Button>
+      </Flex>
+
       <Heading mb="4">Visa Status Management</Heading>
 
       <Input
@@ -87,6 +94,7 @@ const VisaStatusManagementPage: React.FC = () => {
       />
 
       <Stack spacing="4" width="100%" align="center">
+        {/* <需要在右上角添加一个按钮 切换in progress申请人(状态编号不为12的申请人)和全部申请人/> */}
         {filteredEmployees.map((employee) => (
           <Box key={employee.userId} borderWidth="1px" p="4" borderRadius="md" width="100%">
             <Text fontWeight="bold">{`${employee.firstName} ${employee.lastName}`}</Text>
@@ -127,32 +135,87 @@ const VisaStatusManagementPage: React.FC = () => {
             12. HR Approval 显示下面这段话 / Rejected 显示feedback
             All documents have been approved
 
-            13. All done 需要被filter掉
+            0. reject设置一个单独的统一编号即可
             */}
 
-            {/* {employee.nextStep 此处需改为对应的状态编号 === 'HR Approval' && (
+            {/* Display uploaded and approved documents */}
+            {employee.documents && employee.documents.length > 0 && (
               <>
-                {employee.documents?.map((document, index) => (
-                  <div key={index}>
+                <Heading size="sm" mt="4" mb="2">
+                  Uploaded and Approved Documents:
+                </Heading>
+                {employee.documents.map((document, index) => (
+                  <Box key={index} mt="2">
                     <Text>
                       <b>Document Type:</b> {document.type}
                     </Text>
-                    <Image src={document.file} alt={`Document Preview ${index}`} width="200px" height="auto" />
-                  </div>
+                    <Button
+                      as={Link}
+                      href={document.file}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      colorScheme="blue"
+                      mt="2"
+                    >
+                      Download Document
+                    </Button>
+                    <Button
+                      onClick={() => window.open(document.file, '_blank')}
+                      colorScheme="teal"
+                      mt="2"
+                    >
+                      Preview Document
+                    </Button>
+                  </Box>
                 ))}
-                <Button colorScheme="green" mt="2" onClick={() => handleApproveDocument(employee)}>
-                  Approve Document
-                </Button>
-                <Button colorScheme="red" mt="2" onClick={() => handleRejectDocument(employee)}>
-                  Reject Document
-                </Button>
               </>
-            )} */}
+            )}
 
-            {/* {employee.nextStep === 'Send Notification' && (
-              <Button colorScheme="blue" mt="2" onClick={() => handleSendNotification(employee)}>
-                Send Notification
-              </Button>
+            {/* Action buttons
+            {showAllApplicants && (
+              <>
+                {employee.nextStep === 'HR Approval' && (
+                  <>
+                    {employee.documents?.map((document, index) => (
+                      <div key={index}>
+                        <Text>
+                          <b>Document Type:</b> {document.type}
+                        </Text>
+                        <Image
+                          src={document.file}
+                          alt={`Document Preview ${index}`}
+                          width="200px"
+                          height="auto"
+                        />
+                      </div>
+                    ))}
+                    <Button
+                      colorScheme="green"
+                      mt="2"
+                      onClick={() => handleApproveDocument(employee)}
+                    >
+                      Approve Document
+                    </Button>
+                    <Button
+                      colorScheme="red"
+                      mt="2"
+                      onClick={() => handleRejectDocument(employee)}
+                    >
+                      Reject Document
+                    </Button>
+                  </>
+                )}
+
+                {employee.nextStep === 'Send Notification' && (
+                  <Button
+                    colorScheme="blue"
+                    mt="2"
+                    onClick={() => handleSendNotification(employee)}
+                  >
+                    Send Notification
+                  </Button>
+                )}
+                </>
             )} */}
           </Box>
         ))}
