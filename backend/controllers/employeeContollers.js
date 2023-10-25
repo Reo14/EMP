@@ -30,11 +30,11 @@ async function updateInfo(req, res) {
 // 获取个人信息
 async function getInfo(req, res) {
   try {
-    const { userId } = req.params;
+    const { username } = req.params;
+    console.log("Getting Information of Employee", username);
 
-    const employee = await User.findOne({ userId : userId })
-      .populate("emergencyContact")
-      .populate("reference");
+    const employee = await User.findOne({ username });
+
 
     if (!employee) {
       return res.status(404).json({ error: "No user found" });
