@@ -40,10 +40,11 @@ async function signup(req, res) {
       userId: newUser.userId,
       email: newUser.email,
       username: newUser.username,
+      role: newUser.role,
     });
   } catch (error) {
     console.log("auth.js: signUp error: ", error);
-    res.status(500).json({ message: "Server error", });
+    res.status(500).json({ message: "Server error" });
   }
 }
 
@@ -77,6 +78,10 @@ async function signin(req, res) {
     res.status(200).json({
       message: "Signin successful",
       token,
+      role: user.role,
+      email: user.email,
+      username: user.username,
+      userId: user.userId,
     });
   } catch (error) {
     console.error("Signin error:", error);

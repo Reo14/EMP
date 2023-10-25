@@ -30,10 +30,10 @@ async function updateInfo(req, res) {
 // 获取个人信息
 async function getInfo(req, res) {
   try {
-    const { username } = req.params;
-    console.log("Getting Information of Employee", username);
+    const { userId } = req.params;
+    console.log("Getting Information of Employee", userId);
 
-    const employee = await User.findOne({ username });
+    const employee = await User.findOne({ userId });
 
 
     if (!employee) {
