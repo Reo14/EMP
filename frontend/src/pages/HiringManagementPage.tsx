@@ -8,34 +8,31 @@ import {
   Heading,
   Box,
   Link,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
+  Select,
 } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
+
+interface RegistrationToken {
+  email: string;
+  firstName: string;
+  lastName: string;
+  registrationLink: string;
+  status: string; 
+  onboardStatus: string; // ["Never submitted", "Rejected", "Pending", "Approved"],
+}
 
 const HiringManagementPage: React.FC = () => {
-  const [tokenHistory, setTokenHistory] = useState([]);
-  const [pendingApplications, setPendingApplications] = useState([]);
-  const [rejectedApplications, setRejectedApplications] = useState([]);
-  const [approvedApplications, setApprovedApplications] = useState([]);
+  const [registrationTokenHistory, setRegistrationTokenHistory] = useState<RegistrationToken[]>([]);
+  const [expandedToken, setExpandedToken] = useState<string | null>(null);
+  const [filterStatus, setFilterStatus] = useState<string | null>(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch token history, pending applications, rejected applications, and approved applications
     const fetchData = async () => {
       try {
-        const tokenHistoryResponse = await axios.get('/api/token-history');
-        setTokenHistory(tokenHistoryResponse.data);
-
-        const pendingApplicationsResponse = await axios.get('/api/pending-applications');
-        setPendingApplications(pendingApplicationsResponse.data);
-
-        const rejectedApplicationsResponse = await axios.get('/api/rejected-applications');
-        setRejectedApplications(rejectedApplicationsResponse.data);
-
-        const approvedApplicationsResponse = await axios.get('/api/approved-applications');
-        setApprovedApplications(approvedApplicationsResponse.data);
+        const registrationTokenHistoryResponse = await axios.get<{ data: RegistrationToken[] }>('http://localhost:3000/hr/registration/history');
+        setRegistrationTokenHistory(registrationTokenHistoryResponse.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -44,120 +41,116 @@ const HiringManagementPage: React.FC = () => {
     fetchData();
   }, []);
 
-  const generateTokenAndSendEmail = async () => {
-    try {
-      // Make API call to generate token and send email
-      await axios.post('/api/generate-token');
-      // Refresh token history after generating a new token
-      const updatedTokenHistory = await axios.get('/api/token-history');
-      setTokenHistory(updatedTokenHistory.data);
-      // Display success message or update UI as needed
-      alert('Token generated and email sent successfully!');
-    } catch (error) {
-      console.error('Error generating token:', error);
+  const navigateToHRTest = () => {
+    navigate('/hrtest');
+  };
+
+  const toggleExpand = (email: string) => {
+    setExpandedToken(expandedToken === email ? null : email);
+  };
+
+  const handleStatusFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilterStatus(event.target.value);
+  };
+
+  const handleViewApplication = (registrationLink: string) => {
+    window.open(registrationLink, '_blank');
+  };
+
+  const handleApprove = (email: string) => {
+    // Implement logic to send approval to the server
+    // For example, send a PUT request to update the onboardStatus
+  };
+
+  const handleReject = async (email: string) => {
+    // Implement logic to send rejection to the server
+    // For example, send a PUT request to update the onboardStatus
+    const feedback = prompt('Enter feedback for rejection:');
+    if (feedback !== null) {
+      // Send feedback to the server
+      await axios.put(`http://localhost:3000/hr/reject-application/${email}`, {
+        feedback: feedback,
+      });
     }
   };
 
-  const handleApplicationAction = async (action: string, applicationId: string) => {
-    try {
-      // Make API call to perform action (approve or reject) on the application
-      await axios.put(`/api/${action}-application/${applicationId}`);
-      // Refresh application data after the action
-      const updatedPendingApplications = await axios.get('/api/pending-applications');
-      setPendingApplications(updatedPendingApplications.data);
-      // Display success message or update UI as needed
-      alert(`Application ${action === 'approve' ? 'approved' : 'rejected'} successfully!`);
-    } catch (error) {
-      console.error(`Error ${action === 'approve' ? 'approving' : 'rejecting'} application:`, error);
-    }
-  };
+  const filteredData = filterStatus
+    ? registrationTokenHistory.filter(token => token.onboardStatus === filterStatus)
+    : registrationTokenHistory;
 
   return (
     <Flex direction="column" align="center" justify="center" minHeight="100vh" padding="4">
       <Heading mb="4">Hiring Management</Heading>
 
       <Box mb="4">
-        <Button colorScheme="blue" onClick={generateTokenAndSendEmail}>
+        <Button colorScheme="blue" onClick={navigateToHRTest}>
           Generate Token and Send Email
         </Button>
       </Box>
 
-      <Tabs isFitted variant="enclosed">
-        <TabList mb="1em">
-          <Tab>Pending</Tab>
-          <Tab>Rejected</Tab>
-          <Tab>Approved</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel>
-            <Stack spacing="4" width="100%" align="center">
-              {pendingApplications.map((application) => (
-                <Box key={application.id} borderWidth="1px" p="4" borderRadius="md" width="100%">
-                  <Text>
-                    <b>Full Name:</b> {`${application.firstName} ${application.lastName}`}
-                  </Text>
-                  <Text>
-                    <b>Email:</b> {application.email}
-                  </Text>
-                  <Link onClick={() => window.open(`/view-application/${application.id}`, '_blank')}>
-                    View Application
+      <Box mb="4" alignSelf="flex-end">
+        <Select placeholder="Filter by Onboard Status" onChange={handleStatusFilterChange}>
+          <option value="Pending">Pending</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Approved">Approved</option>
+        </Select>
+      </Box>
+
+      <Stack spacing="4" width="100%" align="center">
+        {filteredData?.length ? (
+          filteredData.map((token) => (
+            <Box key={token.email} borderWidth="1px" p="4" borderRadius="md" width="100%">
+              <Text>
+                <b>Email:</b> {token.email}
+              </Text>
+              <Text>
+                <b>Name:</b> {token.firstName} {token.lastName}
+              </Text>
+              <Text>
+                <b>Status:</b> {token.status}
+              </Text>
+              
+              <Button
+                colorScheme={token.status === 'Submitted' ? 'green' : 'red'}
+                onClick={() => toggleExpand(token.email)}
+              >
+                {expandedToken === token.email ? 'Hide Link' : `Show ${token.status} Link`}
+              </Button>
+
+              <Text>
+                <b>Onboard Status:</b> {token.onboardStatus}
+              </Text>
+              {expandedToken === token.email && (
+                <Text>
+                  <b>Registration Link:</b>{' '}
+                  <Link color={token.status === 'Submitted' ? 'green' : 'red'}>
+                    {token.registrationLink}
                   </Link>
-                  <Button
-                    colorScheme="green"
-                    mt="2"
-                    onClick={() => handleApplicationAction('approve', application.id)}
-                  >
-                    Approve Application
+                </Text>
+              )}
+              {token.onboardStatus === 'Pending' && (filterStatus == 'Pending') && (
+                <>
+                  <Button onClick={() => handleViewApplication(token.registrationLink)}>
+                    View Application
                   </Button>
-                  <Button
-                    colorScheme="red"
-                    mt="2"
-                    onClick={() => handleApplicationAction('reject', application.id)}
-                  >
-                    Reject Application
+                  <Button colorScheme="green" onClick={() => handleApprove(token.email)}>
+                    Approve
                   </Button>
-                </Box>
-              ))}
-            </Stack>
-          </TabPanel>
-          <TabPanel>
-            <Stack spacing="4" width="100%" align="center">
-              {rejectedApplications.map((application) => (
-                <Box key={application.id} borderWidth="1px" p="4" borderRadius="md" width="100%">
-                  <Text>
-                    <b>Full Name:</b> {`${application.firstName} ${application.lastName}`}
-                  </Text>
-                  <Text>
-                    <b>Email:</b> {application.email}
-                  </Text>
-                  <Link onClick={() => window.open(`/view-application/${application.id}`, '_blank')}>
-                    View Application
-                  </Link>
-                </Box>
-              ))}
-            </Stack>
-          </TabPanel>
-          <TabPanel>
-            <Stack spacing="4" width="100%" align="center">
-              {approvedApplications.map((application) => (
-                <Box key={application.id} borderWidth="1px" p="4" borderRadius="md" width="100%">
-                  <Text>
-                    <b>Full Name:</b> {`${application.firstName} ${application.lastName}`}
-                  </Text>
-                  <Text>
-                    <b>Email:</b> {application.email}
-                  </Text>
-                  <Link onClick={() => window.open(`/view-application/${application.id}`, '_blank')}>
-                    View Application
-                  </Link>
-                </Box>
-              ))}
-            </Stack>
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+                  <Button colorScheme="red" onClick={() => handleReject(token.email)}>
+                    Reject
+                  </Button>
+                </>
+              )}
+              
+            </Box>
+          ))
+        ) : (
+          <Text>No registration history available.</Text>
+        )}
+      </Stack>
     </Flex>
   );
 };
 
 export default HiringManagementPage;
+

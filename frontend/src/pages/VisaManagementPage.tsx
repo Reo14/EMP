@@ -79,6 +79,7 @@ const VisaStatusManagementPage: React.FC = () => {
   return (
     <Flex direction="column" align="center" justify="center" minHeight="100vh" padding="4">
       <Flex align="center" justify="flex-end" width="100%">
+        {/* <此按钮的逻辑为 切换in progress申请人(状态编号不为12的申请人)和全部申请人/> */}
         <Button onClick={() => setShowAllApplicants(!showAllApplicants)} m="2">
           {showAllApplicants ? 'Show In Progress Applicants' : 'Show All Applicants'}
         </Button>
@@ -94,7 +95,7 @@ const VisaStatusManagementPage: React.FC = () => {
       />
 
       <Stack spacing="4" width="100%" align="center">
-        {/* <需要在右上角添加一个按钮 切换in progress申请人(状态编号不为12的申请人)和全部申请人/> */}
+        
         {filteredEmployees.map((employee) => (
           <Box key={employee.userId} borderWidth="1px" p="4" borderRadius="md" width="100%">
             <Text fontWeight="bold">{`${employee.firstName} ${employee.lastName}`}</Text>
