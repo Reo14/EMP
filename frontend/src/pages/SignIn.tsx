@@ -21,12 +21,13 @@ import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { signIn } from "../store/reducers/auth";
 import Prompt from "../components/Prompt";
 import MyCard from "../components/MyCard";
-import { AppDispatch } from "../store/configureStore";
+import { AppDispatch, RootState } from "../store/configureStore";
 import { getOnboardingData } from "../store/reducers/onboarding";
 
 const SignIn: FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -44,18 +45,22 @@ const SignIn: FC = () => {
     onSubmit: async (values) => {
       // adjusted to use formik values
       try {
-        await dispatch(signIn(values)).unwrap();
-        const { onBoardStatus } = await dispatch(
-          getOnboardingData(values.username)
-        ).unwrap();
-        alert("Signed In Successfully");
-        if (onBoardStatus === "Approved") {
-          navigate("/employee-infos");
+        const { role, userId } = await dispatch(signIn(values)).unwrap();
+        if (role === "HR") {
+          navigate("/hr/all-employees");
         } else {
-          navigate("/employee-onboarding");
+          const { onBoardStatus } = await dispatch(
+            getOnboardingData(userId)
+          ).unwrap();
+          if (onBoardStatus === "Approved") {
+            navigate("/employee-infos");
+          } else {
+            navigate("/employee-onboarding");
+          }
         }
+        alert("Signed In Successfully");
       } catch (error) {
-        console.log("login error: ", error);
+        console.log("signIn error: ", error);
       }
     },
   });

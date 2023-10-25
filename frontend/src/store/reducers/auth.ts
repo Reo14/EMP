@@ -8,6 +8,7 @@ interface authState {
   email: string;
   username: string;
   userId: string;
+  role: string;
   error: string | undefined | null;
   query: boolean | "standby";
 }
@@ -22,6 +23,7 @@ const initialState: authState = {
   email: "",
   username: "",
   userId: "",
+  role: "",
   status: "idle",
   error: null,
   query: "standby",
@@ -131,6 +133,7 @@ const authSlice = createSlice({
         state.userId = action.payload.userId;
         state.email = action.payload.email;
         state.username = action.payload.username;
+        state.role = action.payload.role;
       })
       .addCase(signUp.rejected, (state, action) => {
         state.status = "failed";
@@ -144,6 +147,10 @@ const authSlice = createSlice({
       .addCase(signIn.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.isLoggedIn = true;
+        state.role = action.payload.role;
+        state.userId = action.payload.userId;
+        state.email = action.payload.email;
+        state.username = action.payload.username;
         localStorage.setItem("token", action.payload.token);
       })
       .addCase(signIn.rejected, (state, action) => {

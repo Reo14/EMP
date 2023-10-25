@@ -26,10 +26,10 @@ export const fetchEmployeeInfo = createAsyncThunk<
   { rejectValue: ErrorResponse }
 >(
   "employee/fetchInfo",
-  async (username: string, { rejectWithValue }) => {
+  async (userId: string, { rejectWithValue }) => {
     try {
       const res = await axios.get<EmployeeInfoResponse>(
-        `http://localhost:3000/personal-information/${username}`
+        `http://localhost:3000/personal-information/${userId}`
       );
       return res.data.employee;
     } catch (err) {

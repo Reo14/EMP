@@ -75,7 +75,7 @@ const EmployeeList: React.FC = () => {
                 <Td>
                   <Link
                     as={RouterLink} // Use RouterLink from React Router
-                    to={`/personal-information/${employee.userId}`} // Adjust the route parameter
+                    to={`/employee-infos?userId=${employee.userId}`} // Adjust the route parameter
                     target="_blank"
                   >
                     {`${employee.firstName} ${employee.lastName}`}

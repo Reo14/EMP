@@ -15,6 +15,7 @@ import {
   ButtonGroup,
   Flex,
   FormErrorMessage,
+  Text,
 } from "@chakra-ui/react";
 import { parseISO } from "date-fns";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
@@ -28,6 +29,7 @@ import {
   editEmployeeInfo,
   fetchEmployeeInfo,
 } from "../store/reducers/employee";
+import { useLocation } from "react-router-dom";
 
 const inputStyles = {
   mt: "2",
@@ -246,7 +248,7 @@ const NameForm: FC<Props> = ({ formik }) => {
         >
           <FormLabel>Data of Birth</FormLabel>
           <SingleDatepicker
-            date={new Date(formik.values.DOB)}
+            date={new Date(formik.values.DOB || Date.now())}
             onDateChange={(date) => formik.setFieldValue("DOB", date)}
             name="DOB"
             disabled={!isEditing}
@@ -656,7 +658,9 @@ const EmploymentForm: FC<Props> = ({ formik }) => {
               <FormLabel>Start Date</FormLabel>
               <SingleDatepicker
                 name="employment.startDate"
-                date={new Date(formik.values.employment?.startDate)}
+                date={
+                  new Date(formik.values.employment?.startDate || Date.now())
+                }
                 onDateChange={(selectedDate) => {
                   formik.setFieldValue("employment.startDate", selectedDate);
                 }}
@@ -680,7 +684,7 @@ const EmploymentForm: FC<Props> = ({ formik }) => {
               <FormLabel>End Date</FormLabel>
               <SingleDatepicker
                 name="employment.endDate"
-                date={new Date(formik.values.employment?.endDate)}
+                date={new Date(formik.values.employment?.endDate || Date.now())}
                 onDateChange={(selectedDate) => {
                   formik.setFieldValue("employment.endDate", selectedDate);
                 }}
@@ -882,15 +886,13 @@ const PersonalInfoPage: FC = () => {
 
   // redux
   const dispatch = useDispatch<AppDispatch>();
-  const username = useSelector<RootState, string>(
-    (state) => state.auth.username
-  );
+  const userId = useSelector<RootState, string>((state) => state.auth.userId);
   const employeeInfo = useSelector<RootState, EmployeeInfo>(
     (state) => state.employee.info
   );
 
   useEffect(() => {
-    dispatch(fetchEmployeeInfo(username))
+    dispatch(fetchEmployeeInfo(userId))
       .unwrap()
       .then(() => {
         setIsLoading(false);
@@ -900,6 +902,7 @@ const PersonalInfoPage: FC = () => {
         setIsLoading(false);
       });
   }, [dispatch]);
+
 
   // formik
 
