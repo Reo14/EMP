@@ -26,9 +26,8 @@ export const fetchEmployeeInfo = createAsyncThunk<
   { rejectValue: ErrorResponse }
 >(
   "employee/fetchInfo",
-  async (username: string, { rejectWithValue, dispatch }) => {
+  async (username: string, { rejectWithValue }) => {
     try {
-      dispatch(date2string());
       const res = await axios.get<EmployeeInfoResponse>(
         `http://localhost:3000/personal-information/${username}`
       );
@@ -45,8 +44,9 @@ export const fetchEmployeeInfo = createAsyncThunk<
 
 export const editEmployeeInfo = createAsyncThunk(
   "employee/edit",
-  async (updatedInfo: EmployeeInfo, { rejectWithValue }) => {
+  async (updatedInfo: EmployeeInfo, { rejectWithValue, dispatch }) => {
     try {
+      dispatch(date2string());
       await axios.put("http://localhost:3000/update-info", updatedInfo, {
         headers: {
           "Content-Type": "application/json",
