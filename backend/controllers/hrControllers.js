@@ -13,6 +13,7 @@ async function getAllEmployeeSummaries(req, res) {
     const employees = await User.find().sort({ lastName: 1 }); // 按姓氏排序
     res.json(
       employees.map((employee) => ({
+        onboardStatus: employee.onboardStatus,
         firstName: employee.firstName,
         lastName: employee.lastName,
         middleName: employee.middleName,
@@ -230,11 +231,29 @@ async function getOnboardingApplicationsByStatus(req, res) {
   }
 }
 
+async function sendNotification(email) {
+  const msg = {
+    to: email,
+    from: "w2luo@ucsd.edu",
+    subject: "Reminder to submit your next document",
+    text: "Don't forget to submit your next document on time!",
+    html: "<p>Don't forget to submit your next document on time!</p>",
+  };
+
+  try {
+    await sgMail.send(msg);
+    console.log("Reminder email sent successfully!");
+  } catch (error) {
+    console.error("Error sending reminder email:", error.response.body.errors);
+  }
+}
+
 // 其他 HR 操作...
 
 module.exports = {
   getAllEmployeeSummaries,
   generateRegistrationToken,
+  sendNotification,
   getRegistrationTokenHistory,
   processOnboardingApplication,
   getAllOnboardingApplications,

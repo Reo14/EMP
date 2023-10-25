@@ -80,7 +80,6 @@ const EmployeeList: React.FC = () => {
                 <Td>{employee.SSN}</Td>
                 <Td>{employee.employment?.visaTitle}</Td> 
                 <Td>{employee.Contact.cellPhoneNumber}</Td>
-                
               </Tr>
             ))}
           </Tbody>
