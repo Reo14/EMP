@@ -13,6 +13,9 @@ async function getAllEmployeeSummaries(req, res) {
     const employees = await User.find().sort({ lastName: 1 }); // 按姓氏排序
     res.json(
       employees.map((employee) => ({
+        onboardStatus: employee.onboardStatus,
+        registrationToken: employee.registrationToken,
+        registrationStatus: employee.registrationStatus,
         firstName: employee.firstName,
         lastName: employee.lastName,
         middleName: employee.middleName,
@@ -23,7 +26,7 @@ async function getAllEmployeeSummaries(req, res) {
         emergencyContact: employee.emergencyContact,
         SSN: employee.SSN,
         DOB: employee.DOB,
-        workAuthorization: employee.employment,
+        employment: employee.employment,
         address: employee.address,
         Contact: employee.Contact,
         email: employee.email,
@@ -126,6 +129,7 @@ async function generateRegistrationToken(req, res) {
 
 // Function to send registration email
 async function sendRegistrationEmail(email, token) {
+
   const msg = {
     to: email,
     from: "w2luo@ucsd.edu",
@@ -145,28 +149,32 @@ async function sendRegistrationEmail(email, token) {
 // 获取所有已发送过注册令牌的历史记录
 async function getRegistrationTokenHistory(req, res) {
   try {
-    const tokenHistory = await RegistrationToken.find();
-    res.json(
-      tokenHistory.map((token) => ({
-        email: token.email,
-        employeeName: token.employeeName,
-        registrationLink: token.registrationLink,
-        status: token.status,
-      }))
-    );
+    const users = await User.find();
+
+    const tokenHistory = users.map((user) => ({
+      email: user.email,
+      firstName: user.firstName, 
+      lastName: user.lastName,
+      registrationLink: user.registrationToken,
+      status: user.registrationStatus,
+      onboardStatus: user.onboardStatus,
+    }));
+
+    res.json(tokenHistory);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 }
 
+
 // 审批入职申请（批准或拒绝）
 async function processOnboardingApplication(req, res) {
   try {
-    const { applicationId } = req.params;
+    const { employeeId } = req.params;
     const { feedback, action } = req.body;
 
     // 获取入职申请
-    const application = await OnboardingApplication.findById(applicationId);
+    const application = await OnboardingApplication.findById(employeeId);
     if (!application) {
       return res.status(404).json({ message: "Application not found" });
     }
@@ -198,35 +206,59 @@ async function processOnboardingApplication(req, res) {
 // 获取所有入职申请
 async function getAllOnboardingApplications(req, res) {
   try {
-    const applications = await OnboardingApplication.find();
-    res.json(applications);
+    const users = await User.find();
+
+    const applications  = users.map((user) => ({
+      email: user.email,
+      firstName: user.firstName, 
+      lastName: user.lastName,
+      onboardStatus: user.onboardStatus,
+    }));
+
+    res.json(applications );
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 }
 
-// 获取某一状态的所有入职申请
 async function getOnboardingApplicationsByStatus(req, res) {
   try {
-    const { status } = req.params; // 通过路由参数传递状态
+    const { status } = req.params;
 
-    // 验证状态是否有效，以防止恶意请求
+    // Validate the status to prevent malicious requests
     const validStatuses = ["Pending", "Rejected", "Approved"];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ error: "Invalid status" });
     }
 
-    const applications = await OnboardingApplication.find({ status });
+    const users = await User.find({ onboardStatus: status });
 
-    res.json(
-      applications.map((application) => ({
-        fullName: application.fullName,
-        email: application.email,
-        status: application.status,
-      }))
-    );
+    const formattedApplications = users.map(user => ({
+      fullName: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+      status: user.onboardStatus,
+    }));
+
+    res.json(formattedApplications);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+}
+
+async function sendNotification(email) {
+  const msg = {
+    to: email,
+    from: "w2luo@ucsd.edu",
+    subject: "Reminder to submit your next document",
+    text: "Don't forget to submit your next document on time!",
+    html: "<p>Don't forget to submit your next document on time!</p>",
+  };
+
+  try {
+    await sgMail.send(msg);
+    console.log("Reminder email sent successfully!");
+  } catch (error) {
+    console.error("Error sending reminder email:", error.response.body.errors);
   }
 }
 
@@ -235,6 +267,7 @@ async function getOnboardingApplicationsByStatus(req, res) {
 module.exports = {
   getAllEmployeeSummaries,
   generateRegistrationToken,
+  sendNotification,
   getRegistrationTokenHistory,
   processOnboardingApplication,
   getAllOnboardingApplications,
