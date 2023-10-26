@@ -10,7 +10,7 @@ import {
   Link,
   Select,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface RegistrationToken {
   userId: string;
@@ -30,6 +30,7 @@ const HiringManagementPage: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<string | null>(null);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,7 +45,7 @@ const HiringManagementPage: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [location]);
 
   const navigateToHRTest = () => {
     navigate("/hrtest");
@@ -63,23 +64,6 @@ const HiringManagementPage: React.FC = () => {
   const handleViewApplication = (userId: string) => {
     navigate(`/hr/review-info?from=hiring&userId=${userId}`);
   };
-
-  // const handleApprove = (email: string) => {
-  //   // Implement logic to send approval to the server
-  //   // For example, send a PUT request to update the onboardStatus
-  // };
-
-  // const handleReject = async (email: string) => {
-  //   // Implement logic to send rejection to the server
-  //   // For example, send a PUT request to update the onboardStatus
-  //   const feedback = prompt('Enter feedback for rejection:');
-  //   if (feedback !== null) {
-  //     // Send feedback to the server
-  //     await axios.put(`http://localhost:3000/hr/reject-application/${email}`, {
-  //       feedback: feedback,
-  //     });
-  //   }
-  // };
 
   const filteredData = filterStatus
     ? registrationTokenHistory.filter(
@@ -163,12 +147,6 @@ const HiringManagementPage: React.FC = () => {
                     >
                       View Application
                     </Button>
-                    {/* <Button colorScheme="green" onClick={() => handleApprove(token.email)}>
-                    Approve
-                  </Button>
-                  <Button colorScheme="red" onClick={() => handleReject(token.email)}>
-                    Reject
-                  </Button> */}
                   </>
                 )}
             </Box>

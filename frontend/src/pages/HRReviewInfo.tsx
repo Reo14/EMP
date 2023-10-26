@@ -1,4 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  ChangeEvent,
+  ChangeEventHandler,
+  useEffect,
+  useState,
+} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { fetchEmployeeInfo } from "../store/reducers/employee";
 import { useDispatch } from "react-redux";
@@ -21,6 +26,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import MyWidget from "../components/MyWidget";
+import axios from "axios";
 
 const HRReviewInfo = () => {
   const navigate = useNavigate();
@@ -28,12 +34,46 @@ const HRReviewInfo = () => {
 
   const [employeeInfo, setEmployeeInfo] = useState({} as EmployeeInfo);
   const [isLoading, setIsLoading] = useState(true);
+  const [text, setText] = React.useState("");
 
   // get params
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const userId = queryParams.get("userId") as string;
   const isFromHiring = queryParams.get("from") === "hiring";
+
+  const onTextChange: ChangeEventHandler = (
+    e: ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setText(e.target.value);
+  };
+
+  const handleApprove = async (userId: string) => {
+    console.log("Approve ", userId);
+    try {
+      const res = await axios.put(
+        `http://localhost:3000/hr/process/${userId}`,
+        { status: "Approved" },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      console.log(res);
+    } catch (error) {
+      console.error("Error approving user:", error);
+    }
+  };
+
+  const handleReject = async (userId: string) => {
+    try {
+      const res = await axios.put(
+        `http://localhost:3000/hr/process/${userId}`,
+        { status: "Rejected", reason: `${text}` },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      console.log(res);
+    } catch (error) {
+      console.error("Error rejecting user:", error);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -495,7 +535,19 @@ const HRReviewInfo = () => {
           </VStack>
         </Box>
       </Box>
-      {isFromHiring && <MyWidget />}
+      {isFromHiring && (
+        <MyWidget
+          onTextChange={onTextChange}
+          triggerApproval={() => {
+            handleApprove(userId);
+            navigate("/hr/hiring-management");
+          }}
+          triggerReject={() => {
+            handleReject(userId);
+            navigate("/hr/hiring-management");
+          }}
+        />
+      )}
     </Box>
   );
 };

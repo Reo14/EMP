@@ -67,7 +67,7 @@ const userSchema = new mongoose.Schema({
   DOB: String, // 生日不需要unique
   gender: {
     type: String,
-    enum: ["Male", "Female", "I do not want to answer"],
+    enum: ["male", "female", "I do not want to answer"],
     default: "I do not want to answer",
   },
   isPermanentResident: { type: String, enum: ["Yes", "No"], default: "No" },
@@ -76,6 +76,7 @@ const userSchema = new mongoose.Schema({
     startDate: Date,
     endDate: Date,
   },
+  onboardFeedback: String,
 
   documents: [
     {

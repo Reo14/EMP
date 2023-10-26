@@ -42,6 +42,6 @@ router.post("hr/send-notification/:employeeId", sendNotification);
 router.get("/hr/registration/history", getRegistrationTokenHistory);
 router.get("/hr/onboardapplication", getAllOnboardingApplications);
 router.get("/hr/onboardapplication/:status", getOnboardingApplicationsByStatus);
-router.put("/hr/onboardapplication/process/:employeeId", processOnboardingApplication);
+router.put("/hr/process/:userId/", processOnboardingApplication);
 
 module.exports = router;

@@ -218,7 +218,7 @@ const OnBoardingPage: FC = () => {
         >
           <Box display="flex" flexDirection="row">
             <AlertIcon />
-            Please wait for HR to review your application.
+            Your application has been approved
           </Box>
 
           <Button

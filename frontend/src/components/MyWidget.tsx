@@ -6,8 +6,15 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
+import React, { ChangeEvent, ChangeEventHandler } from "react";
 
-const MyWidget = () => {
+interface Props {
+  onTextChange: ChangeEventHandler;
+  triggerApproval: Function;
+  triggerReject: Function;
+}
+
+const MyWidget = ({ onTextChange, triggerApproval, triggerReject }: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
@@ -29,8 +36,7 @@ const MyWidget = () => {
           _hover={{ bgGradient: "linear(to-r, green.400, green.500)" }}
           _active={{ bgGradient: "linear(to-r, green.500, green.600)" }}
           onClick={() => {
-            // handle approve logic
-            console.log("Approved");
+            triggerApproval();
             onClose();
           }}
         >
@@ -54,6 +60,7 @@ const MyWidget = () => {
             mb={2}
             borderRadius="md"
             boxShadow="inner"
+            onChange={onTextChange}
           />
         )}
 
@@ -64,8 +71,7 @@ const MyWidget = () => {
             _hover={{ bgGradient: "linear(to-r, red.400, red.500)" }}
             _active={{ bgGradient: "linear(to-r, red.500, red.600)" }}
             onClick={() => {
-              // handle reject logic with message
-              console.log("Rejected with message");
+              triggerReject();
               onClose();
             }}
           >
