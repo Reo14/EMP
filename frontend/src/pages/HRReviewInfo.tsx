@@ -35,6 +35,7 @@ const HRReviewInfo = () => {
   const [employeeInfo, setEmployeeInfo] = useState({} as EmployeeInfo);
   const [isLoading, setIsLoading] = useState(true);
   const [text, setText] = React.useState("");
+  const [isPending, setIsPending] = useState(true);
 
   // get params
   const location = useLocation();
@@ -81,6 +82,7 @@ const HRReviewInfo = () => {
         const res = await dispatch(fetchEmployeeInfo(userId)).unwrap();
         setEmployeeInfo(res);
         setIsLoading(false);
+        setIsPending(res.onboardStatus === 'Pending');
       } catch (error) {
         console.log("Review Info Error: ", error);
       }
@@ -535,7 +537,7 @@ const HRReviewInfo = () => {
           </VStack>
         </Box>
       </Box>
-      {isFromHiring && (
+      {isFromHiring && isPending && (
         <MyWidget
           onTextChange={onTextChange}
           triggerApproval={() => {
