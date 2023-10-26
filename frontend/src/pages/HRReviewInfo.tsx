@@ -18,7 +18,9 @@ import {
   Input,
   Select,
   VStack,
+  Button,
 } from "@chakra-ui/react";
+import MyWidget from "../components/MyWidget";
 
 const HRReviewInfo = () => {
   const navigate = useNavigate();
@@ -31,6 +33,7 @@ const HRReviewInfo = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const userId = queryParams.get("userId") as string;
+  const isFromHiring = queryParams.get("from") === "hiring";
 
   useEffect(() => {
     (async () => {
@@ -74,6 +77,11 @@ const HRReviewInfo = () => {
   return (
     <Box p={{ base: 2, md: 4 }} maxW="800px" mx="auto" textColor="black">
       <Box>
+        {isFromHiring && (
+          <Button colorScheme="blue" onClick={() => navigate(-1)}>
+            Go Back
+          </Button>
+        )}
         <Heading as="h1" mb="4">
           Review Infos
         </Heading>
@@ -487,6 +495,7 @@ const HRReviewInfo = () => {
           </VStack>
         </Box>
       </Box>
+      {isFromHiring && <MyWidget />}
     </Box>
   );
 };

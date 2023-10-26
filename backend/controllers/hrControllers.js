@@ -158,6 +158,7 @@ async function getRegistrationTokenHistory(req, res) {
       registrationLink: user.registrationToken,
       status: user.registrationStatus,
       onboardStatus: user.onboardStatus,
+      userId: user.userId,
     }));
 
     res.json(tokenHistory);
