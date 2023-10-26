@@ -936,7 +936,7 @@ const PersonalInfoPage: FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await dispatch(fetchEmployeeInfo(userId)).unwrap();
+        await dispatch(fetchEmployeeInfo(userId)).unwrap();
         setIsLoading(false);
       } catch (error) {
         console.log("Failed to fetch employee info: ", error);
@@ -979,7 +979,7 @@ const PersonalInfoPage: FC = () => {
           ) : step === 5 ? (
             <EmergencyContactForm formik={formikProps} />
           ) : (
-        <DocumentForm formik={formik} />
+        <DocumentForm formik={formikProps} />
           )}
 
           <ButtonGroup mt="5%" w="100%">
