@@ -97,6 +97,7 @@ const OnBoardingPage: FC = () => {
       const currentDocuments: Document[] = formik.values.documents || [];
       // 创建一个新的 Document 对象
       const newDocument: Document = {
+        name: file.name,
         type: file.type,
         file: fileBase64,
       };
