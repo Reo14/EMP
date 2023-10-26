@@ -32,7 +32,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { AppDispatch, RootState } from "../store/configureStore";
-import { submitOnboarding } from "../store/reducers/onboarding";
+import { reset, submitOnboarding } from "../store/reducers/onboarding";
 import { Document } from "../types/employee";
 import { initialValues, validationSchema } from "../utils/formikConfig";
 
@@ -197,7 +197,10 @@ const OnBoardingPage: FC = () => {
               size="sm"
               marginLeft="3"
               // TODO:
-              onClick={() => alert("Under development")}
+              onClick={() => {
+                // alert("Under development");
+                dispatch(reset());
+              }}
             >
               Re-Submit Application
             </Button>
