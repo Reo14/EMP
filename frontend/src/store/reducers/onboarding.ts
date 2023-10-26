@@ -59,10 +59,10 @@ export const getOnboardingStatus = createAsyncThunk(
 
 export const getOnboardingData = createAsyncThunk(
   "employee/getOnboardingData",
-  async (username: string, { rejectWithValue, dispatch }) => {
+  async (userId: string, { rejectWithValue, dispatch }) => {
     try {
       const res = await axios.get(
-        `http://localhost:3000/personal-information/${username}`
+        `http://localhost:3000/personal-information/${userId}`
       );
       dispatch(
         setAuth({

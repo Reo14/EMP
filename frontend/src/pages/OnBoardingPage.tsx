@@ -16,6 +16,14 @@ import {
   Stack,
   VStack,
   Text,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  PopoverCloseButton,
+  PopoverHeader,
+  PopoverBody,
+  Portal,
 } from "@chakra-ui/react";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
 import { useFormik } from "formik";
@@ -24,7 +32,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { AppDispatch, RootState } from "../store/configureStore";
-import { submitOnboarding } from "../store/reducers/onboarding";
+import { reset, submitOnboarding } from "../store/reducers/onboarding";
 import { Document } from "../types/employee";
 import { initialValues, validationSchema } from "../utils/formikConfig";
 
@@ -33,6 +41,9 @@ const OnBoardingPage: FC = () => {
   const navigate = useNavigate();
   const onboardingStatus = useSelector<RootState, string>(
     (state) => state.onboarding.onboardingStatus
+  );
+  const onboardFeedback = useSelector<RootState, string | undefined>(
+    (state) => state.onboarding.data.onboardFeedback
   );
   const email = useSelector<RootState, string>((state) => state.auth.email);
   const username = useSelector<RootState, string>(
@@ -164,20 +175,32 @@ const OnBoardingPage: FC = () => {
           </Box>
 
           <Box>
-            <Button
-              colorScheme="red"
-              size="sm"
-              // TODO: show feedback
-              onClick={() => alert("Under development")}
-            >
-              See Feedback
-            </Button>
+            <Popover>
+              <PopoverTrigger>
+                <Button colorScheme="red" size="sm">
+                  See Feedback
+                </Button>
+              </PopoverTrigger>
+              <Portal>
+                <PopoverContent>
+                  <PopoverArrow />
+                  <PopoverCloseButton />
+                  <PopoverHeader>Feedback from your HR</PopoverHeader>
+                  <PopoverBody>
+                    {onboardFeedback ? onboardFeedback : "No feedback provided"}
+                  </PopoverBody>
+                </PopoverContent>
+              </Portal>
+            </Popover>
             <Button
               colorScheme="blue"
               size="sm"
               marginLeft="3"
               // TODO:
-              onClick={() => alert("Under development")}
+              onClick={() => {
+                // alert("Under development");
+                dispatch(reset());
+              }}
             >
               Re-Submit Application
             </Button>
@@ -219,7 +242,7 @@ const OnBoardingPage: FC = () => {
         >
           <Box display="flex" flexDirection="row">
             <AlertIcon />
-            Please wait for HR to review your application.
+            Your application has been approved
           </Box>
 
           <Button

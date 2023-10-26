@@ -158,6 +158,7 @@ async function getRegistrationTokenHistory(req, res) {
       registrationLink: user.registrationToken,
       status: user.registrationStatus,
       onboardStatus: user.onboardStatus,
+      userId: user.userId,
     }));
 
     res.json(tokenHistory);
@@ -170,35 +171,24 @@ async function getRegistrationTokenHistory(req, res) {
 // 审批入职申请（批准或拒绝）
 async function processOnboardingApplication(req, res) {
   try {
-    const { employeeId } = req.params;
-    const { feedback, action } = req.body;
+    const { userId } = req.params;
+    const { status, reason } = req.body;
 
-    // 获取入职申请
-    const application = await OnboardingApplication.findById(employeeId);
-    if (!application) {
-      return res.status(404).json({ message: "Application not found" });
+    const user = await User.findOne({ userId });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
-
-    // 执行相应的审批操作
-    if (action === "approve") {
-      // 更新申请状态为已批准
-      application.status = "Approved";
-    } else if (action === "reject") {
-      // 更新申请状态为已拒绝
-      application.status = "Rejected";
+    if (status === "Approved") {
+      user.onboardStatus = "Approved";
     } else {
-      // 无效的操作
-      return res.status(400).json({ message: "Invalid action" });
+      if (reason === "") throw new Error("Empty feedback");
+      user.onboardStatus = "Rejected";
+      user.onboardFeedback = reason;
     }
-
-    // 添加审批意见
-    application.feedback = feedback;
-    await application.save();
-
-    // 发送通知或其他操作...
-
-    res.json(application);
+    await user.save();
+    res.status(200).json({ message: "Onboarding status updated successfully" });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: error.message });
   }
 }
@@ -208,14 +198,14 @@ async function getAllOnboardingApplications(req, res) {
   try {
     const users = await User.find();
 
-    const applications  = users.map((user) => ({
+    const applications = users.map((user) => ({
       email: user.email,
-      firstName: user.firstName, 
+      firstName: user.firstName,
       lastName: user.lastName,
       onboardStatus: user.onboardStatus,
     }));
 
-    res.json(applications );
+    res.json(applications);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -233,7 +223,7 @@ async function getOnboardingApplicationsByStatus(req, res) {
 
     const users = await User.find({ onboardStatus: status });
 
-    const formattedApplications = users.map(user => ({
+    const formattedApplications = users.map((user) => ({
       fullName: `${user.firstName} ${user.lastName}`,
       email: user.email,
       status: user.onboardStatus,

@@ -15,11 +15,11 @@ import {
   ButtonGroup,
   Flex,
   FormErrorMessage,
-  Text
+  Text,
 } from "@chakra-ui/react";
 import { parseISO } from "date-fns";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
-import { FormikProps, useFormik } from "formik";
+import { Form, Formik, FormikProps, useFormik } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/configureStore";
@@ -29,6 +29,7 @@ import {
   editEmployeeInfo,
   fetchEmployeeInfo,
 } from "../store/reducers/employee";
+import { useLocation } from "react-router-dom";
 
 const inputStyles = {
   mt: "2",
@@ -247,7 +248,7 @@ const NameForm: FC<Props> = ({ formik }) => {
         >
           <FormLabel>Data of Birth</FormLabel>
           <SingleDatepicker
-            date={new Date(formik.values.DOB)}
+            date={new Date(formik.values.DOB || "")}
             onDateChange={(date) => formik.setFieldValue("DOB", date)}
             name="DOB"
             disabled={!isEditing}
@@ -310,10 +311,10 @@ const AddressForm: FC<Props> = ({ formik }) => {
         <FormLabel>Building / Apt Number</FormLabel>
         <Input
           type="text"
-          value={formik.values.address.buildingAptNumber}
+          value={formik.values.address?.buildingAptNumber}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          name="address.buildingAptNumber"
+          name="address?.buildingAptNumber"
           {...inputStyles}
           isDisabled={!isEditing}
         />
@@ -337,7 +338,7 @@ const AddressForm: FC<Props> = ({ formik }) => {
           value={formik.values.address?.streetName}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          name="address.streetName"
+          name="address?.streetName"
           {...inputStyles}
           isDisabled={!isEditing}
         />
@@ -361,7 +362,7 @@ const AddressForm: FC<Props> = ({ formik }) => {
           value={formik.values.address?.city}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          name="address.city"
+          name="address?.city"
           {...inputStyles}
           isDisabled={!isEditing}
         />
@@ -383,7 +384,7 @@ const AddressForm: FC<Props> = ({ formik }) => {
             value={formik.values.address?.state}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            name="address.state"
+            name="address?.state"
             {...inputStyles}
             isDisabled={!isEditing}
           />
@@ -404,7 +405,7 @@ const AddressForm: FC<Props> = ({ formik }) => {
             value={formik.values.address?.zip}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            name="address.zip"
+            name="address?.zip"
             {...inputStyles}
             isDisabled={!isEditing}
           />
@@ -470,7 +471,7 @@ const ContactInfoForm: FC<Props> = ({ formik }) => {
             value={formik.values.Contact?.cellPhoneNumber}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            name="Contact.cellPhoneNumber"
+            name="Contact?.cellPhoneNumber"
             {...inputStyles}
             placeholder="+1 (___) __-___-___"
             isDisabled={!isEditing}
@@ -490,7 +491,7 @@ const ContactInfoForm: FC<Props> = ({ formik }) => {
             value={formik.values.Contact?.workPhoneNumber}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            name="Contact.workPhoneNumber"
+            name="Contact?.workPhoneNumber"
             {...inputStyles}
             isDisabled={!isEditing}
           />
@@ -572,7 +573,7 @@ const EmploymentForm: FC<Props> = ({ formik }) => {
             value={formik.values.employment?.visaTitle}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            name="employment.visaTitle"
+            name="employment?.visaTitle"
             placeholder="Select option"
             {...inputStyles}
             isDisabled={!isEditing}
@@ -601,7 +602,7 @@ const EmploymentForm: FC<Props> = ({ formik }) => {
               value={formik.values.employment?.visaTitle}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              name="employment.visaTitle"
+              name="employment?.visaTitle"
               placeholder="Select option"
               {...inputStyles}
               isDisabled={!isEditing}
@@ -656,10 +657,12 @@ const EmploymentForm: FC<Props> = ({ formik }) => {
             >
               <FormLabel>Start Date</FormLabel>
               <SingleDatepicker
-                name="employment.startDate"
-                date={new Date(formik.values.employment?.startDate)}
+                name="employment?.startDate"
+                date={
+                  new Date(formik.values.employment?.startDate || Date.now())
+                }
                 onDateChange={(selectedDate) => {
-                  formik.setFieldValue("employment.startDate", selectedDate);
+                  formik.setFieldValue("employment?.startDate", selectedDate);
                 }}
                 disabled={!isEditing}
               />
@@ -680,10 +683,10 @@ const EmploymentForm: FC<Props> = ({ formik }) => {
             >
               <FormLabel>End Date</FormLabel>
               <SingleDatepicker
-                name="employment.endDate"
-                date={new Date(formik.values.employment?.endDate)}
+                name="employment?.endDate"
+                date={new Date(formik.values.employment?.endDate || Date.now())}
                 onDateChange={(selectedDate) => {
-                  formik.setFieldValue("employment.endDate", selectedDate);
+                  formik.setFieldValue("employment?.endDate", selectedDate);
                 }}
                 disabled={!isEditing}
               />
@@ -756,7 +759,7 @@ const EmergencyContactForm: FC<Props> = ({ formik }) => {
             value={formik.values.emergencyContact?.firstName}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            name="emergencyContact.firstName"
+            name="emergencyContact?.firstName"
             {...inputStyles}
             placeholder="emergency contact firstname"
             isDisabled={!isEditing}
@@ -782,7 +785,7 @@ const EmergencyContactForm: FC<Props> = ({ formik }) => {
             value={formik.values.emergencyContact?.lastName}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            name="emergencyContact.lastName"
+            name="emergencyContact?.lastName"
             {...inputStyles}
             placeholder="emergency contact lastname"
             isDisabled={!isEditing}
@@ -804,7 +807,7 @@ const EmergencyContactForm: FC<Props> = ({ formik }) => {
             value={formik.values.emergencyContact?.middleName}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            name="emergencyContact.middleName"
+            name="emergencyContact?.middleName"
             {...inputStyles}
             isDisabled={!isEditing}
           />
@@ -817,7 +820,7 @@ const EmergencyContactForm: FC<Props> = ({ formik }) => {
             value={formik.values.emergencyContact?.phone}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            name="emergencyContact.phone"
+            name="emergencyContact?.phone"
             {...inputStyles}
             isDisabled={!isEditing}
           />
@@ -832,7 +835,7 @@ const EmergencyContactForm: FC<Props> = ({ formik }) => {
             value={formik.values.emergencyContact?.email}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            name="emergencyContact.email"
+            name="emergencyContact?.email"
             {...inputStyles}
             isDisabled={!isEditing}
           />
@@ -851,7 +854,7 @@ const EmergencyContactForm: FC<Props> = ({ formik }) => {
             value={formik.values.emergencyContact?.relationship}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            name="emergencyContact.relationship"
+            name="emergencyContact?.relationship"
             {...inputStyles}
             isDisabled={!isEditing}
           />
@@ -925,111 +928,108 @@ const PersonalInfoPage: FC = () => {
 
   // redux
   const dispatch = useDispatch<AppDispatch>();
-  const username = useSelector<RootState, string>(
-    (state) => state.auth.username
-  );
+  const userId = useSelector<RootState, string>((state) => state.auth.userId);
   const employeeInfo = useSelector<RootState, EmployeeInfo>(
     (state) => state.employee.info
   );
 
   useEffect(() => {
-    dispatch(fetchEmployeeInfo(username))
-      .unwrap()
-      .then(() => {
+    (async () => {
+      try {
+        await dispatch(fetchEmployeeInfo(userId)).unwrap();
         setIsLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.log("Failed to fetch employee info: ", error);
-        setIsLoading(false);
-      });
-  }, [dispatch]);
-
-  // formik
-
-  const formik = useFormik({
-    initialValues: employeeInfo,
-    validationSchema: validationSchema,
-    onSubmit: (values) => {
-      dispatch(editEmployeeInfo(values));
-    },
-  });
+        setIsLoading(true);
+      }
+    })();
+  }, []);
 
   if (isLoading) {
     return <Heading>Loading Info...</Heading>;
   }
 
   return (
-    <Box
-      borderWidth="1px"
-      rounded="lg"
-      shadow="1px 1px 3px rgba(0,0,0,0.3)"
-      maxWidth={800}
-      p={6}
-      m="10px auto"
-      as="form"
+    <Formik
+      initialValues={employeeInfo}
+      validationSchema={validationSchema}
+      onSubmit={(values) => {
+        dispatch(editEmployeeInfo(values));
+      }}
     >
-      <Progress
-        hasStripe
-        value={progress}
-        mb="5%"
-        mx="5%"
-        isAnimated
-      ></Progress>
-      {step === 1 ? (
-        <NameForm formik={formik} />
-      ) : step === 2 ? (
-        <AddressForm formik={formik} />
-      ) : step === 3 ? (
-        <ContactInfoForm formik={formik} />
-      ) : step === 4 ? (
-        <EmploymentForm formik={formik} />
-      ) : step === 5 ? (
-        <EmergencyContactForm formik={formik} />
-      ) : (
-        <DocumentForm formik={formik} />
-      )}
+      {(formikProps) => (
+        <Box
+          borderWidth="1px"
+          rounded="lg"
+          shadow="1px 1px 3px rgba(0,0,0,0.3)"
+          maxWidth={800}
+          p={6}
+          m="10px auto"
+          as={Form}
+        >
+          <Progress hasStripe value={progress} mb="5%" mx="5%" isAnimated />
+          {step === 1 ? (
+            <NameForm formik={formikProps} />
+          ) : step === 2 ? (
+            <AddressForm formik={formikProps} />
+          ) : step === 3 ? (
+            <ContactInfoForm formik={formikProps} />
+          ) : step === 4 ? (
+            <EmploymentForm formik={formikProps} />
+          ) : step === 5 ? (
+            <EmergencyContactForm formik={formikProps} />
+          ) : (
+        <DocumentForm formik={formikProps} />
+          )}
 
-      <ButtonGroup mt="5%" w="100%">
-        <Flex w="100%" justifyContent="space-between">
-          <Flex>
-            <Button
-              onClick={() => {
-                setStep(step - 1);
-                setProgress(progress - 16.67);
-              }}
-              isDisabled={step === 1}
-              colorScheme="teal"
-              variant="solid"
-              w="7rem"
-              mr="5%"
-            >
-              Back
-            </Button>
-            <Button
-              w="7rem"
-              isDisabled={step === 6}
-              onClick={() => {
-                setStep(step + 1);
-                if (step === 6) {
-                  setProgress(100);
-                } else {
-                  setProgress(progress + 16.67);
-                }
-              }}
-              colorScheme="teal"
-              variant="outline"
-            >
-              Next
-            </Button>
-          </Flex>
-          {step === 6 ? (
-            <Button w="7rem" colorScheme="red" variant="solid" type="submit">
-              Submit
-            </Button>
-          ) : null}
-        </Flex>
-      </ButtonGroup>
-    </Box>
+          <ButtonGroup mt="5%" w="100%">
+            <Flex w="100%" justifyContent="space-between">
+              <Flex>
+                <Button
+                  onClick={() => {
+                    setStep(step - 1);
+                    setProgress(progress - 16.67);
+                  }}
+                  isDisabled={step === 1}
+                  colorScheme="teal"
+                  variant="solid"
+                  w="7rem"
+                  mr="5%"
+                >
+                  Back
+                </Button>
+                <Button
+                  w="7rem"
+                  isDisabled={step === 6}
+                  onClick={() => {
+                    setStep(step + 1);
+                    if (step === 6) {
+                      setProgress(100);
+                    } else {
+                      setProgress(progress + 16.67);
+                    }
+                  }}
+                  colorScheme="teal"
+                  variant="outline"
+                >
+                  Next
+                </Button>
+              </Flex>
+              {step === 6 ? (
+                <Button
+                  w="7rem"
+                  colorScheme="red"
+                  variant="solid"
+                  type="submit"
+                >
+                  Submit
+                </Button>
+              ) : null}
+            </Flex>
+          </ButtonGroup>
+        </Box>
+)}
+    </Formik>
   );
 };
 

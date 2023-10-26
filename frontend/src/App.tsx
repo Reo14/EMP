@@ -20,8 +20,14 @@ import PersonalInfoPage from "./pages/PersonalInfoPage";
 import EmployeeVisaPage from "./pages/EmployeeVisaPage";
 import EmployeeList from "./pages/AllEmployeesPage";
 import ReviewOnboarding from "./pages/ReviewOnboarding";
+<<<<<<< HEAD
 import VisaStatusManagementPage from "./pages/VisaManagementPage"
 import HiringManagementPage from "./pages/HiringManagementPage"
+=======
+import HiringManagementPage from "./pages/HiringManagementPage";
+import VisaStatusManagementPage from "./pages/VisaManagementPage";
+import HRReviewInfo from "./pages/HRReviewInfo";
+>>>>>>> origin/Employee-Redux
 
 const App: FC = () => {
   const [navSize, setNavSize] = useState("small");
@@ -52,8 +58,16 @@ const App: FC = () => {
             <Route path="/employee-visa" element={<EmployeeVisaPage />} />
 
             <Route path="/hr/all-employees" element={<EmployeeList />} />
-            <Route path="hr/hiring-management" element={<HiringManagementPage />} />
-            <Route path="hr/visa-management" element={<VisaStatusManagementPage />} />
+            <Route
+              path="/hr/hiring-management"
+              element={<HiringManagementPage />}
+            />
+            <Route
+              path="/hr/visa-management"
+              element={<VisaStatusManagementPage />}
+            />
+            <Route path="/hr/review-info" element={<HRReviewInfo />} />
+
             <Route path="/hrtest" element={<HRtest />} />
             <Route path="/success" element={<LoggedIn />} />
             <Route path="/error" element={<ErrorPage />} />
