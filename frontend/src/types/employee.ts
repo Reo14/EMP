@@ -47,7 +47,8 @@ export type EmployeeInfo = {
   email: string;
   role?: string;
   onboardStatus: string;
-  nextStep?: string,
+  onboardFeedback?: string;
+  nextStep?: string;
   emergencyContact: EmergencyContact;
   reference: Reference;
   userId?: string;
