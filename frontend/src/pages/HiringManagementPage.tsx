@@ -66,10 +66,12 @@ const HiringManagementPage: React.FC = () => {
   };
 
   const filteredData = filterStatus
-    ? registrationTokenHistory.filter(
-        (token) => token.onboardStatus === filterStatus
-      )
-    : registrationTokenHistory;
+  ? registrationTokenHistory.filter(
+      (token) =>
+        token.onboardStatus === filterStatus && token.onboardStatus !== 'Never submitted'
+    )
+  : registrationTokenHistory.filter((token) => token.onboardStatus !== 'Never submitted');
+  // Never submitted的用户不需要显示 
 
   return (
     <Flex
@@ -138,8 +140,7 @@ const HiringManagementPage: React.FC = () => {
                   </Link>
                 </Text>
               )}
-              {token.onboardStatus === "Pending" &&
-                filterStatus == "Pending" && (
+              { (
                   <>
                     <Button
                       colorScheme="yellow"

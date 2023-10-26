@@ -72,13 +72,13 @@ const Sidebar: FC<SidebarProps> = ({ navSize, setNavSize }) => {
               />
               <NavItem
                 navSize={navSize}
-                title="Visa Status Mgmt"
+                title="Visa Management"
                 icon={InfoOutlineIcon}
                 to="/hr/visa-management"
               />
               <NavItem
                 navSize={navSize}
-                title="Hiring Mgmt"
+                title="Application Review"
                 icon={StarIcon}
                 to="/hr/hiring-management"
               />
