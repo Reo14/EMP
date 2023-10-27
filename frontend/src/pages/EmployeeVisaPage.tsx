@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { ChangeEventHandler, FC, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Heading,
@@ -12,34 +12,59 @@ import {
   FormControl,
   Input,
   StepStatus,
+  Popover,
+  PopoverTrigger,
+  Portal,
+  PopoverArrow,
+  PopoverContent,
+  PopoverCloseButton,
+  PopoverHeader,
+  PopoverBody,
 } from "@chakra-ui/react";
 import { InfoIcon } from "@chakra-ui/icons";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/configureStore";
 import { stepStatus } from "../types/employee";
+import axios from "axios";
 
 type feedbackStatus = "not submitted" | "pending" | "approved" | "rejected";
-
 
 interface FormProps {
   title: string;
   feedback: feedbackStatus;
+  userId: string;
 }
 
-const FileForm: FC<FormProps> = ({ title, feedback }) => {
-  const handleUpload = async (event) => {
-    const file = event.target.files[0];
+const FileForm: FC<FormProps> = ({ title, feedback, userId }) => {
+  const [file, setFile] = useState<File | null>(null);
+  const handleFileChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
+  };
+  const handleSubmit = async () => {
+    if (!file) {
+      return;
+    }
+
     const formData = new FormData();
+    formData.append("type", title);
     formData.append("file", file);
 
     try {
-      const response = await fetch("/your/upload/endpoint", {
-        method: "POST",
-        body: formData,
-      });
-      // Handle success/failure based on response
+      const res = await axios.post(
+        `http://localhost:3000/optdocument/${userId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(res.data);
     } catch (error) {
-      console.error("Error uploading file:", error);
+      console.error("上传文件时出错:", error);
     }
   };
 
@@ -59,7 +84,7 @@ const FileForm: FC<FormProps> = ({ title, feedback }) => {
         >
           <Box display="flex" flexDirection="row">
             <AlertIcon />
-            Waiting for HR to approve your OPT EAD.
+            Waiting for HR to approve your {title}.
           </Box>
         </Alert>
       )}
@@ -116,13 +141,23 @@ const FileForm: FC<FormProps> = ({ title, feedback }) => {
           </Box>
 
           <Box>
-            <Button
-              colorScheme="red"
-              size="sm"
-              // TODO: show feedback
-            >
-              See Feedback
-            </Button>
+            <Popover>
+              <PopoverTrigger>
+                <Button colorScheme="red" size="sm">
+                  See Feedback
+                </Button>
+              </PopoverTrigger>
+              <Portal>
+                <PopoverContent>
+                  <PopoverArrow />
+                  <PopoverCloseButton />
+                  <PopoverHeader>Feedback from your HR</PopoverHeader>
+                  <PopoverBody>
+                    {feedback ? feedback : "No feedback provided"}
+                  </PopoverBody>
+                </PopoverContent>
+              </Portal>
+            </Popover>
           </Box>
         </Alert>
       )}
@@ -130,10 +165,20 @@ const FileForm: FC<FormProps> = ({ title, feedback }) => {
         <Input
           type="file"
           accept=".pdf"
-          onChange={handleUpload}
+          onChange={handleFileChange}
           //...
         />
       )}
+      <Flex mt="5" w="100%" justifyContent="center">
+        <Button
+          w="7rem"
+          colorScheme="red"
+          variant="solid"
+          onClick={handleSubmit}
+        >
+          Submit
+        </Button>
+      </Flex>
     </>
   );
 };
@@ -148,18 +193,12 @@ const EmployeeVisaPage: FC = () => {
     return;
   }
 
+  const userId = useSelector<RootState, string>((state) => state.auth.userId);
   const isPerm = useSelector<RootState, string>(
     (state) => state.onboarding.data.isPermanentResident
   );
-  const currentStep = useSelector<RootState, stepStatus>(
-    (state) => state.onboarding.data.currentStep || "not started"
-  );
-  const nextStep = useSelector<RootState, stepStatus>(
-    (state) => state.onboarding.data.nextStep || "not started"
-  );
-  const reason = useSelector<RootState, string>(
-    (state) => state.onboarding.data.visaFeedback || ""
-  );
+  const [feedback, setFeedback] = useState<feedbackStatus>("not submitted");
+  const [currentStep, setCurrentStep] = useState<stepStatus>("not started");
 
   const steps: Record<stepStatus, number> = {
     "not started": 0,
@@ -167,12 +206,58 @@ const EmployeeVisaPage: FC = () => {
     "pending OPT-EAD": 2,
     "pending I-983": 3,
     "pending I-20": 4,
-    completed: 5,
+    "pre-completed": 5,
+    completed: 6,
     rejected: -1,
   };
 
   const step = steps[currentStep];
-  const feedback = nextStep === "rejected" ? nextStep : "not submitted";
+  // 轮询
+  const pollRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        // 发送请求以获取审批状态
+        const res = await axios.get(
+          `http://localhost:3000/get-steps/${userId}`
+        );
+
+        if (res.status === 200) {
+          let curStep: stepStatus;
+          let nextStep: stepStatus;
+          curStep = res.data.curStep;
+          nextStep = res.data.nextStep;
+          setCurrentStep(curStep);
+
+          if (nextStep === "rejected") {
+            setFeedback("rejected");
+          } else {
+            if (steps[nextStep] < steps[curStep]) {
+              setFeedback("pending");
+            } else if (steps[nextStep] === steps[curStep]) {
+              setFeedback("not submitted");
+            } else {
+              setFeedback("approved");
+            }
+          }
+          console.log("step status: ", curStep, " ", nextStep);
+        }
+      } catch (error) {
+        console.error("Error fetching status:", error);
+      }
+    };
+
+    // 开始轮询
+    pollRef.current = window.setInterval(fetchStatus, 10000); // 5秒钟请求一次
+
+    // 清除轮询
+    return () => {
+      if (pollRef.current !== null) {
+        clearInterval(pollRef.current);
+      }
+    };
+  }, [userId]); // 依赖于userId，当userId变化时重新开始轮询
 
   return (
     <>
@@ -199,27 +284,16 @@ const EmployeeVisaPage: FC = () => {
         as="form"
       >
         {step === 0 ? (
-          <FileForm title="OPT Receipt" feedback={feedback} />
+          <FileForm title="OPT Receipt" feedback={feedback} userId={userId} />
         ) : step === 1 ? (
-          <FileForm title="OPT-EAD" feedback={feedback} />
+          <FileForm title="OPT EAD" feedback={feedback} userId={userId} />
         ) : step === 2 ? (
-          <FileForm title="I-983" feedback={feedback} />
+          <FileForm title="I-983" feedback={feedback} userId={userId} />
         ) : step === 3 ? (
-          <FileForm title="I-20" feedback={feedback} />
+          <FileForm title="I-20" feedback={feedback} userId={userId} />
         ) : (
           <Box>All files uploaded</Box>
         )}
-
-        <Flex mt="5" w="100%" justifyContent="center">
-          <Button
-            w="7rem"
-            colorScheme="red"
-            variant="solid"
-            // TODO: onClick={() => {}}
-          >
-            Submit
-          </Button>
-        </Flex>
       </Box>
     </>
   );

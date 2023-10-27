@@ -1,12 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const { verifyToken } = require("../middlewares/verifyToken");
+const { upload } = require("../middlewares/upload");
 const { signin, signup } = require("../controllers/auth");
 const {
   updateInfo,
   getInfo,
   getOnboardStatus,
-  submitVisaDocument
+  submitVisaDocument,
+  getCurAndNextStep,
 } = require("../controllers/employeeContollers");
 
 const {
@@ -35,7 +37,8 @@ router.post("/sign-in", signin);
 router.put("/update-info", updateInfo);
 router.get("/personal-information/:userId", getInfo);
 router.get("/onboardstatus/:id", getOnboardStatus);
-router.post("/optdocument/:id",submitVisaDocument)
+router.post("/optdocument/:id", upload.single("file"), submitVisaDocument);
+router.get("/get-steps/:userId", getCurAndNextStep);
 
 // HR Flow
 router.get("/hr/all-employees", getAllEmployeeSummaries);

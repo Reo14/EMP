@@ -60,37 +60,11 @@ async function getOnboardStatus(req, res) {
   }
 }
 
-// // 管理签证状态
-// async function manageVisaStatus(req, res) {
-//   try {
-//     // 处理管理签证状态逻辑，上传文档、审批等...
-//     // 同样，需要添加身份验证逻辑，确保用户具有管理签证状态的权限
-
-//     // 假设从请求中获取员工ID和签证状态信息
-//     const { employeeId, visaStatus } = req.body;
-
-//     // 查询并更新员工签证状态
-//     const updatedEmployee = await Employee.findByIdAndUpdate(
-//       employeeId,
-//       { visaStatus },
-//       { new: true }
-//     );
-
-//     if (!updatedEmployee) {
-//       return res.status(404).json({ error: 'Employee not found' });
-//     }
-
-//     res.status(200).json({ message: 'Visa status updated successfully' });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// }
-
 // 提交签证文档
 async function submitVisaDocument(req, res) {
   try {
-    const {id} = req.params;
-    const { type, file } = req.body;
+    const { id } = req.params;
+    const { type } = req.body;
 
     // Check if the user exists
     const employee = await User.findOne({ userId: id });
@@ -99,10 +73,25 @@ async function submitVisaDocument(req, res) {
       return res.status(404).json({ error: "User not found" });
     }
 
+    if (type === "OPT Receipt") {
+      employee.currentStep = "pending OPT Receipt";
+    } else if (type === "OPT EAD") {
+      employee.currentStep = "pending OPT EAD";
+    } else if (type === "I-983") {
+      employee.currentStep = "pending I-983";
+    } else if (type === "I-20") {
+      employee.currentStep = "pending I-20";
+    } else {
+      employee.currentStep = "pre-completed";
+    }
+
+    // Use req.file.path if the file is uploaded via multer
+    const filePath = req.file ? req.file.path : null;
+
     // Add the document to the user's documents array
     employee.documents.push({
       type,
-      file,
+      file: filePath,
       status: "Pending",
     });
 
@@ -116,13 +105,64 @@ async function submitVisaDocument(req, res) {
   }
 }
 
+async function triggerNextStep(req, res) {
+  try {
+    const { id } = req.params;
+    const { opinion, reason } = req.body;
+    const user = await User.findOne({ userId: id });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    if (opinion === "Approved") {
+      const curStep = user.currentStep;
+      user.nextStep =
+        curStep === "not started"
+          ? "pending OPT Receipt"
+          : curStep === "pending OPT Receipt"
+          ? "pending OPT-EAD"
+          : curStep === "pending OPT-EAD"
+          ? "pending I-983"
+          : curStep === "pending I-983"
+          ? "pending I-20"
+          : curStep === "pending I-20"
+          ? "pre-completed"
+          : "completed";
+      return res.status(200).json({ message: "Visa approved successfully" });
+    } else {
+      user.nextStep = "rejected";
+      user.visaFeedback = reason;
+      return res
+        .status(200)
+        .json({
+          message: "Visa rejected successfully",
+          reason: user.visaFeedback,
+        });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
 
-
-
+async function getCurAndNextStep(req, res) {
+  try {
+    const { userId } = req.params;
+    const user = await User.findOne({ userId });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    const curStep = user.currentStep;
+    const nextStep = user.nextStep;
+    res.json({ curStep, nextStep });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
 
 module.exports = {
   updateInfo,
   getInfo,
   getOnboardStatus,
-  submitVisaDocument
+  submitVisaDocument,
+  triggerNextStep,
+  getCurAndNextStep,
 };
