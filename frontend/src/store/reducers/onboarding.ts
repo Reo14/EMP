@@ -87,6 +87,12 @@ const onboardSlice = createSlice({
   name: "onboarding",
   initialState,
   reducers: {
+    setCurrentStep: (state, action) => {
+      state.data.currentStep = action.payload;
+    },
+    setNextStep: (state, action) => {
+      state.data.nextStep = action.payload;
+    },
     date2string: (state) => {
       if (state.data.DOB instanceof Date)
         state.data.DOB = state.data.DOB.toISOString();

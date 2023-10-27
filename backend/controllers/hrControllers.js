@@ -167,24 +167,54 @@ async function getRegistrationTokenHistory(req, res) {
 }
 
 // 审批入职申请（批准或拒绝）
-async function processOnboardingApplication(req, res) {
+async function processEmployee(req, res) {
   try {
     const { userId } = req.params;
     const { status, reason } = req.body;
+    console.log(
+      `backend userId: ${userId} received status: ${status} and reason: ${
+        reason || "none"
+      }`
+    );
 
     const user = await User.findOne({ userId });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    if (status === "Approved") {
+    if (status === "App Approved") {
       user.onboardStatus = "Approved";
-    } else {
+    } else if (status === "Visa Approved") {
+      const curStep = user.currentStep;
+      const nextStep = user.nextStep;
+      user.currentStep = nextStep;
+      user.nextStep =
+        curStep === "not started"
+          ? "pending OPT Receipt"
+          : curStep === "pending OPT Receipt"
+          ? "pending OPT-EAD"
+          : curStep === "pending OPT-EAD"
+          ? "pending I-983"
+          : curStep === "pending I-983"
+          ? "pending I-20"
+          : curStep === "pending I-20"
+          ? "completed"
+          : "completed";
+      user.visaFeedback = "pass";
+    } else if (status === "App Rejected") {
       if (reason === "") throw new Error("Empty feedback");
       user.onboardStatus = "Rejected";
       user.onboardFeedback = reason;
+    } else if (status === "Visa Rejected") {
+      user.currentStep = "rejected";
+      user.nextStep = "rejected";
+      user.visaFeedback = reason;
     }
     await user.save();
-    res.status(200).json({ message: "Onboarding status updated successfully" });
+    res.status(200).json({
+      message: "Onboarding status updated successfully",
+      curStep: user.currentStep,
+      nextStep: user.nextStep,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: error.message });
@@ -257,7 +287,7 @@ module.exports = {
   generateRegistrationToken,
   sendNotification,
   getRegistrationTokenHistory,
-  processOnboardingApplication,
+  processEmployee,
   getAllOnboardingApplications,
   getOnboardingApplicationsByStatus,
   // 其他 HR 操作...

@@ -11,6 +11,34 @@ const userSchema = new mongoose.Schema({
     enum: ["Never submitted", "Rejected", "Pending", "Approved"],
     default: "Never submitted",
   },
+  onboardFeedback: String,
+  nextStep: {
+    type: String,
+    enum: [
+      "rejected",
+      "not started",
+      "pending OPT Receipt",
+      "pending OPT-EAD",
+      "pending I-983",
+      "pending I-20",
+      "completed",
+    ],
+    default: "not started",
+  },
+  currentStep: {
+    type: String,
+    enum: [
+      "rejected",
+      "not started",
+      "pending OPT Receipt",
+      "pending OPT-EAD",
+      "pending I-983",
+      "pending I-20",
+      "completed",
+    ],
+    default: "not started",
+  },
+  visaFeedback: String,
 
   registrationToken: {
     type: String,
@@ -76,7 +104,6 @@ const userSchema = new mongoose.Schema({
     startDate: Date,
     endDate: Date,
   },
-  onboardFeedback: String,
 
   documents: [
     {
