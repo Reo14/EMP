@@ -86,8 +86,43 @@ async function getOnboardStatus(req, res) {
 //   }
 // }
 
+// 提交签证文档
+async function submitVisaDocument(req, res) {
+  try {
+    const {id} = req.params;
+    const { type, file } = req.body;
+
+    // Check if the user exists
+    const employee = await User.findOne({ userId: id });
+
+    if (!employee) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Add the document to the user's documents array
+    employee.documents.push({
+      type,
+      file,
+      status: "Pending",
+    });
+
+    // Save the updated user document
+    await employee.save();
+
+    res.status(200).json({ message: "Visa document submitted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+
+
+
+
 module.exports = {
   updateInfo,
   getInfo,
   getOnboardStatus,
+  submitVisaDocument
 };
