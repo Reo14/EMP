@@ -263,6 +263,42 @@ async function getOnboardingApplicationsByStatus(req, res) {
   }
 }
 
+// 审批OPT文件
+async function updateDocumentStatus(req, res) {
+  try {
+    const { userId } = req.params;
+    const { type, status, reason } = req.body;
+
+    // Check if the user exists
+    const user = await User.findOne({ userId:userId });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Find the document in the user's documents array based on the type
+    const documentToUpdate = user.documents.find(
+      (document) => document.type === type
+    );
+
+    if (!documentToUpdate) {
+      return res.status(404).json({ error: "Document not found" });
+    }
+
+    // Update the document's status
+    documentToUpdate.status = status;
+    documentToUpdate.Feedback = reason;
+
+    // Save the updated user
+    await user.save();
+
+    res.status(200).json({ message: "Document status updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 async function sendNotification(email) {
   const msg = {
     to: email,
@@ -290,5 +326,6 @@ module.exports = {
   processEmployee,
   getAllOnboardingApplications,
   getOnboardingApplicationsByStatus,
+  updateDocumentStatus
   // 其他 HR 操作...
 };

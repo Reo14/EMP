@@ -6,6 +6,7 @@ const {
   updateInfo,
   getInfo,
   getOnboardStatus,
+  submitVisaDocument
 } = require("../controllers/employeeContollers");
 
 const {
@@ -16,6 +17,7 @@ const {
   processEmployee,
   getAllOnboardingApplications,
   getOnboardingApplicationsByStatus,
+  updateDocumentStatus,
 } = require("../controllers/hrControllers");
 const { checkExistence } = require("../utils/query");
 // 请根据前端的实际需要修改此处的router
@@ -33,6 +35,7 @@ router.post("/sign-in", signin);
 router.put("/update-info", updateInfo);
 router.get("/personal-information/:userId", getInfo);
 router.get("/onboardstatus/:id", getOnboardStatus);
+router.post("/optdocument/:id",submitVisaDocument)
 
 // HR Flow
 router.get("/hr/all-employees", getAllEmployeeSummaries);
@@ -42,5 +45,6 @@ router.get("/hr/registration/history", getRegistrationTokenHistory);
 router.get("/hr/onboardapplication", getAllOnboardingApplications);
 router.get("/hr/onboardapplication/:status", getOnboardingApplicationsByStatus);
 router.put("/hr/process/:userId/", processEmployee);
+router.put("hr/opt/:userId", updateDocumentStatus);
 
 module.exports = router;
