@@ -1,5 +1,8 @@
 import { Grid, GridItem } from "@chakra-ui/react";
 import { FC, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "./store/configureStore";
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -26,6 +29,8 @@ import HRReviewInfo from "./pages/HRReviewInfo";
 
 const App: FC = () => {
   const [navSize, setNavSize] = useState("small");
+  const role = useSelector<RootState>((state) => state.auth.role);
+  const isHR = (role === 'HR');
 
   return (
     <Router>
@@ -52,18 +57,21 @@ const App: FC = () => {
             <Route path="/review-info" element={<ReviewOnboarding />} />
             <Route path="/employee-visa" element={<EmployeeVisaPage />} />
 
-            <Route path="/hr/all-employees" element={<EmployeeList />} />
+            <Route path="/hr/all-employees" element={isHR ? <EmployeeList /> : <ErrorPage />} />
             <Route
               path="/hr/hiring-management"
-              element={<HiringManagementPage />}
+              element={isHR ? <HiringManagementPage /> : <ErrorPage />}
             />
             <Route
               path="/hr/visa-management"
-              element={<VisaStatusManagementPage />}
+              element={isHR ? <VisaStatusManagementPage /> : <ErrorPage />}
             />
-            <Route path="/hr/review-info" element={<HRReviewInfo />} />
+            <Route path="/hr/review-info" 
+            element={isHR ? <HRReviewInfo /> : <ErrorPage />}
+            />
 
-            <Route path="/hrtest" element={<HRtest />} />
+            <Route path="/hrtest" 
+            element={isHR ? <HRtest /> : <ErrorPage />} />
             <Route path="/success" element={<LoggedIn />} />
             <Route path="/error" element={<ErrorPage />} />
           </Routes>

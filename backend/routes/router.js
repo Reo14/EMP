@@ -13,7 +13,7 @@ const {
   sendNotification,
   generateRegistrationToken,
   getRegistrationTokenHistory,
-  processOnboardingApplication,
+  processEmployee,
   getAllOnboardingApplications,
   getOnboardingApplicationsByStatus,
 } = require("../controllers/hrControllers");
@@ -32,8 +32,7 @@ router.post("/sign-in", signin);
 // Employee Flow
 router.put("/update-info", updateInfo);
 router.get("/personal-information/:userId", getInfo);
-router.get("/onboardstatus/:id", getOnboardStatus );
-
+router.get("/onboardstatus/:id", getOnboardStatus);
 
 // HR Flow
 router.get("/hr/all-employees", getAllEmployeeSummaries);
@@ -42,6 +41,6 @@ router.post("hr/send-notification/:employeeId", sendNotification);
 router.get("/hr/registration/history", getRegistrationTokenHistory);
 router.get("/hr/onboardapplication", getAllOnboardingApplications);
 router.get("/hr/onboardapplication/:status", getOnboardingApplicationsByStatus);
-router.put("/hr/process/:userId/", processOnboardingApplication);
+router.put("/hr/process/:userId/", processEmployee);
 
 module.exports = router;

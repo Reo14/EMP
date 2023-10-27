@@ -242,16 +242,16 @@ const OnBoardingPage: FC = () => {
         >
           <Box display="flex" flexDirection="row">
             <AlertIcon />
-            Your application has been approved
+            Your application has been approved. Upload your next files here.
           </Box>
 
           <Button
             colorScheme="teal"
             size="sm"
             // TODO:
-            onClick={() => alert("Under development")}
+            onClick={() => navigate("/employee-visa")}
           >
-            Review Infos
+            Upload files
           </Button>
         </Alert>
 

@@ -52,27 +52,38 @@ const HRReviewInfo = () => {
   const handleApprove = async (userId: string) => {
     console.log("Approve ", userId);
     try {
-      const res = await axios.put(
+      const appRes = await axios.put(
         `http://localhost:3000/hr/process/${userId}`,
-        { status: "Approved" },
+        { status: "App Approved" },
         { headers: { "Content-Type": "application/json" } }
       );
-      console.log(res);
+      console.log(appRes);
+
+      const visaRes = await axios.put(
+        `http://localhost:3000/hr/process/${userId}`,
+        { status: "Visa Approved", reason: "" },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      console.log(visaRes);
     } catch (error) {
       console.error("Error approving user:", error);
+      alert(error);
+      navigate('/error')
     }
   };
 
   const handleReject = async (userId: string) => {
     try {
-      const res = await axios.put(
+      const resApp = await axios.put(
         `http://localhost:3000/hr/process/${userId}`,
-        { status: "Rejected", reason: `${text}` },
+        { status: "App Rejected", reason: `${text}` },
         { headers: { "Content-Type": "application/json" } }
       );
-      console.log(res);
+      console.log(resApp);
     } catch (error) {
       console.error("Error rejecting user:", error);
+      alert(error);
+      navigate('/error')
     }
   };
 
@@ -82,9 +93,11 @@ const HRReviewInfo = () => {
         const res = await dispatch(fetchEmployeeInfo(userId)).unwrap();
         setEmployeeInfo(res);
         setIsLoading(false);
-        setIsPending(res.onboardStatus === 'Pending');
+        setIsPending(res.onboardStatus === "Pending");
       } catch (error) {
         console.log("Review Info Error: ", error);
+        alert(error);
+        navigate('/error')
       }
     })();
     console.log("Employee Info: ", employeeInfo);
