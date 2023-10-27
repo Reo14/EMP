@@ -39,6 +39,7 @@ const Sidebar: FC<SidebarProps> = ({ navSize, setNavSize }) => {
       pos="sticky"
       left="5"
       w={navSize === "small" ? "75px" : "220px"}
+      transition="width 0.05s"
       flexDir="column"
       justifyContent="space-between"
       height="100vh"
@@ -47,6 +48,7 @@ const Sidebar: FC<SidebarProps> = ({ navSize, setNavSize }) => {
         p="0.5rem"
         flexDir="column"
         alignItems={navSize === "small" ? "center" : "flex-start"}
+        transition="align-items 0.05s"
         as="nav"
       >
         <Flex 
@@ -55,10 +57,12 @@ const Sidebar: FC<SidebarProps> = ({ navSize, setNavSize }) => {
           alignItems="center"
           p="0.5rem"
           mt={navSize === "small" ? "0.5rem" : "0"}
+          transition="margin-top 0.05s"
         >
           <Flex
             flexDir="column"
             display={navSize === "small" ? "none" : "block"}
+            transition="display 0.05s"
           >
             <Heading>Chuwa</Heading>
             <Text fontSize="xs" color="gray.400">Management System</Text>
@@ -78,7 +82,7 @@ const Sidebar: FC<SidebarProps> = ({ navSize, setNavSize }) => {
             }}
           />
         </Flex>
-        <Divider display={navSize === "small" ? "none" : "flex"} />
+        <Divider display={navSize === "small" ? "none" : "flex"} transition="display 0.05s" />
         {isLoggedIn ? (
           role === "HR" ? (
             <>
@@ -140,23 +144,27 @@ const Sidebar: FC<SidebarProps> = ({ navSize, setNavSize }) => {
       </Flex>
 
       {/* 新增的Flex元素 */}
-      <Flex flexGrow={1} />
+      {/* <Flex flexGrow={1} /> */}
 
       <Flex
         p="0.5rem"
         flexDir="column"
-        w="100%"
+        w={navSize === "small" ? "75px" : "220px"}
         alignItems={navSize === "small" ? "center" : "flex-start"}
         mb={4}
         display={isLoggedIn ? "flex" : "none"}
+        transition="w 0.05s"
+        position="fixed"
+        bottom="0"
       >
         <Divider display={navSize === "small" ? "none" : "flex"} />
-        <Flex mt={4} align="center">
+        <Flex mt={4} align="center" px={4}>
           <Avatar size="sm" src="https://bit.ly/dan-abramov" />
           <Flex
             flexDir="column"
             ml={4}
             display={navSize === "small" ? "none" : "flex"}
+            transition="display 0.05s"
           >
             <Heading as="h3" size="sm">
               {username}
