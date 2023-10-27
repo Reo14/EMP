@@ -31,20 +31,23 @@ const App: FC = () => {
   const [navSize, setNavSize] = useState("small");
   const role = useSelector<RootState>((state) => state.auth.role);
   const isHR = (role === 'HR');
+  const isLoggedIn = useSelector<RootState, boolean>(
+    (state) => state.auth.isLoggedIn
+  );
 
   return (
     <Router>
       <Grid
         h="100vh"
-        templateAreas={`"sidebar header" "sidebar main" "sidebar footer"`}
-        gridTemplateRows={"auto 1fr 85px"}
-        gridTemplateColumns={navSize === "small" ? "75px 1fr" : "200px 1fr"}
+        templateAreas={`"sidebar header" "sidebar main"`}
+        gridTemplateRows={"auto 1fr"}
+        gridTemplateColumns={navSize === "small" ? "75px 1fr" : "220px 1fr"}
         autoFlow={"row"}
       >
-        <GridItem bg="#111827" area={"header"}>
+        <GridItem bg="gray.200" area={"header"}>
           <Header />
         </GridItem>
-        <GridItem bg="gray.200" area={"sidebar"}>
+        <GridItem bg="white" area={"sidebar"}>
           <Sidebar navSize={navSize} setNavSize={setNavSize} />
         </GridItem>
         <GridItem backgroundColor="gray.100" area={"main"}>
@@ -52,10 +55,22 @@ const App: FC = () => {
             <Route path="/" element={<Navigate to="/sign-in" replace />} />
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/employee-onboarding" element={<OnBoardingPage />} />
-            <Route path="/employee-infos" element={<PersonalInfoPage />} />
-            <Route path="/review-info" element={<ReviewOnboarding />} />
-            <Route path="/employee-visa" element={<EmployeeVisaPage />} />
+            
+            <Route 
+              path="/employee-onboarding" 
+              element={isLoggedIn ? <OnBoardingPage /> : <ErrorPage />} 
+            />
+            <Route 
+              path="/employee-infos" 
+              element={isLoggedIn ? <PersonalInfoPage /> : <ErrorPage />} 
+            />
+            <Route 
+              path="/review-info" 
+              element={isLoggedIn ? <ReviewOnboarding /> : <ErrorPage />} />
+            <Route 
+              path="/employee-visa" 
+              element={isLoggedIn ? <EmployeeVisaPage /> : <ErrorPage />} 
+            />
 
             <Route path="/hr/all-employees" element={isHR ? <EmployeeList /> : <ErrorPage />} />
             <Route
@@ -75,9 +90,6 @@ const App: FC = () => {
             <Route path="/success" element={<LoggedIn />} />
             <Route path="/error" element={<ErrorPage />} />
           </Routes>
-        </GridItem>
-        <GridItem bg="#111827" area={"footer"}>
-          <Footer />
         </GridItem>
       </Grid>
     </Router>

@@ -19,10 +19,7 @@ import { RootState } from "../store/configureStore";
 import { stepStatus } from "../types/employee";
 
 type feedbackStatus = "not submitted" | "pending" | "approved" | "rejected";
-type IndicatorResult = {
-  step: number;
-  feedback: feedbackStatus;
-};
+
 
 interface FormProps {
   title: string;

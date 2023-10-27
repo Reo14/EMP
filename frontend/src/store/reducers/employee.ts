@@ -20,6 +20,49 @@ const initialState: EmployeeState = {
   error: null,
 };
 
+// export const fetchEmployeeInfo = createAsyncThunk<
+//   EmployeeInfo,
+//   string,
+//   { rejectValue: ErrorResponse }
+// >(
+//   "employee/fetchInfo",
+//   async (username: string, { rejectWithValue, dispatch }) => {
+//     try {
+//       dispatch(date2string());
+//       const res = await axios.get<EmployeeInfoResponse>(
+//         `http://localhost:3000/personal-information/${username}`
+//       );
+//       return res.data.employee;
+//     } catch (err) {
+//       const axiosErr = err as AxiosError<ErrorResponse>;
+//       if (!axiosErr.response || !axiosErr.response.data.error) {
+//         throw err; // Some network or unknown error, let it go to the fallback error handling
+//       }
+//       return rejectWithValue(axiosErr.response.data);
+//     }
+//   }
+// );
+
+// export const editEmployeeInfo = createAsyncThunk(
+//   "employee/edit",
+//   async (updatedInfo: EmployeeInfo, { rejectWithValue }) => {
+//     try {
+//       await axios.put("http://localhost:3000/update-info", updatedInfo, {
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       });
+//       return updatedInfo;
+//     } catch (err) {
+//       const axiosErr = err as AxiosError<ErrorResponse>;
+//       if (!axiosErr.response || !axiosErr.response.data.error) {
+//         throw err; // Some network or unknown error, let it go to the fallback error handling
+//       }
+//       return rejectWithValue(axiosErr.response.data);
+//     }
+//   }
+// );
+
 export const fetchEmployeeInfo = createAsyncThunk<
   EmployeeInfo,
   string,

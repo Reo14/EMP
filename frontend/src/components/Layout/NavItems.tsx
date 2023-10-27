@@ -48,7 +48,7 @@ const NavItem: FC<NavItemProps> = ({ navSize, title, icon, to }) => {
         >
           <MenuButton w="100%">
             <Flex>
-              <Icon as={icon} fontSize="lg" color="gray.500" />
+              <Icon as={icon} fontSize="2xl" color="gray.500" />
               <Text ml={2} display={navSize == "small" ? "none" : "flex"}>
                 {title}
               </Text>
