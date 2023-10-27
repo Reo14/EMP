@@ -55,6 +55,7 @@ const SignUp: FC = () => {
         navigate("/employee-onboarding");
       } catch (error) {
         console.log("Sign up error", error);
+        alert(error);
         navigate("/error");
       }
     },

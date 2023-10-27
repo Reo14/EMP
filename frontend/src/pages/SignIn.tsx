@@ -61,6 +61,8 @@ const SignIn: FC = () => {
         alert("Signed In Successfully");
       } catch (error) {
         console.log("signIn error: ", error);
+        alert(error);
+        navigate("/error");
       }
     },
   });
