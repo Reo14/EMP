@@ -5,14 +5,15 @@ import {
   Heading,
   IconButton,
   Text,
+  Box
 } from "@chakra-ui/react";
+import { BsFileEarmarkPerson } from "react-icons/bs";
+import { PiFilesDuotone, PiSignOutBold, PiSignInBold } from "react-icons/pi";
+import { AiOutlineProfile } from "react-icons/ai";
+import { MdOutlinePreview } from "react-icons/md";
 import {
   HamburgerIcon,
-  EditIcon,
   InfoOutlineIcon,
-  LockIcon,
-  UnlockIcon,
-  StarIcon,
 } from "@chakra-ui/icons";
 import { FC, useState } from "react";
 import { AppDispatch, RootState } from "../../store/configureStore";
@@ -37,9 +38,10 @@ const Sidebar: FC<SidebarProps> = ({ navSize, setNavSize }) => {
     <Flex
       pos="sticky"
       left="5"
-      w={navSize === "small" ? "75px" : "200px"}
+      w={navSize === "small" ? "75px" : "220px"}
       flexDir="column"
       justifyContent="space-between"
+      height="100vh"
     >
       <Flex
         p="0.5rem"
@@ -47,45 +49,61 @@ const Sidebar: FC<SidebarProps> = ({ navSize, setNavSize }) => {
         alignItems={navSize === "small" ? "center" : "flex-start"}
         as="nav"
       >
-        <IconButton
-          background="none"
-          mt={5}
-          _hover={{ background: "none" }}
-          icon={<HamburgerIcon />}
-          aria-label="Toggle Navigation"
-          onClick={() => {
-            if (navSize === "small") {
-              setNavSize("large");
-            } else {
-              setNavSize("small");
-            }
-          }}
-        />
+        <Flex 
+          flexDir="row"
+          justifyContent="space-between"
+          alignItems="center"
+          p="0.5rem"
+          mt={navSize === "small" ? "0.5rem" : "0"}
+        >
+          <Flex
+            flexDir="column"
+            display={navSize === "small" ? "none" : "block"}
+          >
+            <Heading>Chuwa</Heading>
+            <Text fontSize="xs" color="gray.400">Management System</Text>
+          </Flex>
+          <IconButton
+            background="none"
+            _hover={{ background: "none" }}
+            icon={<HamburgerIcon />}
+            aria-label="Toggle Navigation"
+            ml={navSize === "small" ? "0" : "1rem"}
+            onClick={() => {
+              if (navSize === "small") {
+                setNavSize("large");
+              } else {
+                setNavSize("small");
+              }
+            }}
+          />
+        </Flex>
+        <Divider display={navSize === "small" ? "none" : "flex"} />
         {isLoggedIn ? (
           role === "HR" ? (
             <>
               <NavItem
                 navSize={navSize}
                 title="Employee Profiles"
-                icon={EditIcon}
+                icon={AiOutlineProfile}
                 to="/hr/all-employees"
               />
               <NavItem
                 navSize={navSize}
                 title="Visa Management"
-                icon={InfoOutlineIcon}
+                icon={PiFilesDuotone}
                 to="/hr/visa-management"
               />
               <NavItem
                 navSize={navSize}
                 title="Application Review"
-                icon={StarIcon}
+                icon={MdOutlinePreview}
                 to="/hr/hiring-management"
               />
               <NavItem
                 navSize={navSize}
                 title="Log out"
-                icon={UnlockIcon}
+                icon={PiSignOutBold}
                 to="/sign-in"
               />
             </>
@@ -93,20 +111,20 @@ const Sidebar: FC<SidebarProps> = ({ navSize, setNavSize }) => {
             <>
               <NavItem
                 navSize={navSize}
-                title="Personal Infos"
-                icon={EditIcon}
+                title="Personal Infomation"
+                icon={InfoOutlineIcon}
                 to="/employee-infos"
               />
               <NavItem
                 navSize={navSize}
                 title="Visa Status"
-                icon={InfoOutlineIcon}
+                icon={BsFileEarmarkPerson}
                 to="/employee-visa"
               />
               <NavItem
                 navSize={navSize}
                 title="Log out"
-                icon={UnlockIcon}
+                icon={PiSignOutBold}
                 to="/sign-in"
               />
             </>
@@ -115,11 +133,14 @@ const Sidebar: FC<SidebarProps> = ({ navSize, setNavSize }) => {
           <NavItem
             navSize={navSize}
             title="Log in"
-            icon={LockIcon}
+            icon={PiSignInBold}
             to="/sign-in"
           />
         )}
       </Flex>
+
+      {/* 新增的Flex元素 */}
+      <Flex flexGrow={1} />
 
       <Flex
         p="0.5rem"
@@ -127,7 +148,6 @@ const Sidebar: FC<SidebarProps> = ({ navSize, setNavSize }) => {
         w="100%"
         alignItems={navSize === "small" ? "center" : "flex-start"}
         mb={4}
-        borderTop="5px solid gray"
         display={isLoggedIn ? "flex" : "none"}
       >
         <Divider display={navSize === "small" ? "none" : "flex"} />
