@@ -31,6 +31,9 @@ const App: FC = () => {
   const [navSize, setNavSize] = useState("small");
   const role = useSelector<RootState>((state) => state.auth.role);
   const isHR = (role === 'HR');
+  const isLoggedIn = useSelector<RootState, boolean>(
+    (state) => state.auth.isLoggedIn
+  );
 
   return (
     <Router>
@@ -52,10 +55,22 @@ const App: FC = () => {
             <Route path="/" element={<Navigate to="/sign-in" replace />} />
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/employee-onboarding" element={<OnBoardingPage />} />
-            <Route path="/employee-infos" element={<PersonalInfoPage />} />
-            <Route path="/review-info" element={<ReviewOnboarding />} />
-            <Route path="/employee-visa" element={<EmployeeVisaPage />} />
+            
+            <Route 
+              path="/employee-onboarding" 
+              element={isLoggedIn ? <OnBoardingPage /> : <ErrorPage />} 
+            />
+            <Route 
+              path="/employee-infos" 
+              element={isLoggedIn ? <PersonalInfoPage /> : <ErrorPage />} 
+            />
+            <Route 
+              path="/review-info" 
+              element={isLoggedIn ? <ReviewOnboarding /> : <ErrorPage />} />
+            <Route 
+              path="/employee-visa" 
+              element={isLoggedIn ? <EmployeeVisaPage /> : <ErrorPage />} 
+            />
 
             <Route path="/hr/all-employees" element={isHR ? <EmployeeList /> : <ErrorPage />} />
             <Route
