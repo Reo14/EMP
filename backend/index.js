@@ -16,6 +16,8 @@ app.use(express.json());
 
 app.use("/", router);
 
+app.use("/hr/uploads", express.static("uploads"));
+
 // Connect to MongoDB
 const connectDB = async () => {
   try {

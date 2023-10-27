@@ -58,13 +58,6 @@ const HRReviewInfo = () => {
         { headers: { "Content-Type": "application/json" } }
       );
       console.log(appRes);
-
-      const visaRes = await axios.put(
-        `http://localhost:3000/hr/process/${userId}`,
-        { status: "Visa Approved", reason: "" },
-        { headers: { "Content-Type": "application/json" } }
-      );
-      console.log(visaRes);
     } catch (error) {
       console.error("Error approving user:", error);
       alert(error);

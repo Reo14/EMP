@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema({
       "pending OPT-EAD",
       "pending I-983",
       "pending I-20",
+      "pre-completed",
       "completed",
     ],
     default: "not started",
@@ -28,12 +29,12 @@ const userSchema = new mongoose.Schema({
   currentStep: {
     type: String,
     enum: [
-      "rejected",
       "not started",
       "pending OPT Receipt",
       "pending OPT-EAD",
       "pending I-983",
       "pending I-20",
+      "pre-completed",
       "completed",
     ],
     default: "not started",

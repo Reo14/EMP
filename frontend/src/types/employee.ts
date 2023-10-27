@@ -47,6 +47,7 @@ export type stepStatus =
   | "pending OPT-EAD"
   | "pending I-983"
   | "pending I-20"
+  | "pre-completed"
   | "completed"
   | "rejected";
 
