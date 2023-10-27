@@ -30,7 +30,7 @@ import HRReviewInfo from "./pages/HRReviewInfo";
 const App: FC = () => {
   const [navSize, setNavSize] = useState("small");
   const role = useSelector<RootState>((state) => state.auth.role);
-  const isHR = (role === 'HR');
+  const isHR = role === "HR";
   const isLoggedIn = useSelector<RootState, boolean>(
     (state) => state.auth.isLoggedIn
   );
@@ -52,27 +52,45 @@ const App: FC = () => {
         </GridItem>
         <GridItem backgroundColor="gray.100" area={"main"}>
           <Routes>
-            <Route path="/" element={<Navigate to="/sign-in" replace />} />
+            <Route
+              path="/"
+              element={
+                <Navigate
+                  to={`${
+                    isLoggedIn
+                      ? isHR
+                        ? "/hr/all-employees"
+                        : "/employee-onboarding"
+                      : "/sign-in"
+                  }`}
+                  replace
+                />
+              }
+            />
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
-            
-            <Route 
-              path="/employee-onboarding" 
-              element={isLoggedIn ? <OnBoardingPage /> : <ErrorPage />} 
+
+            <Route
+              path="/employee-onboarding"
+              element={isLoggedIn ? <OnBoardingPage /> : <ErrorPage />}
             />
-            <Route 
-              path="/employee-infos" 
-              element={isLoggedIn ? <PersonalInfoPage /> : <ErrorPage />} 
+            <Route
+              path="/employee-infos"
+              element={isLoggedIn ? <PersonalInfoPage /> : <ErrorPage />}
             />
-            <Route 
-              path="/review-info" 
-              element={isLoggedIn ? <ReviewOnboarding /> : <ErrorPage />} />
-            <Route 
-              path="/employee-visa" 
-              element={isLoggedIn ? <EmployeeVisaPage /> : <ErrorPage />} 
+            <Route
+              path="/review-info"
+              element={isLoggedIn ? <ReviewOnboarding /> : <ErrorPage />}
+            />
+            <Route
+              path="/employee-visa"
+              element={isLoggedIn ? <EmployeeVisaPage /> : <ErrorPage />}
             />
 
-            <Route path="/hr/all-employees" element={isHR ? <EmployeeList /> : <ErrorPage />} />
+            <Route
+              path="/hr/all-employees"
+              element={isHR ? <EmployeeList /> : <ErrorPage />}
+            />
             <Route
               path="/hr/hiring-management"
               element={isHR ? <HiringManagementPage /> : <ErrorPage />}
@@ -81,12 +99,12 @@ const App: FC = () => {
               path="/hr/visa-management"
               element={isHR ? <VisaStatusManagementPage /> : <ErrorPage />}
             />
-            <Route path="/hr/review-info" 
-            element={isHR ? <HRReviewInfo /> : <ErrorPage />}
+            <Route
+              path="/hr/review-info"
+              element={isHR ? <HRReviewInfo /> : <ErrorPage />}
             />
 
-            <Route path="/hrtest" 
-            element={isHR ? <HRtest /> : <ErrorPage />} />
+            <Route path="/hrtest" element={isHR ? <HRtest /> : <ErrorPage />} />
             <Route path="/success" element={<LoggedIn />} />
             <Route path="/error" element={<ErrorPage />} />
           </Routes>
