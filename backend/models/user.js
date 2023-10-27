@@ -108,10 +108,38 @@ const userSchema = new mongoose.Schema({
 
   documents: [
     {
-      type: String, // Type of document (e.g., 'driverLicense', 'workAuthorization')
-      file: String, // File path or URL
-    },
+      type: {
+        type: String,
+        enum: [
+          "OPT Receipt",
+          "OPT EAD",
+          "I-983",
+          "I-20",
+          "Visa",
+          "Passport",
+          "ID",
+          "Other"
+        ],
+        default: "Other"
+      },
+      file: {
+        type: String // File path or URL
+      },
+      status: {
+        type: String,
+        enum: [
+          "Pending",
+          "Approved",
+          "Rejected"
+        ],
+        default: "Pending"
+      },
+      Feedback: {
+        type: String,
+        default: "No comment"},
+    }
   ],
+
 });
 
 function generateID() {
