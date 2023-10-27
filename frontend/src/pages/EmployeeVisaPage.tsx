@@ -64,11 +64,11 @@ const OPTReceiptForm: FC = () => {
               bgColor="white"
               marginRight="1rem"
             />
+            {/* 丢弃，只需要<Input type="file" />即可
             <Button
               size="sm"
               colorScheme="blue"
-              // TODO: onClick
-            >Upload OPT Receipt</Button>
+            >Upload OPT EAD</Button> */}
           </FormControl>
         </Box>
       </Alert>
@@ -104,7 +104,7 @@ const OPTReceiptForm: FC = () => {
 const OPTEADForm: FC = () => {
   return (
     <>
-      <Heading as="h3" size="lg">OPT EAD</Heading>
+      <Heading as="h3" size="lg" marginBottom="1rem">OPT EAD</Heading>
       {/* ----- pending ----- */}
       <Alert 
         status='info'
@@ -197,7 +197,7 @@ const OPTEADForm: FC = () => {
 const I983Form: FC = () => {
   return (
     <>
-      <Heading as="h3" size="lg">I-983</Heading>
+      <Heading as="h3" size="lg" marginBottom="1rem">I-983</Heading>
       {/* ----- pending ----- */}
       <Alert 
         status='info'
@@ -244,11 +244,11 @@ const I983Form: FC = () => {
               bgColor="white"
               marginRight="1rem"
             />
+            {/* 丢弃 只需要<Input type="file" />即可
             <Button
               size="sm"
               colorScheme="blue"
-              // TODO: onClick
-            >Upload New I-20</Button>
+            >Upload New I-20</Button> */}
           </FormControl>
         </Box>
       </Alert>
@@ -284,7 +284,7 @@ const I983Form: FC = () => {
 const I20Form: FC = () => {
   return (
     <>
-      <Heading as="h3" size="lg">I-20</Heading>
+      <Heading as="h3" size="lg" marginBottom="1rem">I-20</Heading>
       {/* ----- pending ----- */}
       <Alert 
         status='info'
@@ -373,11 +373,12 @@ const EmployeeVisaPage: FC = () => {
       {/* ----- document upload */}
       <Box
         borderWidth="1px"
-        rounded="lg"
-        shadow="1px 1px 3px rgba(0,0,0,0.3)"
+        rounded="md"
+        boxShadow="dark-lg"
+        bg="white"
         maxWidth={800}
         p={6}
-        m="10px auto"
+        m="3rem auto"
         as="form"
       >
       <Progress hasStripe value={progress} mb="5%" mx="5%" isAnimated></Progress>

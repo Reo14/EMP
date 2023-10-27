@@ -5,24 +5,14 @@ const Header: FC = () =>{
   return (
     <Box
       px="25"
-      pt="2"
-      bg="black"
-      height="70px" 
+      bg="gray.200"
+      height="85px"
     >
-      <Flex
-        align="center"
-        justify="space-between"
-        flexDirection="row"
+      <Heading
+        as="h1" color="blue.500" lineHeight="85px"
       >
-        <>
-        <HStack textColor="white" spacing="1">
-          <Heading as="h1">Employee Management</Heading>
-          <Text fontSize="lg" mt="4" fontWeight="bold">
-            Chuwa
-          </Text>
-          </HStack>
-        </>
-      </Flex>
+        Welcome
+      </Heading>
     </Box>
   );
 };

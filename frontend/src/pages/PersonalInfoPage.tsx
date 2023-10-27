@@ -960,11 +960,12 @@ const PersonalInfoPage: FC = () => {
       {(formikProps) => (
         <Box
           borderWidth="1px"
-          rounded="lg"
-          shadow="1px 1px 3px rgba(0,0,0,0.3)"
+          rounded="md"
+          boxShadow="dark-lg"
+          bg="white"
           maxWidth={800}
           p={6}
-          m="10px auto"
+          m="3rem auto"
           as={Form}
         >
           <Progress hasStripe value={progress} mb="5%" mx="5%" isAnimated />

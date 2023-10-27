@@ -31,15 +31,15 @@ const App: FC = () => {
     <Router>
       <Grid
         h="100vh"
-        templateAreas={`"sidebar header" "sidebar main" "sidebar footer"`}
-        gridTemplateRows={"auto 1fr 85px"}
-        gridTemplateColumns={navSize === "small" ? "75px 1fr" : "200px 1fr"}
+        templateAreas={`"sidebar header" "sidebar main"`}
+        gridTemplateRows={"auto 1fr"}
+        gridTemplateColumns={navSize === "small" ? "75px 1fr" : "220px 1fr"}
         autoFlow={"row"}
       >
-        <GridItem bg="#111827" area={"header"}>
+        <GridItem bg="gray.200" area={"header"}>
           <Header />
         </GridItem>
-        <GridItem bg="gray.200" area={"sidebar"}>
+        <GridItem bg="white" area={"sidebar"}>
           <Sidebar navSize={navSize} setNavSize={setNavSize} />
         </GridItem>
         <GridItem backgroundColor="gray.100" area={"main"}>
@@ -67,9 +67,6 @@ const App: FC = () => {
             <Route path="/success" element={<LoggedIn />} />
             <Route path="/error" element={<ErrorPage />} />
           </Routes>
-        </GridItem>
-        <GridItem bg="#111827" area={"footer"}>
-          <Footer />
         </GridItem>
       </Grid>
     </Router>
