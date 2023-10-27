@@ -44,10 +44,10 @@ const VisaStatusManagementPage: React.FC = () => {
     return daysRemaining > 0 ? daysRemaining : 0;
   };
 
-  const handleApproveDocument = async (employee: Employee) => {
+  const handleApproveDocument = async (employee: Employee, type: string) => {
     try {
       await axios.put(`http://localhost:3000/hr/opt/${employee.userId}`, {
-        // type: type,
+        type,
         status: "Approved",
       });
 
@@ -60,12 +60,12 @@ const VisaStatusManagementPage: React.FC = () => {
     }
   };
 
-  const handleRejectDocument = async (employee: Employee) => {
+  const handleRejectDocument = async (employee: Employee, type: string) => {
     try {
       const feedback = prompt("Provide feedback for document rejection:");
 
       await axios.put(`http://localhost:3000/hr/opt/${employee.userId}`, {
-        // type
+        type,
         status: "Rejected",
         reason: feedback,
       });
@@ -191,7 +191,9 @@ const VisaStatusManagementPage: React.FC = () => {
                 {employee.documents.map((document, index) => (
                   <Box key={index} mt="2">
                     <Text>
-                      <b>{document.file}Document {index}:</b>
+                      <b>
+                        {document.file}Document {index}:
+                      </b>
                     </Text>
                     <Link
                       href={`http://localhost:3000/${document.file}`}
@@ -204,13 +206,17 @@ const VisaStatusManagementPage: React.FC = () => {
                       <>
                         <Button
                           colorScheme="green"
-                          onClick={() => handleApproveDocument(employee)}
+                          onClick={() =>
+                            handleApproveDocument(employee, document.type)
+                          }
                         >
                           Approve Document
                         </Button>
                         <Button
                           colorScheme="red"
-                          onClick={() => handleRejectDocument(employee)}
+                          onClick={() =>
+                            handleRejectDocument(employee, document.type)
+                          }
                         >
                           Reject Document
                         </Button>
@@ -221,7 +227,7 @@ const VisaStatusManagementPage: React.FC = () => {
                         Document Status:{" "}
                         {document.status === "Approved"
                           ? "Approved"
-                          : "Rejected"}
+                          : "Rejected with reason: " + document.Feedback}
                       </Text>
                     )}
 

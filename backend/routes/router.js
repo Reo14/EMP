@@ -8,7 +8,8 @@ const {
   getInfo,
   getOnboardStatus,
   submitVisaDocument,
-  getCurAndNextStep,
+  checkAllFilesUploaded,
+  checkFileUploaded,
 } = require("../controllers/employeeContollers");
 
 const {
@@ -38,7 +39,8 @@ router.put("/update-info", updateInfo);
 router.get("/personal-information/:userId", getInfo);
 router.get("/onboardstatus/:id", getOnboardStatus);
 router.post("/optdocument/:id", upload.single("file"), submitVisaDocument);
-router.get("/get-steps/:userId", getCurAndNextStep);
+router.get("/get-file-status/:type/:userId", checkFileUploaded);
+router.get("/check-all-files-uploaded/:userId", checkAllFilesUploaded);
 
 // HR Flow
 router.get("/hr/all-employees", getAllEmployeeSummaries);
@@ -48,6 +50,6 @@ router.get("/hr/registration/history", getRegistrationTokenHistory);
 router.get("/hr/onboardapplication", getAllOnboardingApplications);
 router.get("/hr/onboardapplication/:status", getOnboardingApplicationsByStatus);
 router.put("/hr/process/:userId/", processEmployee);
-router.put("hr/opt/:userId", updateDocumentStatus);
+router.put("/hr/opt/:userId", updateDocumentStatus);
 
 module.exports = router;

@@ -118,28 +118,33 @@ const userSchema = new mongoose.Schema({
           "Visa",
           "Passport",
           "ID",
-          "Other"
+          "Other",
         ],
-        default: "Other"
+        default: "Other",
+      },
+      requiredUpload: {
+        type: Boolean,
+        default: function () {
+          // 如果文档类型是 "OPT Receipt", "OPT EAD", "I-983", 或 "I-20", 则默认为 true
+          return ["OPT Receipt", "OPT EAD", "I-983", "I-20"].includes(
+            this.type
+          );
+        },
       },
       file: {
-        type: String // File path or URL
+        type: String, // File path or URL
       },
       status: {
         type: String,
-        enum: [
-          "Pending",
-          "Approved",
-          "Rejected"
-        ],
-        default: "Pending"
+        enum: ["Pending", "Approved", "Rejected"],
+        default: "Pending",
       },
       Feedback: {
         type: String,
-        default: "No comment"},
-    }
+        default: "No comment",
+      },
+    },
   ],
-
 });
 
 function generateID() {

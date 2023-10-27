@@ -73,18 +73,6 @@ async function submitVisaDocument(req, res) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    if (type === "OPT Receipt") {
-      employee.currentStep = "pending OPT Receipt";
-    } else if (type === "OPT EAD") {
-      employee.currentStep = "pending OPT EAD";
-    } else if (type === "I-983") {
-      employee.currentStep = "pending I-983";
-    } else if (type === "I-20") {
-      employee.currentStep = "pending I-20";
-    } else {
-      employee.currentStep = "pre-completed";
-    }
-
     // Use req.file.path if the file is uploaded via multer
     const filePath = req.file ? req.file.path : null;
 
@@ -105,35 +93,66 @@ async function submitVisaDocument(req, res) {
   }
 }
 
-async function triggerNextStep(req, res) {
+// async function triggerNextStep(req, res) {
+//   try {
+//     const { id } = req.params;
+//     const { opinion, reason } = req.body;
+//     const user = await User.findOne({ userId: id });
+//     if (!user) {
+//       return res.status(404).json({ error: "User not found" });
+//     }
+//     if (opinion === "Approved") {
+//       const curStep = user.currentStep;
+//       user.nextStep =
+//         curStep === "not started"
+//           ? "pending OPT Receipt"
+//           : curStep === "pending OPT Receipt"
+//           ? "pending OPT-EAD"
+//           : curStep === "pending OPT-EAD"
+//           ? "pending I-983"
+//           : curStep === "pending I-983"
+//           ? "pending I-20"
+//           : curStep === "pending I-20"
+//           ? "pre-completed"
+//           : "completed";
+//       return res.status(200).json({ message: "Visa approved successfully" });
+//     } else {
+//       user.nextStep = "rejected";
+//       user.visaFeedback = reason;
+//       return res.status(200).json({
+//         message: "Visa rejected successfully",
+//         reason: user.visaFeedback,
+//       });
+//     }
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// }
+
+async function checkAllFilesUploaded(req, res) {
+  const requiredDocuments = ["OPT Receipt", "OPT EAD", "I-983", "I-20"];
+
   try {
-    const { id } = req.params;
-    const { opinion, reason } = req.body;
-    const user = await User.findOne({ userId: id });
+    const { userId } = req.params;
+
+    const user = await User.findOne({ userId });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    if (opinion === "Approved") {
-      const curStep = user.currentStep;
-      user.nextStep =
-        curStep === "not started"
-          ? "pending OPT Receipt"
-          : curStep === "pending OPT Receipt"
-          ? "pending OPT-EAD"
-          : curStep === "pending OPT-EAD"
-          ? "pending I-983"
-          : curStep === "pending I-983"
-          ? "pending I-20"
-          : curStep === "pending I-20"
-          ? "pre-completed"
-          : "completed";
-      return res.status(200).json({ message: "Visa approved successfully" });
+
+    // 获取用户已上传的所有文件类型
+    const uploadedDocs = user.documents.map((doc) => doc.type);
+
+    // 检查是否每一个必须的文件都在已上传的文件列表中
+    const allUploaded = requiredDocuments.every((docType) =>
+      uploadedDocs.includes(docType)
+    );
+
+    if (allUploaded) {
+      res.json({ result: true });
     } else {
-      user.nextStep = "rejected";
-      user.visaFeedback = reason;
-      return res.status(200).json({
-        message: "Visa rejected successfully",
-        reason: user.visaFeedback,
+      res.json({
+        result: false,
       });
     }
   } catch (error) {
@@ -141,30 +160,63 @@ async function triggerNextStep(req, res) {
   }
 }
 
-async function getCurAndNextStep(req, res) {
+async function checkFileUploaded(req, res) {
+  const uploadSequence = ["OPT Receipt", "OPT EAD", "I-983", "I-20"];
   try {
-    const { userId } = req.params;
+    const { type, userId } = req.params;
+
     const user = await User.findOne({ userId });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    const docs = user.documents;
-    const len = docs.length;
-    const { type, status, Feedback } = docs[len - 1];
-    if (status === "Pending") {
-      const curStep = "pending " + type;
-      return res.json({ curStep, feedback: "pending" });
-    } else if (status === "Approved") {
-      const curStep = "completed " + type;
-      const enumValues = User.schema.path("documents.type").enumValues;
-      const index = enumValues.indexOf(type);
-      const nextStep =
-        index === 3 ? "completed" : "pending " + enumValues[index + 1];
-      return res.json({ curStep, nextStep, feedback: "approved" });
+
+    // Check if the document of the given type is uploaded
+    const document = user.documents.find((doc) => doc.type === type);
+
+    let isCurrent = false;
+
+    for (let i = 0; i < uploadSequence.length; i++) {
+      const currentType = uploadSequence[i];
+      const currentDocument = user.documents.find(
+        (doc) => doc.type === currentType
+      );
+
+      if (!currentDocument || currentDocument.status === "Rejected") {
+        if (currentType === type) {
+          isCurrent = true;
+        }
+        break;
+      }
+
+      if (currentDocument.status === "Pending") {
+        if (currentType === type) {
+          isCurrent = true;
+        }
+        break;
+      }
+
+      if (currentDocument.status === "Approved" && currentType === type) {
+        isCurrent = true;
+      }
+    }
+
+    if (document) {
+      res.status(200).json({
+        uploaded: true,
+        status: document.status,
+        feedback: document.Feedback,
+        isCurrent: isCurrent,
+        message: `${type} is already uploaded with status ${document.status}`,
+      });
     } else {
-      return res.json({ curStep: "rejected", feedback: Feedback });
+      res.status(200).json({
+        uploaded: false,
+        isCurrent: isCurrent,
+        message: `${type} has not been uploaded yet`,
+      });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: error.message });
   }
 }
@@ -174,6 +226,6 @@ module.exports = {
   getInfo,
   getOnboardStatus,
   submitVisaDocument,
-  triggerNextStep,
-  getCurAndNextStep,
+  checkAllFilesUploaded,
+  checkFileUploaded,
 };
