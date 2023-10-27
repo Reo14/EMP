@@ -70,7 +70,7 @@ const FileForm: FC<FormProps> = ({ title, feedback, userId }) => {
 
   return (
     <>
-      <Heading as="h3" size="lg">
+      <Heading as="h3" size="lg" mb="1rem">
         {title}
       </Heading>
 
@@ -165,6 +165,7 @@ const FileForm: FC<FormProps> = ({ title, feedback, userId }) => {
         <Input
           type="file"
           accept=".pdf"
+          height="50%"
           onChange={handleFileChange}
           //...
         />

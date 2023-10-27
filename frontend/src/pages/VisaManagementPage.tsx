@@ -78,10 +78,10 @@ const VisaStatusManagementPage: React.FC = () => {
   });
 
   return (
-    <Flex direction="column" align="center" justify="center" minHeight="100vh" padding="4">
+    <Flex direction="column" align="center" justify="center" minHeight="100vh" padding="4" maxWidth="900px" m="1rem auto">
       <Flex align="center" justify="flex-end" width="100%">
         {/* <此按钮的逻辑为 切换in progress申请人(状态编号不为12的申请人)和全部申请人/> */}
-        <Button onClick={() => setShowAllApplicants(!showAllApplicants)} m="2">
+        <Button onClick={() => setShowAllApplicants(!showAllApplicants)} m="2" variant="solid" colorScheme='blue'>
           {showAllApplicants ? 'Show In Progress Applicants' : 'Show All Applicants'}
         </Button>
       </Flex>
@@ -93,12 +93,13 @@ const VisaStatusManagementPage: React.FC = () => {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         mb="4"
+        bgColor="white"
       />
 
       <Stack spacing="4" width="100%" align="center">
         
         {filteredEmployees.map((employee) => (
-          <Box key={employee.userId} borderWidth="1px" p="4" borderRadius="md" width="100%">
+          <Box key={employee.userId} borderWidth="1px" p="4" borderRadius="md" width="100%" bgColor="white">
             <Text fontWeight="bold">{`${employee.firstName} ${employee.lastName}`}</Text>
             <Text>
               <b>Title:</b> {employee.employment?.visaTitle || 'Not specified'}

@@ -76,16 +76,17 @@ const HiringManagementPage: React.FC = () => {
   // Never submitted的用户不需要显示 
 
   return (
-    <Flex
-      direction="column"
-      align="center"
-      justify="center"
+    <Box
       minHeight="100vh"
       padding="4"
+      m="1rem auto"
+      maxW="600px"
+      display="flex"
+      flexDir="column"
     >
-      <Heading mb="4">Hiring Management</Heading>
-
-      <Box mb="4">
+      
+      <Heading mb="4" alignSelf="center">Hiring Management</Heading>
+      <Box mb="4" alignSelf="center">
         <Button colorScheme="blue" onClick={navigateToHRTest}>
           Generate Token and Send Email
         </Button>
@@ -95,6 +96,7 @@ const HiringManagementPage: React.FC = () => {
         <Select
           placeholder="Filter by Onboard Status"
           onChange={handleStatusFilterChange}
+          bg="blackAlpha.200"
         >
           <option value="Pending">Pending</option>
           <option value="Rejected">Rejected</option>
@@ -111,6 +113,8 @@ const HiringManagementPage: React.FC = () => {
               p="4"
               borderRadius="md"
               width="100%"
+              bgColor="white"
+              textAlign="center"
             >
               <Text>
                 <b>Email:</b> {token.email}
@@ -158,7 +162,7 @@ const HiringManagementPage: React.FC = () => {
           <Text>No registration history available.</Text>
         )}
       </Stack>
-    </Flex>
+    </Box>
   );
 };
 
