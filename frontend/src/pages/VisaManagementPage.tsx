@@ -33,8 +33,9 @@ const VisaStatusManagementPage: React.FC = () => {
 
   const handleApproveDocument = async (employee: Employee) => {
     try {
-      await axios.put(`http://localhost:3000/hr/onboardapplication/process/${employee.userId}`, {
-        action: 'approve',
+      await axios.put(`http://localhost:3000/hr/opt/${employee.userId}`, {
+        // type: type,
+        status: 'Approved',
       });
 
       const updatedEmployees = await axios.get<Employee[]>('http://localhost:3000/hr/all-employees');
@@ -48,9 +49,10 @@ const VisaStatusManagementPage: React.FC = () => {
     try {
       const feedback = prompt('Provide feedback for document rejection:');
 
-      await axios.put(`http://localhost:3000/hr/onboardapplication/process/${employee.userId}`, {
-        action: 'reject',
-        feedback,
+      await axios.put(`http://localhost:3000/hr/opt/${employee.userId}`, {
+        // type
+        status: 'Rejected',
+        reason: feedback,
       });
 
       const updatedEmployees = await axios.get<Employee[]>('http://localhost:3000/hr/all-employees');
@@ -63,7 +65,6 @@ const VisaStatusManagementPage: React.FC = () => {
   const handleSendNotification = async (employee: Employee) => {
     try {
       await axios.post(`http://localhost:3000/hr/send-notification/${employee.userId}`);
-      // 目前后端还没有这个api
       alert('Notification sent successfully!');
     } catch (error) {
       console.error('Error sending notification:', error);
@@ -142,15 +143,43 @@ const VisaStatusManagementPage: React.FC = () => {
             {/* Display uploaded and approved documents */}
             {employee.documents && employee.documents.length > 0 && (
               <>
-                <Heading size="sm" mt="4" mb="2">
-                  Uploaded and Approved Documents:
+                <Heading size="md" mt="4" mb="2">
+                  Documents List:
                 </Heading>
                 {employee.documents.map((document, index) => (
                   <Box key={index} mt="2">
                     <Text>
-                      <b>Document Type:</b> {document.type}
+                      <b>Document {index}:</b>
                     </Text>
-                    <Button
+                    <Link href={document.file} isExternal>
+                      <Button>{document.type}</Button>
+                    </Link>
+
+                    {document.status === 'Pending' && (
+                      <>
+                        <Button
+                          colorScheme="green"
+                          onClick={() => handleApproveDocument(employee)}
+                        >
+                          Approve Document
+                        </Button>
+                        <Button
+                          colorScheme="red"
+                          onClick={() => handleRejectDocument(employee)}
+                        >
+                          Reject Document
+                        </Button>
+                      </>
+                    )}
+                    {document.status !== 'Pending' && (
+                      <Text>
+                        Document Status: {document.status === 'Approved' ? 'Approved' : 'Rejected'}
+                      </Text>
+                    )}
+
+
+
+                    {/* <Button
                       as={Link}
                       href={document.file}
                       target="_blank"
@@ -159,18 +188,15 @@ const VisaStatusManagementPage: React.FC = () => {
                       mt="2"
                     >
                       Download Document
-                    </Button>
-                    <Button
-                      onClick={() => window.open(document.file, '_blank')}
-                      colorScheme="teal"
-                      mt="2"
-                    >
-                      Preview Document
-                    </Button>
+                    </Button> */}
                   </Box>
                 ))}
               </>
             )}
+
+            
+
+            
 
             {/* Action buttons
             {showAllApplicants && (
