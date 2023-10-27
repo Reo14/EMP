@@ -1,12 +1,15 @@
 import React, { ChangeEvent } from "react";
 import { Flex, Text, Input, Button, Spacer } from "@chakra-ui/react";
 import axios, { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
 
 const hrId = "HR123456";
 const employeeName = "John Doe";
 
+
 const HRtest = () => {
   const [email, setEmail] = React.useState("");
+  const navigate = useNavigate();
   const onChange = (e: ChangeEvent<HTMLInputElement>) =>
     setEmail(e.target.value);
   const onSubmit = async () => {
@@ -21,9 +24,12 @@ const HRtest = () => {
       );
       alert("Email sent");
       console.log(response.data);
+      
     } catch (err) {
       const axiosErr = err as AxiosError;
       console.log(axiosErr.response?.data);
+      alert(err);
+      navigate('/error')
     }
   };
   

@@ -29,7 +29,7 @@ import {
   editEmployeeInfo,
   fetchEmployeeInfo,
 } from "../store/reducers/employee";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const inputStyles = {
   mt: "2",
@@ -928,6 +928,7 @@ const PersonalInfoPage: FC = () => {
 
   // redux
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const userId = useSelector<RootState, string>((state) => state.auth.userId);
   const employeeInfo = useSelector<RootState, EmployeeInfo>(
     (state) => state.employee.info
@@ -941,6 +942,8 @@ const PersonalInfoPage: FC = () => {
       } catch (error) {
         console.log("Failed to fetch employee info: ", error);
         setIsLoading(true);
+        alert(error);
+        navigate("/error");
       }
     })();
   }, []);

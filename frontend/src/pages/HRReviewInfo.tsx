@@ -67,6 +67,8 @@ const HRReviewInfo = () => {
       console.log(visaRes);
     } catch (error) {
       console.error("Error approving user:", error);
+      alert(error);
+      navigate('/error')
     }
   };
 
@@ -80,6 +82,8 @@ const HRReviewInfo = () => {
       console.log(resApp);
     } catch (error) {
       console.error("Error rejecting user:", error);
+      alert(error);
+      navigate('/error')
     }
   };
 
@@ -92,6 +96,8 @@ const HRReviewInfo = () => {
         setIsPending(res.onboardStatus === "Pending");
       } catch (error) {
         console.log("Review Info Error: ", error);
+        alert(error);
+        navigate('/error')
       }
     })();
     console.log("Employee Info: ", employeeInfo);

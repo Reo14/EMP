@@ -14,11 +14,12 @@ import {
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { EmployeeInfo as Employee } from "../types/employee";
-import { Link as RouterLink } from 'react-router-dom'; // Import Link from React Router
+import {useNavigate, Link as RouterLink } from 'react-router-dom'; // Import Link from React Router
 
 const EmployeeList: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch employee data from your backend
@@ -32,6 +33,8 @@ const EmployeeList: React.FC = () => {
         setEmployees(sortedEmployees);
       } catch (error) {
         console.error('Error fetching employee data:');
+        alert(error);
+        navigate('/error')
       }
     };
 
