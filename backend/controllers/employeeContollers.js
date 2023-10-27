@@ -131,12 +131,10 @@ async function triggerNextStep(req, res) {
     } else {
       user.nextStep = "rejected";
       user.visaFeedback = reason;
-      return res
-        .status(200)
-        .json({
-          message: "Visa rejected successfully",
-          reason: user.visaFeedback,
-        });
+      return res.status(200).json({
+        message: "Visa rejected successfully",
+        reason: user.visaFeedback,
+      });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -150,9 +148,22 @@ async function getCurAndNextStep(req, res) {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    const curStep = user.currentStep;
-    const nextStep = user.nextStep;
-    res.json({ curStep, nextStep });
+    const docs = user.documents;
+    const len = docs.length;
+    const { type, status, Feedback } = docs[len - 1];
+    if (status === "Pending") {
+      const curStep = "pending " + type;
+      return res.json({ curStep, feedback: "pending" });
+    } else if (status === "Approved") {
+      const curStep = "completed " + type;
+      const enumValues = User.schema.path("documents.type").enumValues;
+      const index = enumValues.indexOf(type);
+      const nextStep =
+        index === 3 ? "completed" : "pending " + enumValues[index + 1];
+      return res.json({ curStep, nextStep, feedback: "approved" });
+    } else {
+      return res.json({ curStep: "rejected", feedback: Feedback });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

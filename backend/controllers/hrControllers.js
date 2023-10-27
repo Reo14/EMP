@@ -248,6 +248,7 @@ async function updateDocumentStatus(req, res) {
     const { userId } = req.params;
     const { type, status, reason } = req.body;
 
+    console.log("received doc update for ", userId);
     // Check if the user exists
     const user = await User.findOne({ userId: userId });
 

@@ -24,14 +24,11 @@ import {
 import { InfoIcon } from "@chakra-ui/icons";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/configureStore";
-import { stepStatus } from "../types/employee";
 import axios from "axios";
-
-type feedbackStatus = "not submitted" | "pending" | "approved" | "rejected";
 
 interface FormProps {
   title: string;
-  feedback: feedbackStatus;
+  feedback: string;
   userId: string;
 }
 
@@ -85,44 +82,6 @@ const FileForm: FC<FormProps> = ({ title, feedback, userId }) => {
           <Box display="flex" flexDirection="row">
             <AlertIcon />
             Waiting for HR to approve your {title}.
-          </Box>
-        </Alert>
-      )}
-
-      {feedback === "approved" && (
-        <Alert
-          status="success"
-          display="flex"
-          flexDirection="row"
-          justifyContent="space-between"
-          padding="0.75rem 1.5rem"
-        >
-          <Box display="flex" flexDirection="column">
-            <Box display="flex" flexDirection="row" marginBottom="1rem">
-              <AlertIcon />
-              Please download and fill out the I-983 form.
-            </Box>
-
-            <Box
-              display="flex"
-              flexDirection="row"
-              justifyContent="space-between"
-            >
-              <Button
-                size="sm"
-                colorScheme="blue"
-                // TODO: onClick
-              >
-                Download Form Here
-              </Button>
-              <Button
-                size="sm"
-                colorScheme="blue"
-                // TODO: onClick
-              >
-                Download Sample Here
-              </Button>
-            </Box>
           </Box>
         </Alert>
       )}
@@ -197,67 +156,68 @@ const EmployeeVisaPage: FC = () => {
   const isPerm = useSelector<RootState, string>(
     (state) => state.onboarding.data.isPermanentResident
   );
-  const [feedback, setFeedback] = useState<feedbackStatus>("not submitted");
-  const [currentStep, setCurrentStep] = useState<stepStatus>("not started");
+  const [feedback, setFeedback] = useState("not submitted");
+  const [currentStep, setCurrentStep] = useState("not started");
+  const [isLoading, setIsLoading] = useState(true);
 
-  const steps: Record<stepStatus, number> = {
+  const steps: Record<string, number> = {
     "not started": 0,
     "pending OPT Receipt": 1,
     "pending OPT-EAD": 2,
     "pending I-983": 3,
     "pending I-20": 4,
-    "pre-completed": 5,
-    completed: 6,
+    completed: 5,
     rejected: -1,
   };
+  const [part, setPart] = useState(0);
 
-  const step = steps[currentStep];
   // 轮询
   const pollRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    const fetchStatus = async () => {
-      try {
-        // 发送请求以获取审批状态
-        const res = await axios.get(
-          `http://localhost:3000/get-steps/${userId}`
-        );
-
-        if (res.status === 200) {
-          let curStep: stepStatus;
-          let nextStep: stepStatus;
-          curStep = res.data.curStep;
-          nextStep = res.data.nextStep;
-          setCurrentStep(curStep);
-
-          if (nextStep === "rejected") {
-            setFeedback("rejected");
-          } else {
-            if (steps[nextStep] < steps[curStep]) {
-              setFeedback("pending");
-            } else if (steps[nextStep] === steps[curStep]) {
-              setFeedback("not submitted");
-            } else {
-              setFeedback("approved");
-            }
-          }
-          console.log("step status: ", curStep, " ", nextStep);
-        }
-      } catch (error) {
-        console.error("Error fetching status:", error);
+  const fetchStatus = async () => {
+    let curStep: string, nextStep: string, feedback: string;
+    try {
+      // 发送请求以获取审批状态
+      const res = await axios.get(`http://localhost:3000/get-steps/${userId}`);
+      curStep = res.data.curStep;
+      nextStep = res.data.nextStep;
+      feedback = res.data.feedback;
+      if (feedback === "pending") {
+        setPart(steps[curStep]);
+      } else if (feedback === "approved") {
+        setPart(steps[nextStep]);
       }
-    };
+      setFeedback(feedback);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching status:", error);
+    }
+  };
 
+  useEffect(() => {
+    fetchStatus();
+  }, []);
+
+  useEffect(() => {
     // 开始轮询
-    pollRef.current = window.setInterval(fetchStatus, 10000); // 5秒钟请求一次
+    pollRef.current = window.setInterval(fetchStatus, 10000); // 10秒钟请求一次
 
     // 清除轮询
     return () => {
       if (pollRef.current !== null) {
         clearInterval(pollRef.current);
+        setIsLoading(true);
       }
     };
   }, [userId]); // 依赖于userId，当userId变化时重新开始轮询
+
+  if (isLoading) {
+    return (
+      <Heading as="h3" size="lg">
+        Loading...
+      </Heading>
+    );
+  }
 
   return (
     <>
@@ -273,7 +233,22 @@ const EmployeeVisaPage: FC = () => {
         </Box>
       )}
 
-      {/* ----- document upload */}
+      {feedback === "approved" && (
+        <Alert
+          status="success"
+          display="flex"
+          flexDirection="row"
+          justifyContent="space-between"
+          padding="0.75rem 1.5rem"
+        >
+          <Box display="flex" flexDirection="column">
+            <Box display="flex" flexDirection="row" marginBottom="1rem">
+              <AlertIcon />
+              Your last file has been approved. Please continue
+            </Box>
+          </Box>
+        </Alert>
+      )}
       <Box
         borderWidth="1px"
         rounded="lg"
@@ -283,13 +258,13 @@ const EmployeeVisaPage: FC = () => {
         m="10px auto"
         as="form"
       >
-        {step === 0 ? (
+        {part === 0 ? (
           <FileForm title="OPT Receipt" feedback={feedback} userId={userId} />
-        ) : step === 1 ? (
+        ) : part === 1 ? (
           <FileForm title="OPT EAD" feedback={feedback} userId={userId} />
-        ) : step === 2 ? (
+        ) : part === 2 ? (
           <FileForm title="I-983" feedback={feedback} userId={userId} />
-        ) : step === 3 ? (
+        ) : part === 3 ? (
           <FileForm title="I-20" feedback={feedback} userId={userId} />
         ) : (
           <Box>All files uploaded</Box>

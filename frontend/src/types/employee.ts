@@ -41,16 +41,6 @@ export type Document = {
   file: string;
 };
 
-export type stepStatus =
-  | "not started"
-  | "pending OPT Receipt"
-  | "pending OPT-EAD"
-  | "pending I-983"
-  | "pending I-20"
-  | "pre-completed"
-  | "completed"
-  | "rejected";
-
 export type EmployeeInfo = {
   username: string;
   password?: string; // delete after debugging
@@ -58,8 +48,6 @@ export type EmployeeInfo = {
   role?: string;
   onboardStatus: string;
   onboardFeedback?: string;
-  currentStep?: stepStatus;
-  nextStep?: stepStatus;
   visaFeedback?: string;
   emergencyContact: EmergencyContact;
   reference: Reference;
