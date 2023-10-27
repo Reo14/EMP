@@ -42,6 +42,7 @@ const App: FC = () => {
         templateAreas={`"sidebar header" "sidebar main"`}
         gridTemplateRows={"auto 1fr"}
         gridTemplateColumns={navSize === "small" ? "75px 1fr" : "220px 1fr"}
+        transition="grid-template-columns 0.1s"
         autoFlow={"row"}
       >
         <GridItem bg="gray.200" area={"header"}>

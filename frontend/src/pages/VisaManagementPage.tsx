@@ -1,35 +1,21 @@
-import React, { useState, useEffect } from "react";
-import {
-  Flex,
-  Input,
-  Button,
-  Text,
-  Stack,
-  Heading,
-  Box,
-  Image,
-  Link,
-} from "@chakra-ui/react";
-import { EmployeeInfo as Employee } from "../types/employee";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { Flex, Input, Button, Text, Stack, Heading, Box, Image, Link } from '@chakra-ui/react';
+import { EmployeeInfo as Employee } from '../types/employee';
+import axios from 'axios';
 
 const VisaStatusManagementPage: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [showAllApplicants, setShowAllApplicants] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await axios.get<Employee[]>(
-          "http://localhost:3000/hr/all-employees"
-        );
-        const sortedEmployees = response.data.sort((a, b) =>
-          a.lastName.localeCompare(b.lastName)
-        );
+        const response = await axios.get<Employee[]>('http://localhost:3000/hr/all-employees');
+        const sortedEmployees = response.data.sort((a, b) => a.lastName.localeCompare(b.lastName));
         setEmployees(sortedEmployees);
       } catch (error) {
-        console.error("Error fetching employee data:", error);
+        console.error('Error fetching employee data:', error);
       }
     };
 
@@ -44,71 +30,58 @@ const VisaStatusManagementPage: React.FC = () => {
     return daysRemaining > 0 ? daysRemaining : 0;
   };
 
-  const handleApproveDocument = async (employee: Employee, type: string) => {
+const handleApproveDocument = async (employee: Employee, type: string) => {
     try {
       await axios.put(`http://localhost:3000/hr/opt/${employee.userId}`, {
-        type,
-        status: "Approved",
+        // type: type,
+        status: 'Approved',
       });
 
-      const updatedEmployees = await axios.get<Employee[]>(
-        "http://localhost:3000/hr/all-employees"
-      );
+      const updatedEmployees = await axios.get<Employee[]>('http://localhost:3000/hr/all-employees');
       setEmployees(updatedEmployees.data);
     } catch (error) {
-      console.error("Error approving document:", error);
+      console.error('Error approving document:', error);
     }
   };
 
   const handleRejectDocument = async (employee: Employee, type: string) => {
     try {
-      const feedback = prompt("Provide feedback for document rejection:");
+      const feedback = prompt('Provide feedback for document rejection:');
 
       await axios.put(`http://localhost:3000/hr/opt/${employee.userId}`, {
-        type,
-        status: "Rejected",
+        // type
+        status: 'Rejected',
         reason: feedback,
       });
 
-      const updatedEmployees = await axios.get<Employee[]>(
-        "http://localhost:3000/hr/all-employees"
-      );
+      const updatedEmployees = await axios.get<Employee[]>('http://localhost:3000/hr/all-employees');
       setEmployees(updatedEmployees.data);
     } catch (error) {
-      console.error("Error rejecting document:", error);
+      console.error('Error rejecting document:', error);
     }
   };
 
   const handleSendNotification = async (employee: Employee) => {
     try {
-      await axios.post(
-        `http://localhost:3000/hr/send-notification/${employee.userId}`
-      );
-      alert("Notification sent successfully!");
+      await axios.post(`http://localhost:3000/hr/send-notification/${employee.userId}`);
+      alert('Notification sent successfully!');
     } catch (error) {
-      console.error("Error sending notification:", error);
+      console.error('Error sending notification:', error);
     }
   };
 
   const filteredEmployees = employees.filter((employee) => {
     const fullName = `${employee.firstName} ${employee.lastName}`;
     return fullName.toLowerCase().includes(searchTerm.toLowerCase());
+    
   });
 
   return (
-    <Flex
-      direction="column"
-      align="center"
-      justify="center"
-      minHeight="100vh"
-      padding="4"
-    >
+    <Flex direction="column" align="center" justify="center" minHeight="100vh" padding="4" maxWidth="900px" m="1rem auto">
       <Flex align="center" justify="flex-end" width="100%">
         {/* <此按钮的逻辑为 切换in progress申请人(状态编号不为12的申请人)和全部申请人/> */}
-        <Button onClick={() => setShowAllApplicants(!showAllApplicants)} m="2">
-          {showAllApplicants
-            ? "Show In Progress Applicants"
-            : "Show All Applicants"}
+        <Button onClick={() => setShowAllApplicants(!showAllApplicants)} m="2" variant="solid" colorScheme='blue'>
+          {showAllApplicants ? 'Show In Progress Applicants' : 'Show All Applicants'}
         </Button>
       </Flex>
 
@@ -119,40 +92,25 @@ const VisaStatusManagementPage: React.FC = () => {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         mb="4"
+        bgColor="white"
       />
 
       <Stack spacing="4" width="100%" align="center">
+        
         {filteredEmployees.map((employee) => (
-          <Box
-            key={employee.userId}
-            borderWidth="1px"
-            p="4"
-            borderRadius="md"
-            width="100%"
-          >
+          <Box key={employee.userId} borderWidth="1px" p="4" borderRadius="md" width="100%" bgColor="white">
             <Text fontWeight="bold">{`${employee.firstName} ${employee.lastName}`}</Text>
             <Text>
-              <b>Title:</b> {employee.employment?.visaTitle || "Not specified"}
+              <b>Title:</b> {employee.employment?.visaTitle || 'Not specified'}
             </Text>
             <Text>
-              <b>Start Date:</b>{" "}
-              {employee.employment?.startDate
-                ? new Date(employee.employment.startDate).toLocaleDateString()
-                : "Not specified"}
+              <b>Start Date:</b> {employee.employment?.startDate ? new Date(employee.employment.startDate).toLocaleDateString() : 'Not specified'}
             </Text>
             <Text>
-              <b>End Date:</b>{" "}
-              {employee.employment?.endDate
-                ? new Date(employee.employment.endDate).toLocaleDateString()
-                : "Not specified"}
+              <b>End Date:</b> {employee.employment?.endDate ? new Date(employee.employment.endDate).toLocaleDateString() : 'Not specified'}
             </Text>
             <Text>
-              <b>Number of Days Remaining:</b>{" "}
-              {employee.employment?.endDate
-                ? calculateRemainingDays(
-                    new Date(employee.employment.endDate).toLocaleDateString()
-                  )
-                : "Not specified"}
+              <b>Number of Days Remaining:</b> {employee.employment?.endDate ? calculateRemainingDays(new Date(employee.employment.endDate).toLocaleDateString()) : 'Not specified'}
             </Text>
 
             {/* <Text mt="2">
@@ -202,7 +160,7 @@ const VisaStatusManagementPage: React.FC = () => {
                       <Button>{document.type}</Button>
                     </Link>
 
-                    {document.status === "Pending" && (
+                    {document.status === 'Pending' && (
                       <>
                         <Button
                           colorScheme="green"
@@ -222,7 +180,7 @@ const VisaStatusManagementPage: React.FC = () => {
                         </Button>
                       </>
                     )}
-                    {document.status !== "Pending" && (
+                    {document.status !== 'Pending' && (
                       <Text>
                         Document Status:{" "}
                         {document.status === "Approved"
@@ -230,6 +188,8 @@ const VisaStatusManagementPage: React.FC = () => {
                           : "Rejected with reason: " + document.Feedback}
                       </Text>
                     )}
+
+
 
                     {/* <Button
                       as={Link}
@@ -245,6 +205,10 @@ const VisaStatusManagementPage: React.FC = () => {
                 ))}
               </>
             )}
+
+            
+
+            
 
             {/* Action buttons
             {showAllApplicants && (

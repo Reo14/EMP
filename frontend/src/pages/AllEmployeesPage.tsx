@@ -60,9 +60,13 @@ const EmployeeList: React.FC = () => {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         mb={4}
+        bgColor="white"
       />
-      <Center>
-        <Table variant="simple">
+      <Center
+        bgColor="white"
+        borderRadius="5px"
+      >
+        <Table variant="striped" colorScheme='blackAlpha'>
           <Thead>
             <Tr>
               <Th>Name (legal full name)</Th>
@@ -74,7 +78,7 @@ const EmployeeList: React.FC = () => {
           </Thead>
           <Tbody>
             {filteredEmployees.map((employee) => (
-              <Tr key={employee.userId}>
+              <Tr key={employee.userId} _hover={{ textDecor: "none", backgroundColor: "blue.50" }}>
                 <Td>
                   <Link
                     as={RouterLink} // Use RouterLink from React Router
