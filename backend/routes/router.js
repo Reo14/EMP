@@ -10,6 +10,7 @@ const {
   submitVisaDocument,
   checkAllFilesUploaded,
   checkFileUploaded,
+  deleteRejectedFile,
 } = require("../controllers/employeeContollers");
 
 const {
@@ -41,6 +42,7 @@ router.get("/onboardstatus/:id", getOnboardStatus);
 router.post("/optdocument/:id", upload.single("file"), submitVisaDocument);
 router.get("/get-file-status/:type/:userId", checkFileUploaded);
 router.get("/check-all-files-uploaded/:userId", checkAllFilesUploaded);
+router.delete("/delete-rejected-file/:userId", deleteRejectedFile);
 
 // HR Flow
 router.get("/hr/all-employees", getAllEmployeeSummaries);

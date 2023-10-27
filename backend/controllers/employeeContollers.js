@@ -93,41 +93,32 @@ async function submitVisaDocument(req, res) {
   }
 }
 
-// async function triggerNextStep(req, res) {
-//   try {
-//     const { id } = req.params;
-//     const { opinion, reason } = req.body;
-//     const user = await User.findOne({ userId: id });
-//     if (!user) {
-//       return res.status(404).json({ error: "User not found" });
-//     }
-//     if (opinion === "Approved") {
-//       const curStep = user.currentStep;
-//       user.nextStep =
-//         curStep === "not started"
-//           ? "pending OPT Receipt"
-//           : curStep === "pending OPT Receipt"
-//           ? "pending OPT-EAD"
-//           : curStep === "pending OPT-EAD"
-//           ? "pending I-983"
-//           : curStep === "pending I-983"
-//           ? "pending I-20"
-//           : curStep === "pending I-20"
-//           ? "pre-completed"
-//           : "completed";
-//       return res.status(200).json({ message: "Visa approved successfully" });
-//     } else {
-//       user.nextStep = "rejected";
-//       user.visaFeedback = reason;
-//       return res.status(200).json({
-//         message: "Visa rejected successfully",
-//         reason: user.visaFeedback,
-//       });
-//     }
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// }
+async function deleteRejectedFile(req, res) {
+  try {
+    const { userId } = req.params;
+
+    // 查找用户
+    const user = await User.findOne({ userId: userId });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const latestFile = user.documents[user.documents.length - 1];
+    if (!latestFile) {
+      return res.status(404).json({ error: "No documents found" });
+    }
+    if (latestFile.status !== "Rejected") {
+      return res.status(400).json({ error: "File not rejected" });
+    }
+    user.documents.pop();
+    await user.save();
+
+    res.status(200).json({ message: "File deleted" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: error.message });
+  }
+}
 
 async function checkAllFilesUploaded(req, res) {
   const requiredDocuments = ["OPT Receipt", "OPT EAD", "I-983", "I-20"];
@@ -228,4 +219,5 @@ module.exports = {
   submitVisaDocument,
   checkAllFilesUploaded,
   checkFileUploaded,
+  deleteRejectedFile,
 };

@@ -91,6 +91,21 @@ const FileForm: FC<FormProps> = ({ title, userId }) => {
     }
   };
 
+  const handleResubmit = async () => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/delete-rejected-file/${userId}`
+      );
+      if (response.status === 200) {
+        setUploaded(false);
+        setStatus("");
+        setFeedback("");
+      }
+    } catch (error) {
+      console.error("Error during resubmission:", error);
+    }
+  };
+
   useEffect(() => {
     checkFile(title, userId);
   }, []);
@@ -171,7 +186,7 @@ const FileForm: FC<FormProps> = ({ title, userId }) => {
               Sorry, your application was rejected.
             </Box>
 
-            <Box>
+            <Box display="flex" flexDirection="row">
               <Popover>
                 <PopoverTrigger>
                   <Button colorScheme="red" size="sm">
@@ -189,6 +204,14 @@ const FileForm: FC<FormProps> = ({ title, userId }) => {
                   </PopoverContent>
                 </Portal>
               </Popover>
+              <Button
+                ml="6"
+                colorScheme="red"
+                size="sm"
+                onClick={handleResubmit}
+              >
+                Resubmit
+              </Button>
             </Box>
           </Alert>
         ))}
