@@ -11,7 +11,7 @@ async function updateInfo(req, res) {
 
     const employee = await User.findOneAndUpdate(
       { userId: employeeInfo.userId },
-      { employeeInfo }
+      employeeInfo
     );
     console.log("employee", employee);
     if (!employee) {
