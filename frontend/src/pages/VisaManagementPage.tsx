@@ -181,12 +181,21 @@ const handleApproveDocument = async (employee: Employee, type: string) => {
                       </>
                     )}
                     {document.status !== 'Pending' && (
+                    <div>
                       <Text>
                         Document Status:{" "}
                         {document.status === "Approved"
                           ? "Approved"
                           : "Rejected with reason: " + document.Feedback}
                       </Text>
+
+                      <Button
+                        colorScheme="blue"
+                        onClick={() => handleSendNotification(employee)}
+                      >
+                        Send Notification
+                      </Button>
+                    </div>
                     )}
 
 
