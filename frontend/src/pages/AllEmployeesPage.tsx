@@ -32,7 +32,7 @@ const EmployeeList: React.FC = () => {
 
         setEmployees(sortedEmployees);
       } catch (error) {
-        console.error('Error fetching employee data:');
+        console.error('Error fetching employee data:', error);
         alert(error);
         navigate('/error')
       }

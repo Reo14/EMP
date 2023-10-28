@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ErrorResponse } from "../../types/error";
 import { EmployeeInfo } from "../../types/employee";
 import { setAuth } from "./auth";
+import { cloneDeep } from "lodash";
 
 interface onboardingState {
   data: EmployeeInfo;
@@ -22,6 +23,7 @@ export const submitOnboarding = createAsyncThunk(
   "employee/submitOnboarding",
   async (onboardData: EmployeeInfo, { rejectWithValue, dispatch }) => {
     try {
+      dispatch(saveData(onboardData));
       dispatch(date2string());
       await axios.put("http://localhost:3000/update-info", onboardData, {
         headers: {
@@ -87,13 +89,12 @@ const onboardSlice = createSlice({
   name: "onboarding",
   initialState,
   reducers: {
-    setCurrentStep: (state, action) => {
-      state.data.currentStep = action.payload;
-    },
-    setNextStep: (state, action) => {
-      state.data.nextStep = action.payload;
+    saveData: (state, action) => {
+      const data = cloneDeep(action.payload);
+      state.data = data;
     },
     date2string: (state) => {
+      console.log(state.data.employment.startDate);
       if (state.data.DOB instanceof Date)
         state.data.DOB = state.data.DOB.toISOString();
       if (state.data.employment.startDate instanceof Date)
@@ -150,5 +151,5 @@ const onboardSlice = createSlice({
   },
 });
 
-export const { date2string, reset } = onboardSlice.actions;
+export const { date2string, reset, saveData } = onboardSlice.actions;
 export default onboardSlice.reducer;

@@ -67,6 +67,7 @@ const OnBoardingPage: FC = () => {
     onSubmit: (values) => {
       console.log(values);
       dispatch(submitOnboarding(values));
+      // navigate
     },
   });
 
@@ -254,19 +255,6 @@ const OnBoardingPage: FC = () => {
             Upload files
           </Button>
         </Alert>
-
-        // <Alert
-        //   status="success"
-        //   display="flex"
-        //   flexDirection="row"
-        //   justifyContent="space-between"
-        //   padding="0.75rem 1.5rem"
-        // >
-        //   <Box display="flex" flexDirection="row">
-        //     <AlertIcon />
-        //       Onbaording approved! Automatically direct to personal info page...
-        //     </Box>
-        // </Alert>
       )}
 
       {onboardingStatus === "Never submitted" && (
